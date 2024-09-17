@@ -1,0 +1,206 @@
+###########
+##1. DOWNLOAD FILES AND CREATE FILES IN CORRECT FORMAT TO OBTAIN genome.fa, annotation.gff3, annotation.cds, annotation.pep
+###########
+
+mkdir S.melongena
+mkdir S.lycopersicum
+mkdir S.dulcamara
+mkdir S.tuberosum
+mkdir S.chilense
+mkdir S.habrochaites
+mkdir S.nigrum
+mkdir S.americanum2773
+mkdir S.americanum2775
+
+
+### Download S. americanum
+####SP2773
+wget -P ./S.americanum.2773/ https://figshare.com/ndownloader/files/36711297###CDS
+wget -P ./S.americanum.2773/ https://figshare.com/ndownloader/files/36711300 ##PEP
+wget -P ./S.americanum.2773/ https://figshare.com/ndownloader/files/36612648 ##genome
+wget -P ./S.americanum.2773/ https://figshare.com/ndownloader/files/36612651 ##gff3
+
+####SP2775
+wget -P ./S.americanum.2775/ https://figshare.com/ndownloader/files/36711306###CDS
+wget -P ./S.americanum.2775/ https://figshare.com/ndownloader/files/36711309 ##PEP
+wget -P ./S.americanum.2775/ https://figshare.com/ndownloader/files/36612684 ##genome
+wget -P ./S.americanum.2775/ https://figshare.com/ndownloader/files/36612687 ##gff3
+
+
+###Download potato
+wget -P ./S.tuberosum/ http://spuddb.uga.edu/data/C88.v1.fa.gz
+wget -P ./S.tuberosum/  http://spuddb.uga.edu/data/C88.v1.gene.gff3.gz
+wget -P ./S.tuberosum/ http://spuddb.uga.edu/data/C88.v1.cdna.fa.gz
+wget -P ./S.tuberosum/ http://spuddb.uga.edu/data/C88.v1.cds.fa.gz
+wget -P ./S.tuberosum/ http://spuddb.uga.edu/data/C88.v1.pep.fa.gz
+
+### download tomato
+wget -P ./S.lycopersicum http://solomics.agis.org.cn/tomato/ftp/gff/SL5.0.gff3.gz
+#wget -P ./S.lycopersicum http://solomics.agis.org.cn/tomato/ftp/cds/SL5.0.cds.fa.gz
+wget -P ./S.lycopersicum http://solomics.agis.org.cn/tomato/ftp/genome/SL5.0.fasta.gz
+wget -P ./S.lycopersicum http://solomics.agis.org.cn/tomato/ftp/pep/SL5.0.pep.fa.gz
+wget -P ./S.lycopersicum http://solomics.agis.org.cn/tomato/ftp/gff/SL5.0.gff3.gz
+
+### download eggplant
+wget -P ./S.melongena/ https://solgenomics.net/ftp/genomes/Solanum_melongena_V4.1/Eggplant_V4.1.fa
+wget -P ./S.melongena/ https://solgenomics.net/ftp/genomes/Solanum_melongena_V4.1/Eggplant_V4.1_repeats.gff3
+wget -P ./S.melongena/ https://solgenomics.net/ftp/genomes/Solanum_melongena_V4.1/Eggplant_V4.1_function_IPR_final.gff
+wget -P ./S.melongena/ https://solgenomics.net/ftp/genomes/Solanum_melongena_V4.1/Eggplant_V4.1_Interproscan.tsv
+
+
+####gunzip all files
+gunzip ./S.tuberosum/*
+gunzip ./S.lycopersicum/*
+gunzip ./S.americanum.2773/*
+gunzip ./S.americanum.2775/*
+
+
+######They need to be all same type of gff3 which requires some modifications
+
+#########TOMATO
+module load  AUGUSTUS/3.5.0-foss-2022a
+####to produce CDS fasta
+gffread -g ./S.lycopersicum/SL5.0.fasta ./S.lycopersicum/SL5.0.gff3 -w ./S.lycopersicum/tomato_CDS.fasta -F 
+cp S.lycopersicum/tomato_CDS.fasta S.lycopersicum/S.lycopersicum.annotation.2.cds
+sed '/^>/ s/ .*//' ./S.lycopersicum/S.lycopersicum.annotation.2.cds > ./S.lycopersicum/S.lycopersicum.annotation.cds
+
+###produce pep fasta 
+gffread ./S.lycopersicum/SL5.0.gff3 -T -o ./S.lycopersicum/SL5.0.1.gtf
+gtf2aa.pl ./S.lycopersicum/SL5.0.fasta SL5.0.1.gtf S.lycopersicum/tomato_pep.fasta 
+cp S.lycopersicum/tomato_pep.fasta  S.lycopersicum/S.lycopersicum.annotation.2.pep
+sed '/^>/ s/ .*//' ./S.lycopersicum/S.lycopersicum.annotation.2.cds > ./S.lycopersicum/S.lycopersicum.annotation.cds
+
+###use the original SL5.0.gff3 with gene and mRNA names #### gff3 for synima ok
+cp ./S.lycopersicum/SL5.0.gff3 S.lycopersicum/S.lycopersicum.annotation.gff3 
+cp S.lycopersicum/SL5.0.fasta  S.lycopersicum/S.lycopersicum.genome.fa
+
+#########EGGPLANT 
+sed -e 's/mRNA/mRNA_t/g'  S.melongena/Eggplant_V4.1_function_IPR_final.gff >  S.melongena/Eggplant_V4.1_function_IPR_final.2.gff
+sed -e 's/gene/mRNA/g'  S.melongena/Eggplant_V4.1_function_IPR_final.2.gff >  S.melongena/Eggplant_V4.1_function_IPR_final.3.gff
+###remove lines
+gffread -E  S.melongena/Eggplant_V4.1_function_IPR_final.3.gff -T -o  S.melongena/Eggplant_V4.1.gtf -F
+gffread -E  S.melongena/Eggplant_V4.1_function_IPR_final.gff -T -o  S.melongena/Eggplant_V4.1.1.gtf -F
+gtf2aa.pl  S.melongena/Eggplant_V4.1.fa  S.melongena/Eggplant_V4.1.1.gtf  S.melongena/eggplant_pep.fasta
+gffread -g  S.melongena/Eggplant_V4.1.fa  S.melongena/Eggplant_V4.1.gtf -w  S.melongena/eggplant_CDS.fasta -F
+cp  S.melongena/Eggplant_V4.1_function_IPR_final.3.gff S.melongena/S.melongena.annotation.gff3
+cp  S.melongena/eggplant_CDS.fasta  S.melongena/S.melongena.annotation.cds
+cp  S.melongena/eggplant_pep.fasta S.melongena/S.melongena.annotation.pep
+cp  S.melongena/Eggplant_V4.1.fa S.melongena/S.melongena.genome.fa
+cp S.melongena/S.melongena.annotation.cds S.melongena/S.melongena.annotation.2.cds
+awk '/^>/ {$0=$1} 1' S.melongena/S.melongena.annotation.2.cds >  S.melongena/S.melongena.annotation.cds
+
+#########POTATO 
+cp  S.tuberosum/C88.v1.gene.gff3 S.tuberosum/S.tuberosum.annotation.gff3
+cp  S.tuberosum/C88.v1.cds.fa  S.tuberosum/S.tuberosum.annotation.cds
+cp  S.tuberosum/C88.v1.pep.fa S.tuberosum/S.tuberosum.annotation.pep
+cp  S.tuberosum/C88.v1.fa S.tuberosum/S.tuberosum.genome.fa
+
+
+#########AMERICACNUM
+
+cp  S.americanum.2773/36612651 S.americanum.2773/S.americanum.2773.annotation.gff3
+cp  S.americanum.2773/36711297  S.americanum.2773/S.americanum.2773.annotation.cds
+cp  S.americanum.2773/36711300 S.americanum.2773/S.americanum.2773.annotation.pep
+cp  S.americanum.2773/36612648 S.americanum.2773/S.americanum.2773.genome.fa
+
+cp  S.americanum.2775/36612687 S.americanum.2775/S.americanum.2775.annotation.gff3
+cp  S.americanum.2775/36711306  S.americanum.2775/S.americanum.2775.annotation.cds
+cp  S.americanum.2775/36711309 S.americanum.2775/S.americanum.2775.annotation.pep
+cp  S.americanum.2775/36612684 S.americanum.2775/S.americanum.2775.genome.fa
+
+
+#########NIGRUM ###need to use the one gFACs
+cp ./S.nigrum/Sn_gFACs_entap_unique_ab_initio_out.gff3 ./S.nigrum/S.nigrum.gff3
+cp purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta ./S.nigrum/S.nigrum.annotation.genome.fa
+sed -e 's/mRNA/gene/g'  ./S.nigrum/S.nigrum.gff3 >  ./S.nigrum/S.nigrum.2.gff3
+cp   ./S.nigrum/S.nigrum.gff3  ./S.nigrum/S.nigrum.annotation.gff3
+
+gffread -E  ./S.nigrum/S.nigrum.2.gff3 -T -o  ./S.nigrum/S.nigrum.gtf -F
+gffread -g  ./S.nigrum/S.nigrum.genome.fa  ./S.nigrum/S.nigrum.gtf -w  S.nigrum/S.nigrum_CDS.fasta -F
+sed '/^>/ s/ .*//' ./S.nigrum/S.nigrum_CDS.fasta > ./S.nigrum/S.nigrum.annotation.cds
+
+gffread -E  ./S.nigrum/S.nigrum.gff3 -T -o  ./S.nigrum/S.nigrum.gtf -F
+gtf2aa.pl ./S.nigrum/S.nigrum.genome.fa ./S.nigrum/S.nigrum.gtf S.nigrum/S.nigrum_pep.fasta #####NOT WORKING DONT KNOW WHY!
+sed '/^>/ s/ .*//' ./S.nigrum/S.nigrum_pep.fasta > ./S.nigrum/S.nigrum.annotation.pep
+
+
+#########DULCAMARA ###need to use the one gFACs
+cp ./S.dulcamara/Sd_gFACs_entap_unique_ab_initio_out.gff3 ./S.dulcamara/S.dulcamara.gff3
+cp /users/sfo503/scratch/S.nigrum/genome/purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta ./S.nigrum/S.nigrum.annotation.genome.fa
+sed -e 's/mRNA/gene/g'  ./S.dulcamara/S.dulcamara.gff3 >  ./S.dulcamara/S.dulcamara.2.gff3
+cp   ./S.dulcamara/S.dulcamara.gff3  ./S.dulcamara/S.dulcamara.annotation.gff3
+
+gffread -E  ./S.dulcamara/S.dulcamara.2.gff3 -T -o  ./S.dulcamara/S.dulcamara.gtf -F
+gffread -g  ./S.dulcamara/S.dulcamara.genome.fa  ./S.dulcamara/S.dulcamara.gtf -w  ./S.dulcamara/S.dulcamara_CDS.fasta -F
+sed '/^>/ s/ .*//' ./S.dulcamara/S.dulcamara_CDS.fasta > ./S.dulcamara/S.dulcamara.annotation.cds
+
+gffread -E  ./S.dulcamara/S.dulcamara.gff3 -T -o ./S.dulcamara/S.dulcamara.gtf -F
+gtf2aa.pl ./S.dulcamara/S.dulcamara.genome.fa ./S.dulcamara/S.dulcamara.gtf ./S.dulcamara/S.dulcamara_pep.fasta #####NOT WORKING DONT KNOW WHY!
+
+
+#########SYNIMA prepare Repo_spec.txt file with names of all species which is as below
+#//
+#Genome S.lycopersicum
+#Annotation S.lycopersicum
+#//
+#Genome S.dulcamara
+#Annotation S.dulcamara
+#//
+#Genome S.nigrum
+#Annotation S.nigrum
+#//
+#Genome S.tuberosum
+#Annotation S.tuberosum
+#//
+#Genome S.melongena
+#Annotation S.melongena
+#//
+#Genome S.americanum.2773
+#Annotation S.americanum.2773
+#//
+#Genome S.americanum.2775
+#Annotation S.americanum.2775
+#//
+
+module load BLAST+/2.14.0-gompi-2022b 
+perl Synima/util/Create_full_repo_sequence_databases.pl -r Repo_spec.txt -v
+perl Synima/util/Blast_grid_all_vs_all.pl -r Repo_spec.txt -t CDS
+perl Synima/util/Blast_all_vs_all_repo_to_Orthofinder.pl  -r Repo_spec.txt -t CDS
+perl Synima/util/Orthologs_to_summary.pl -o ./Orthofinder_outdir/Orthogroups.csv -t Orthofinder -d Orthofinder_outdir -r Repo_spec.txt
+perl Synima/util/DAGchainer_from_gene_clusters.pl -c ./GENE_CLUSTERS_SUMMARIES.Orthofinder/GENE_CLUSTERS_SUMMARIES.clusters -r Repo_spec.txt -v -i 4
+###use outputs from DAGchainer
+cp Repo_spec.txt.dagchainer.aligncoords ./GENE_CLUSTERS_SUMMARIES.Orthofinder/
+cp Repo_spec.txt.dagchainer.aligncoords.spans ./GENE_CLUSTERS_SUMMARIES.Orthofinder/
+perl Synima/SynIma.pl -a ./GENE_CLUSTERS_SUMMARIES.Orthofinder/Repo_spec.txt.dagchainer.aligncoords -b ./GENE_CLUSTERS_SUMMARIES.Orthofinder/Repo_spec.txt.dagchainer.aligncoords.spans
+
+
+##############kinfin ####fill config.txt file manually with order in Repo_spec
+echo '#IDX,TAXON' > config.txt
+sed 's/: /,/g' ./Orthofinder_outdir/SpeciesIDs.txt | cut -f 1 -d"." >> config.txt
+./kinfin/kinfin  -g ./Orthofinder_outdir/Orthogroups.txt -c config.txt -s ./Orthofinder_outdir/SequenceIDs.txt -p ./Orthofinder_outdir/SpeciesIDs.txt -o all_vs_all_7
+
+
+
+########AFTER PART2, continue then here
+##4. RETRIEVE GENES  IN ORTHOGROUPS CORRESPONDING TO ONLY S.dulcamara or to S.dulcamara + S.americanum SP2773 (both resistant)
+#######
+
+filename=venn_table2_19_common_sd_sa2773_names #########only names so keep only that column
+while read -r line; do
+	name="$line"
+	grep -w "$line" Orthofinder_outdir/Orthogroups.txt >> genes_sd_sa2773 
+done < "$filename"
+
+grep -Eow "Sd_g\w+.[0-9]" genes_sd_sa2773 > Sd_sa2773_genes ##30 genes
+
+#####add annotation later in R
+
+filename=venn_table2_27_sd_only_names #########only names so keep only that column
+while read -r line; do
+	name="$line"
+	grep -w "$line" Orthofinder_outdir/Orthogroups.txt >> genes_sd_only ##30 genes
+done < "$filename"
+
+grep -Eow "Sd_g\w+.[0-9]" genes_sd_only > Sd_only_genes  ###90 genes
+
+
