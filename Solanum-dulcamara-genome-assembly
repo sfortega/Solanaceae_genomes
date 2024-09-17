@@ -1,0 +1,392 @@
+################
+##1.Chloroplast assembly 
+################
+
+##############Round1 -map against the tomato chloroplast to only use those reads to assemble the chloroplast
+
+module load lang/Java
+module load bio/minimap2
+module load bio/SAMtools
+module load bio/Flye
+module load bio/Racon
+module load bio/canu
+module load bio/BEDTools
+module load bio/medaka
+module load bio/quast
+module load bio/BWA
+
+cat fastq_pass/*.fastq.gz > all_fastq_pass.fastq.gz ####concantnate all fastq files
+###for reads length
+gunzip all_fastq_pass.fastq.gz
+awk 'NR%4 ==2 {lengths[length($0)]++} END {for (l in lengths) {print l, lengths[1]}}' all_fastq_pass.fastq > ./reads_lengths.txt
+
+minimap2 -ax map-ont tomato_ref.txt all_fastq_pass.fastq.gz -t 40 >alignment_promethION_chloroplast_ref.sam 
+samtools view -S -bo -h alignment_promethION_chloroplast_ref.sam -o output_chloroplasts_promethion_pass.bam
+samtools sort output_chloroplasts_promethion_pass.bam -o output_chloroplasts_promethion_pass_sorted.bam
+samtools view -h -f 4 output_chloroplasts_promethion_pass_sorted.bam >unmapped_chloroplasts_round1.bam
+samtools view -h -F 4 output_chloroplasts_promethion_pass_sorted.bam >mapped_chloroplasts_round1.bam
+##number of reads
+samtools flagstat mapped_chloroplasts_round1.bam
+samtools sort mapped_chloroplasts_round1.bam -o mapped_chloroplasts_round1_sorted.bam
+samtools fastq mapped_chloroplasts_round1_sorted.bam > mapped_chloroplasts_round1.fastq
+
+#####now assemble using canu and then polish with racon and medaka
+mkdir canu_chloroplast_round1
+canu useGrid=0 gridOptions="t 20:00:00 --maxMemory=$ ((SLURM_MEM_PER_NODE -1)) -maxThreads=$SLURM_CPUS_PER_TASK" -p canu_chloroplast_round1 -d canu_chloroplast_round1 genomeSize=155k -nanopore-raw mapped_chloroplasts_round1.fastq
+
+###first mapping
+mkdir racon_round1
+bwa index ./canu_chloroplast_round1/canu_chloroplast_round1.contigs.fasta
+bwa mem -t 40 -x ont2d ./canu_chloroplast_round1/canu_chloroplast_round1.contigs.fasta mapped_chloroplasts_round1.fastq > mapping_chloroplasts_round1_aftercanu.sam
+racon -m 8 -x 6 -g -8 -w 500 -t 40 mapped_chloroplasts_round1.fastq mapping_chloroplasts_round1_aftercanu.sam ./canu_chloroplast_round1/canu_chloroplast_round1.contigs.fasta > racon_round1/racon_chloroplasts_round1.fasta
+
+###now use racon for medaka, one round
+mkdir medaka_round1
+medaka_consensus -i mapped_chloroplasts_round1.fastq -d ./racon_round1/racon_chloroplasts_round1.fasta -o medaka_round1/canu_chloroplasts_round1_medaka_racon -t $SLURM_CPUS_PER_TASK -b 50
+##evaluate racon and racon-medaka
+mkdir quast_chloroplast_round1
+quast.py -t 4 -o ./quast_chloroplast_round1 -R ./canu_chloroplast_round1/canu_chloroplast_round1.contigs.fasta ./racon_round1/racon_chloroplasts_round1.fasta  ./medaka_round1/canu_chloroplasts_round1_medaka_racon/consensus.fasta 
+seqkit stat -a ./medaka_round1/canu_chloroplasts_round1_medaka_racon/consensus.fasta >seqkit_canu_chloroplasts_round1_medaka_racon.txt
+
+
+
+##############Round2 of the chloroplast assemble to polish it more, do the same, but now use the fasta assemble produced by medaka in the first round to retrieve the reads that map to chloroplast
+#####second round chloroplasts_use racon medaka fasta for minimap2
+mkdir ./chloroplast_round2
+
+minimap2 -ax map-ont ./medaka_round1/canu_chloroplasts_round1_medaka_racon/consensus.fasta all_fastq_pass.fastq -t 40 > alignment_promethION_chloroplast_ref_round2.sam 
+samtools view -S -bo -h alignment_promethION_chloroplast_ref_round2.sam -o output_chloroplasts_promethion_pass_round2.bam
+samtools sort output_chloroplasts_promethion_pass_round2.bam -o output_chloroplasts_promethion_pass_sorted_round2.bam
+samtools view -h -f 4 output_chloroplasts_promethion_pass_sorted_round2.bam >unmapped_chloroplasts_round2.bam
+samtools view -h -F 4 output_chloroplasts_promethion_pass_sorted_round2.bam >mapped_chloroplasts_round2.bam
+samtools flagstat mapped_chloroplasts_round2.bam
+samtools sort -n mapped_chloroplasts_round2.bam -o mapped_chloroplasts_round2_sorted.bam
+samtools fastq mapped_chloroplasts_round2_sorted.bam > mapped_chloroplasts_round2.fastq
+
+
+mkdir canu_chloroplast_round2
+canu useGrid=0 gridOptions="t 40:00:00 --maxMemory=$ ((SLURM_MEM_PER_NODE -1)) -maxThreads=$SLURM_CPUS_PER_TASK" -p canu_chloroplast_round2 -d canu_chloroplast_round2 genomeSize=155k -nanopore-raw mapped_chloroplasts_round2.fastq
+
+
+mkdir racon_round2
+bwa index ./canu_chloroplast_round2/canu_chloroplast_round2.contigs.fasta
+bwa mem -t 40 -x ont2d canu_chloroplast_round2/canu_chloroplast_round2.contigs.fasta mapped_chloroplasts_round2.fastq > mapping_chloroplasts_round2_aftercanu.sam
+racon -m 8 -x 6 -g -8 -w 500 -t 40 mapped_chloroplasts_round2.fastq mapping_chloroplasts_round2_aftercanu.sam ./canu_chloroplast_round2/canu_chloroplast_round2.contigs.fasta > ./racon_round2/racon_chloroplasts_round2.fasta
+
+###now use racon for medaka, one round
+mkdir medaka_round2
+medaka_consensus -i mapped_chloroplasts_round2.fastq -d ./racon_round2/racon_chloroplasts_round2.fasta -o medaka_round2/canu_chloroplasts_round2_medaka_racon -t 40 -b 10
+######final chloroplast submit to Genbank
+
+################
+##2.Mitochondria assembly 
+################
+
+
+module load bio/minimap2
+module load bio/SAMtools
+module load bio/Flye
+module load bio/Racon
+module load bio/canu
+module load bio/BEDTools
+module load bio/BWA
+module load bio/medaka
+
+##############Round1 - same as chloroplast but using the tomato mitochondria as reference and the reads that did not mapped to the chloroplast above
+samtools fastq unmapped_chloroplasts_round2.bam > unmapped_chloroplasts_round2.fastq
+minimap2 -ax map-ont tomato_mitochondria unmapped_chloroplasts_round2.fastq -t $SLURM_CPUS_PER_TASK > alignment_promethION_mitochondria_ref_round1.sam 
+samtools view -S -bo -h alignment_promethION_mitochondria_ref_round1.sam -o output_mitochondria_promethion_pass_round1.bam
+samtools sort output_mitochondria_promethion_pass_round1.bam -o output_mitochondria_promethion_pass_sorted_round1.bam
+samtools view -h -f 4 output_mitochondria_promethion_pass_sorted_round1.bam >unmapped_mitochondria_round1.bam
+samtools view -h -F 4 output_mitochondria_promethion_pass_sorted_round1.bam >mapped_mitochondria_round1.bam
+samtools fastq mapped_mitochondria_round1.bam > mapped_mitochondria_round1.fq
+samtools flagstat mapped_mitochondria_round1.bam >flagstat_mitochondria_round1.txt
+mkdir canu_mitochondria_round1
+canu  useGrid=0 gridOptions="-t 48:00:00 --maxMemory=$ ((SLURM_MEM_PER_NODE -1)) -corMinCoverage=0 -corOutCoverage=999 -maxThreads=$SLURM_CPUS_PER_TASK" -p canu_mitochondria_round1 -d canu_mitochondria_round1 genomeSize=455k -nanopore-raw mapped_mitochondria_round1.fq
+
+mkdir racon_round1
+mkdir medaka_round1
+mkdir quast_mitochondria_round1
+bwa index ./canu_mitochondria_round1/canu_mitochondria_round1.contigs.fasta
+bwa mem -t 40 -x ont2d ./canu_mitochondria_round1/canu_mitochondria_round1.contigs.fasta mapped_mitochondria_round1.fq > mapping_mitochondria_round1_aftercanu.sam
+racon -m 8 -x 6 -g -8 -w 500 -t 40 mapped_mitochondria_round1.fq mapping_mitochondria_round1_aftercanu.sam ./canu_mitochondria_round1/canu_mitochondria_round1.contigs.fasta > racon_round1/racon_mitochondria_round1.fasta
+medaka_consensus -i mapped_mitochondria_round1.fq -d ./racon_round1/racon_mitochondria_round1.fasta -o medaka_round1/medaka_racon_mitochondria_round1 -t $SLURM_CPUS_PER_TASK -b 50
+quast.py -t 4 -o ./quast_mitochondria_round1 -R ./canu_mitochondria_round1/canu_mitochondria_round1.contigs.fasta ./racon_round1/racon_mitochondria_round1.fasta  ./medaka_round1/medaka_racon_mitochondria_round1/consensus.fasta 
+seqkit stat -a ./medaka_round1/medaka_racon_mitochondria_round1/consensus.fasta > seqkit_mitochondria_medaka_round1.txt
+
+
+##############Round2
+
+minimap2 -ax map-ont ./medaka_round1/medaka_racon_mitochondria_round1/consensus.fasta unmapped_chloroplasts_round2.fastq -t $SLURM_CPUS_PER_TASK > alignment_promethION_mitochondria_ref_round2.sam 
+samtools view -S -bo -h alignment_promethION_mitochondria_ref_round2.sam -o output_mitochondria_promethion_pass_round2.bam
+samtools sort output_mitochondria_promethion_pass_round2.bam -o output_mitochondria_promethion_pass_sorted_round2.bam
+samtools view -h -f 4 output_mitochondria_promethion_pass_sorted_round2.bam >unmapped_mitochondria_round2.bam
+samtools view -h -F 4 output_mitochondria_promethion_pass_sorted_round2.bam >mapped_mitochondria_round2.bam
+samtools fastq mapped_mitochondria_round2.bam > mapped_mitochondria_round2.fastq
+samtools flagstat mapped_mitochondria_round2.bam >flagstat_mitochondria_round2.txt
+samtools fastq unmapped_mitochondria_round2.bam >unmapped_mitochondria_round2.fastq
+mkdir canu_mitochondria_round2
+canu  useGrid=0 gridOptions="-t 20:00:00 --maxMemory=$ ((SLURM_MEM_PER_NODE -1)) -maxThreads=$SLURM_CPUS_PER_TASK" -p canu_mitochondria_round2 -d canu_mitochondria_round2 genomeSize=550k -nanopore-raw mapped_mitochondria_round2.fastq
+mkdir racon_round2
+mkdir medaka_round2
+mkdir quast_mitochondria_round2
+bwa index ./canu_mitochondria_round2/canu_mitochondria_round2.contigs.fasta
+bwa mem -t 40 -x ont2d ./canu_mitochondria_round2/canu_mitochondria_round2.contigs.fasta mapped_mitochondria_round2.fastq > mapping_mitochondria_round2_aftercanu.sam
+racon -m 8 -x 6 -g -8 -w 500 -t 40 mapped_mitochondria_round2.fastq mapping_mitochondria_round2_aftercanu.sam ./canu_mitochondria_round2/canu_mitochondria_round2.contigs.fasta > racon_round2/racon_mitochondria_round2.fasta
+medaka_consensus -i mapped_mitochondria_round2.fastq -d ./racon_round2/racon_mitochondria_round2.fasta -o medaka_round2/medaka_racon_mitochondria_round2 -t $SLURM_CPUS_PER_TASK -b 50
+quast.py -t 4 -o ./quast_mitochondria_round2 -R ./canu_mitochondria_round2/canu_mitochondria_round2.contigs.fasta ./racon_round2/racon_mitochondria_round2.fasta  ./medaka_round2/medaka_racon_mitochondria_round2/consensus.fasta 
+seqkit stat -a ./medaka_round2/medaka_racon_mitochondria_round2/consensus.fasta > seqkit_mitochondria_medaka_round2.txt
+######final mitochondria submit to Genbank
+
+
+################
+##3.Genome assembly 
+################
+
+
+module load bio/minimap2
+module load bio/SAMtools
+module load bio/Flye
+module load bio/Racon
+module load bio/canu
+module load bio/BEDTools
+module load bio/BWA
+module load bio/GNU
+module load vis/gnuplot
+module load bio/RepeatMasker
+module load bio/RepeatModeler
+module load bio/RMBlast
+module load bio/SAMtools
+module load bio/gmap
+module load bio/BLAST/2.2.26-Linux_x86_64
+
+###ADD PATH if necessary
+#export AUGUSTUS_CONFIG_PATH=
+#export GENEMARK_PATH=
+#export GENEMARK_PATH=./gmes_linux_64_4/gmes_petap.pl
+#export BAMTOOLS_PATH=
+#export DIAMOND_PATH=
+#export CDBTOOLS_PATH=
+
+######similar than before using canu to assemble and the reads that did not mapped to the chloroplast and the mitochondria
+mkdir canu_genome
+mkdir purge_haplotigs_canu
+canu  useGrid=0 gridOptions="-t 40:00:00 --maxMemory=$ ((SLURM_MEM_PER_NODE -1)) -maxThreads=$SLURM_CPUS_PER_TASK" -p canu_genome -d canu_genome genomeSize=900m -nanopore-raw unmapped_mitochondria_round2.fastq
+samtools faidx ./canu_genome/canu_genome.contigs.fasta
+minimap2 -t $SLURM_CPUS_PER_TASK -ax map-ont ./canu_genome/canu_genome.contigs.fasta all_fastq_pass.fastq --secondary=no | samtools sort -m 1G -o ./purge_haplotigs_canu/aligned_canu_genome_all_reads.bam -T tmp.ali
+samtools index ./purge_haplotigs_canu/aligned_canu_genome_all_reads.bam
+mkdir purge_haplotigs
+####do all purge inside the folder 
+purge_haplotigs hist -b ./purge_haplotigs_canu/aligned_canu_genome_all_reads.bam -g ./canu_genome/canu_genome.contigs.fasta -t $SLURM_CPUS_PER_TASK -d 100
+purge_haplotigs cov -i ./purge_haplotigs_canu/aligned_canu_genome_all_reads.bam.gencov -l 3 -m 45 -h 390 -o ./purge_haplotigs_canu/aligned_canu_coverage_stats.csv -j 80 -s 80
+purge_haplotigs purge -b ./purge_haplotigs_canu/aligned_canu_genome_all_reads.bam -g ./canu_genome/canu_genome.contigs.fasta -t $SLURM_CPUS_PER_TASK -d -c ./purge_haplotigs_canu/aligned_canu_coverage_stats.csv -o S.dulcamara_curated_genome_canu_purge_haplotigs
+
+mkdir ./pilon ###to polish with Illumina data 
+bwa index ./purge_haplotigs_canu/S.dulcamara_curated_genome_canu_purge_haplotigs.fasta
+bwa mem ./purge_haplotigs_canu/S.dulcamara_curated_genome_canu_purge_haplotigs.fasta ./Illumina/S.dulcamara_illumina_forward_paired.fastq.gz ./Illumina/S.dulcamara_illumina_reverse_paired.fastq.gz -t $SLURM_CPUS_PER_TASK > ./pilon/mapping_genome_purge_haplotigs_to_Illumina.sam
+samtools view -S -bo -h ./pilon/mapping_genome_purge_haplotigs_to_Illumina.sam -o ./pilon/mapping_genome_purge_haplotigs_to_Illumina.bam
+samtools sort ./pilon/mapping_genome_purge_haplotigs_to_Illumina.bam -o ./pilon/mapping_genome_purge_haplotigs_to_Illumina_sorted.bam 
+samtools index ./mapping_genome_purge_haplotigs_to_Illumina_sorted.bam
+java -Xmx100G -jar .pilon-1.24.jar --genome ./purge_haplotigs_canu/S.dulcamara_curated_genome_canu_purge_haplotigs.fasta --frags ./pilon/mapping_genome_purge_haplotigs_to_Illumina_sorted.bam --diploid --fix "all" --output ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon --changes --threads 30 
+seqkit stat -a ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta > ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon_sekit.txt
+
+
+#############Completeness of the genome
+export AUGUSTUS_CONFIG_PATH="./Augustus/config/"
+busco --augustus --long -r -i ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta -l embryophyta_odb10 -c 20 -o results_embryophyta_pilon -m genome
+busco --augustus --long -r -i ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta -l eudicots_odb10 -c 20 -o results_eudicots_pilon -m genome
+busco --augustus --long -r -i ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta -l viridiplantae_odb10 -c 20 -o results_viridiplantae_pilon -m genome
+busco --augustus --long -r -i ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta -l solanales_odb10 -c 20 -o results_solanales_pilon -m genome
+
+
+
+################
+##4.Genome Annotation
+################
+
+###masked genome first before using BRAKER - it crashed in the cluster so the steps were done one by one instead of using only BRAKER.pl
+BuildDatabase -name database_dulcamara_braker_genome -engine ncbi  ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta
+RepeatModeler -database database_dulcamara_braker_genome -engine ncbi -LTRStruct -pa $SLURM_CPUS_PER_TASK
+RepeatMasker -pa 100 -gff -lib tmpConsensi.fa S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta -dir genome_masked.fasta
+
+
+
+###### use both Illumina data and then use the cDNA-obtained with ONT 
+name=S.dulcamara_RNA
+java -jar trimmomatic-0.39.jar PE AH1_1.fq.gz AH1_2.fq.gz ./braker/Illumina_mRNA_Seq_trimmomatic/forward_paired.fastq.gz ./braker/Illumina_mRNA_Seq_trimmomatic/forward_unpaired.fastq.gz ./braker/Illumina_mRNA_Seq_trimmomatic/reverse_paired.fastq.gz ./braker/Illumina_mRNA_Seq_trimmomatic/reverse_unpaired.fastq.gz LEADING:3 TRAILING:3 MINLEN:36
+STAR --runMode genomeGenerate --runThreadN 40 --genomeDir star_genome --genomeFastaFiles ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked
+STAR --twopassMode Basic --genomeDir star_genome --runThreadN 40 --readFilesIn ./braker/Illumina_mRNA_Seq_trimmomatic/forward_paired.fastq.gz ./braker/Illumina_mRNA_Seq_trimmomatic/reverse_paired.fastq.gz --readFilesCommand zcat --outFileNamePrefix RNA_paired --outSAMtype BAM Unsorted
+samtools sort ./RNA_pairedAligned.out.bam --threads $SLURM_CPUS_PER_TASK -o  ./braker/RNA_paired_sorted_Aligned.out.bam
+samtools index ./RNA_paired_sorted_Aligned.out.bam
+
+
+######cDNA long-reads
+mkdir braker/ONT_RNA_for_annotation
+minimap2 -ax map-ont -t $SLURM_CPUS_PER_TASK ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked ./fastq_pass/barcode01/* --secondary=no | samtools sort -m 1G -o ./braker/ONT_RNA_for_annotation/aligned_leaves_genome_masked.bam -T ./braker/ONT_RNA_for_annotation/tmp.ali
+samtools view ./braker/ONT_RNA_for_annotation/aligned_leaves_genome_masked.bam -F 2308 -q 50 -O BAM -o ./braker/ONT_RNA_for_annotation/aligned_leaves_genome_masked_filtered.bam
+samtools sort ./braker/ONT_RNA_for_annotation/aligned_leaves_genome_masked_filtered.bam  -o ./braker/ONT_RNA_for_annotation/aligned_leaves_genome_masked_filtered_sorted.bam
+minimap2 -ax map-ont -t $SLURM_CPUS_PER_TASK ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked ./fastq_pass/barcode02/* --secondary=no | samtools sort -m 1G -o ./braker/ONT_RNA_for_annotation/aligned_stem_genome_masked.bam -T ./braker/ONT_RNA_for_annotation/tmp.ali
+samtools view ./braker/ONT_RNA_for_annotation/aligned_stem_genome_masked.bam -F 2308 -q 50 -O BAM -o ./braker/ONT_RNA_for_annotation/aligned_stem_genome_masked_filtered.bam
+samtools sort ./braker/ONT_RNA_for_annotation/aligned_stem_genome_masked_filtered.bam  -o ./braker/ONT_RNA_for_annotation/aligned_stem_genome_masked_filtered_sorted.bam
+minimap2 -ax map-ont -t $SLURM_CPUS_PER_TASK ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked /mnt/lustre/groups/bio-ash-2019/20220426_SFO_cDNA/fastq_pass/barcode03/* --secondary=no | samtools sort -m 1G -o ./braker/ONT_RNA_for_annotation/aligned_root_genome_masked.bam -T ./braker/ONT_RNA_for_annotation/tmp.ali
+samtools view ./braker/ONT_RNA_for_annotation/aligned_root_genome_masked.bam -F 2308 -q 50 -O BAM -o ./braker/ONT_RNA_for_annotation/aligned_root_genome_masked_filtered.bam
+samtools sort ./braker/ONT_RNA_for_annotation/aligned_root_genome_masked_filtered.bam  -o ./braker/ONT_RNA_for_annotation/aligned_root_genome_masked_filtered_sorted.bam
+minimap2 -ax map-ont -t $SLURM_CPUS_PER_TASK ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked ./fastq_pass/barcode04/* --secondary=no | samtools sort -m 1G -o ./braker/ONT_RNA_for_annotation/aligned_berries_genome_masked.bam -T ./braker/ONT_RNA_for_annotation/tmp.ali
+samtools view ./braker/ONT_RNA_for_annotation/aligned_berries_genome_masked.bam -F 2308 -q 50 -O BAM -o ./braker/ONT_RNA_for_annotation/aligned_berries_genome_masked_filtered.bam
+samtools sort ./braker/ONT_RNA_for_annotation/aligned_berries_genome_masked_filtered.bam  -o ./braker/ONT_RNA_for_annotation/aligned_berries_genome_masked_filtered_sorted.bam
+minimap2 -ax map-ont -t $SLURM_CPUS_PER_TASK ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked ./fastq_pass/barcode05/* --secondary=no | samtools sort -m 1G -o ./braker/ONT_RNA_for_annotation/aligned_flowers_genome_masked.bam -T ./braker/ONT_RNA_for_annotation/tmp.ali
+samtools view ./braker/ONT_RNA_for_annotation/aligned_flowers_genome_masked.bam -F 2308 -q 50 -O BAM -o ./braker/ONT_RNA_for_annotation/aligned_flowers_genome_masked_filtered.bam
+samtools sort ./braker/ONT_RNA_for_annotation/aligned_flowers_genome_masked_filtered.bam  -o ./braker/ONT_RNA_for_annotation/aligned_flowers_genome_masked_filtered_sorted.bam
+
+#######Braker start with gmes using Viridiplantae proteins
+perl gmes_petap.pl --EP --verbose --seq ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked --EP --dbep proteins_augustus_viridiplantae.fasta --soft_mask 1000
+prothint.py --threads=500 ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked  ./proteins_augustus_viridiplantae.fasta --geneMarkGtf genemark.gtf
+braker.pl --useexisting --softmasking --species=Solanum_dulcamara_only_proteins --genome=./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked  --cores 120  --epmode --hints=./prothint_augustus.gff --geneMarkGtf=genemark.gtf --AUGUSTUS_CONFIG_PATH=../Augustus/config
+##rename to braker_proteins.gtf
+TSEBRA/bin/fix_gtf_ids.py --gtf ./braker/braker_proteins.gtf --out braker_proteins_fixed.gtf
+
+#######Braker start with gmes using the mRNA
+##ATernate protocol 1
+bam2hints --intronsonly --in=./braker/ONT_RNA_for_annotation/aligned_leaves_genome_masked_filtered_sorted.bam --out=leaves_introns.gff
+bam2hints --intronsonly --in=./braker/ONT_RNA_for_annotation/aligned_stem_genome_masked_filtered_sorted.bam --out=stem_introns.gff
+bam2hints --intronsonly --in=./braker/ONT_RNA_for_annotation/aligned_root_genome_masked_filtered_sorted.bam --out=root_introns.gff
+bam2hints --intronsonly --in=./braker/ONT_RNA_for_annotation/aligned_berries_genome_masked_filtered_sorted.bam --out=berries_introns.gff
+bam2hints --intronsonly --in=./braker/ONT_RNA_for_annotation/aligned_flowers_genome_masked_filtered_sorted.bam --out=flowers_introns.gff
+bam2hints --intronsonly --in=./braker/RNA_paired_sorted_Aligned.out.bam --out=Illumina_introns.gff
+BRAKER/scripts/filterIntronsFindStrand.pl ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked leaves_introns.gff --score > leaves_introns.f.gff
+BRAKER/scripts/filterIntronsFindStrand.pl ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked stem_introns.gff --score > stem_introns.f.gff
+BRAKER/scripts/filterIntronsFindStrand.pl ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked root_introns.gff --score > root_introns.f.gff
+BRAKER/scripts/filterIntronsFindStrand.pl ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked berries_introns.gff --score > berries_introns.f.gff
+BRAKER/scripts/filterIntronsFindStrand.pl ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked flowers_introns.gff --score > flowers_introns.f.gff
+BRAKER/scripts/filterIntronsFindStrand.pl ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked Illumina_introns.gff --score > Illumina_introns.f.gff
+
+#mv all files to braker
+gmes_petap.pl --verbose --sequence=./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked --ET=./braker_rna/leaves_introns.f.gff --cores=100 --soft_mask 1000
+gmes_petap.pl --verbose --sequence=./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked --ET=./braker_rna/stem_introns.f.gff --cores=100 --soft_mask 1000
+gmes_petap.pl --verbose --sequence=./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked --ET=./braker_rna/root_introns.f.gff --cores=100 --soft_mask 1000
+gmes_petap.pl --verbose --sequence=./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked --ET=./braker_rna/berries_introns.f.gff --cores=100 --soft_mask 1000
+gmes_petap.pl --verbose --sequence=./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked --ET=./braker_rna/flowers_introns.f.gff --cores=100 --soft_mask 1000
+gmes_petap.pl --verbose --sequence=./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked --ET=./braker_rna/Illumina_introns.f.gff --cores=100 --soft_mask 1000
+###each one moved to a folder and rename with tissue
+BRAKER/scripts/braker.pl --softmasking --species=Solanum_dulcamara_RNA_leaves --genome=./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked  --cores 0 --bam=./braker_rna/ONT_RNA_for_annotation/aligned_leaves_genome_masked_filtered_sorted.bam --gff3 --AUGUSTUS_CONFIG_PATH=./Augustus/config --geneMarkGtf=./braker_rna/leaves/genemark_leaves.gtf
+BRAKER/scripts/braker.pl --softmasking --species=Solanum_dulcamara_RNA_stem --genome=./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked  --cores 40 --bam=./braker_rna/ONT_RNA_for_annotation/aligned_stem_genome_masked_filtered_sorted.bam --gff3 --AUGUSTUS_CONFIG_PATH=./Augustus/config --geneMarkGtf=./braker_rna/stem/genemark_stem.gtf
+BRAKER/scripts/braker.pl --softmasking --species=Solanum_dulcamara_RNA_root --genome=./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked  --cores 40 --bam=./braker_rna/ONT_RNA_for_annotation/aligned_root_genome_masked_filtered_sorted.bam --gff3 --AUGUSTUS_CONFIG_PATH=./Augustus/config --geneMarkGtf=./braker_rna/root/genemark_root.gtf
+BRAKER/scripts/braker.pl --softmasking --species=Solanum_dulcamara_RNA_berries --genome=./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked  --cores 40 --bam=./braker_rna/ONT_RNA_for_annotation/aligned_berries_genome_masked_filtered_sorted.bam --gff3 --AUGUSTUS_CONFIG_PATH=./Augustus/config --geneMarkGtf=./braker_rna/berries/genemark_berries.gtf
+BRAKER/scripts/braker.pl --softmasking --species=Solanum_dulcamara_RNA_flowers --genome=./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked --cores 40 --bam=./braker_rna/ONT_RNA_for_annotation/aligned_flowers_genome_masked_filtered_sorted.bam --gff3 --AUGUSTUS_CONFIG_PATH=./Augustus/config --geneMarkGtf=./braker_rna/flowers/genemark_flowers.gtf
+BRAKER/scripts/braker.pl --softmasking --species=Solanum_dulcamara_RNA_Illumina --genome=./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked  --cores 40 --bam=./braker_rna/RNA_paired_sorted_Aligned.out.bam --gff3 --AUGUSTUS_CONFIG_PATH=./Augustus/config --geneMarkGtf=./braker_rna/Illumina/genemark_Illumina.gtf
+###rename
+TSEBRA/bin/fix_gtf_ids.py --gtf ./braker_rna/leaves/genemark_leaves.gtf --out braker_leaf_fixed.gtf
+TSEBRA/bin/fix_gtf_ids.py --gtf ./braker_rna/stem/genemark_stem.gtf --out braker_stem_fixed.gtf
+TSEBRA/bin/fix_gtf_ids.py --gtf ./braker_rna/root/genemark_root.gtf --out braker_root_fixed.gtf
+TSEBRA/bin/fix_gtf_ids.py --gtf ./braker_rna/berries/genemark_berries.gtf --out braker_berries_fixed.gtf
+TSEBRA/bin/fix_gtf_ids.py --gtf ./braker_rna/flowers/genemark_flowers.gtf --out braker_flowers_fixed.gtf
+TSEBRA/bin/fix_gtf_ids.py --gtf ./braker_rna/Illumina/genemark_Illumina.gtf --out braker_Illumina_fixed.gtf
+
+####combine with TSEBRA
+ln -s ./braker_rna/leaves/braker/hintsfile_leaves.gff 
+ln -s ./braker_rna/stem/braker/hintsfile_stem.gff 
+ln -s ./braker_rna/root/braker/hintsfile_root.gff 
+ln -s ./braker_rna/berries/braker/hintsfile_berries.gff 
+ln -s ./braker_rna/flowers/braker/hintsfile_flowers.gff 
+ln -s ./braker/hintsfile_proteins.gff 
+ln -s ./braker_rna/Illumina/braker/hintsfile_Illumina.gff
+TSEBRA/bin/tsebra.py -g braker_leaf_fixed.gtf,braker_stem_fixed.gtf,braker_root_fixed.gtf,braker_berries_fixed.gtf,braker_flowers_fixed.gtf,braker_Illumina_fixed.gtf,braker_proteins_fixed.gtf -c ./braker/TSEBRA/config/keep_ab_initio.cfg -e hintsfile_leaves.gff,hintsfile_stem.gff,hintsfile_root.gff,hintsfile_berries.gff,hintsfile_flowers.gff,hintsfile_Illumina.gff,hintsfile_proteins.gff -o RNA_proteins_braker_combined_keep_ab_initio.gtf
+TSEBRA/bin/rename_gtf.py --gtf ./RNA_proteins_braker_combined_keep_ab_initio.gtf --prefix Sd --translation_tab Sd_translation_keep_ab_initio.tab --out Sd_tsebra_results_RNA_proteins_keep_ab_initio.gtf
+Augustus/scripts/gtf2aa.pl./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked  ./Sd_tsebra_results_RNA_proteins_keep_ab_initio.gtf Sd_proteins_keep_ab_initio.fa
+Augustus/scripts/gtf2gff.pl <./Sd_tsebra_results_RNA_proteins_keep_ab_initio.gtf --out=Sd_tsebra_results_RNA_proteins_keep_ab_initio.gff
+
+
+
+
+################
+##5.Genome functional annotation
+################
+###first eggnog and then filtering with gFACs 
+mkdir ./gFACs
+mkdir eggnog
+mkdir eggnog_database
+
+######do first eggnog, 
+emapper.py --override --cpu 100 -i Sd_cDNA_gfffile_ab_initio.fasta --output Sd_ab_initio --output_dir eggnog -m diamond --itype CDS --decorate_gff Sd_tsebra_results_RNA_proteins_keep_ab_initio.gff
+
+###now can filter with gFAC 
+perl gFACs.pl -f braker_2.1.2_gtf -p Sd_gFACs_entap_unique_ab_initio --rem-all-incompletes --entap-annotation ./Sd_ab_initio.emapper.annotations --fasta ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta -get-fasta-without-introns --rem-genes-without-start-and-stop-codon --entap-annotation --unique-genes-only --annotated-all-genes-only --create-gtf --get-fasta --distributions exon_lengths intron_lengths CDS_lengths gene_lengths exon_position intron_position --compatibility stringtie_1.3.6_gtf --create-gff3 --get-protein-fasta --statistics -O . ./Sd_tsebra_results_RNA_proteins_keep_ab_initio.gtf
+
+Augustus/scripts/gtf2aa.pl ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked   ./gFACs/Sd_gFACs_entap_unique_ab_initio_out.gtf Sd_gFACs_entap_unique_ab_initio_out_proteins.fasta
+gffread -g ./genome_masked.fasta/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.masked Sd_gFACs_entap_unique_ab_initio_out.gtf -w Sd_gFACs_entap_unique_ab_initio_out_CDS.fasta -F
+
+###egggnog after gFACS to have funcitonal annotaiton!!
+mkdir eggnog_after_gFACs
+emapper.py --override --cpu 100 -i ./gFACs/Sd_gFACs_entap_unique_ab_initio_out_CDS.fasta --output Sd_gFACs_entap_unique_ab_initio_after_gFACs --output_dir eggnog_after_gFACs -m diamond --itype CDS --decorate_gff Sd_gFACs_entap_unique_ab_initio_out.gff3
+
+
+
+################
+##6.Transposable elements de novo
+################
+EDTA.pl --genome ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta --species others --step all --cds ./gFACs/Sd_gFACs_entap_unique_ab_initio_out_CDS.fasta --sensitive 0 --anno 1 --evaluate 0 --threads 40 --overwrite 0
+
+
+
+################
+##7.Methylation - using fast5 from ONT
+################
+nanopolish index -d ./fast5_pass/ /mnt/lustre/groups/bio-ash-2019/20220215_SFO_PromethION_gDNA/all_fastq_pass.fastq
+minimap2 -ax map-ont ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta ./all_fastq_pass.fastq -t $SLURM_CPUS_PER_TASK > ./nanopolish/alignment_genome_for_nanopolish.sam
+samtools view -S -bo -h ./nanopolish/alignment_genome_for_nanopolish.sam -o ./nanopolish/output_genome_for_nanopolish.bam
+samtools sort ./nanopolish/output_genome_for_nanopolish.bam -o output_genome_sorted_for_nanopolish.bam
+samtools index ./nanopolish/output_genome_sorted_for_nanopolish.bam
+
+####divide in smaller fragments to call methylation
+mkdir ./nanopolish/nanopolish_makerange_smaller
+python nanopolish/scripts/nanopolish_makerange.py  --segment-length 2000 --overlap-length 0  ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta > nanopolish/nanopolish_makerange_smaller/genome_segmented_for_nanopolish_0.1mb.txt
+
+mkdir nanopolish/all_tsvs
+filename=nanopolish/nanopolish_makerange_smaller/genome_segmented_for_nanopolish_0.1mb.txt
+while read -r line; do
+	name="$line"
+	echo "line is -$name"
+	nanopolish call-methylation -t 40 --verbose --progress -q cpg -r ./all_fastq_pass.fastq -b  ./nanopolish/output_genome_sorted_for_nanopolish.bam -g  ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta -w "$name" > ./nanopolish/all_tsvs/methylation_genome_divided_$name.tsv
+done < <(sed -n 441001,445000p "$filename")
+####repeat loop above for all the lines in the file (total 442301)
+
+
+###move them to the same folder
+mkdir  nanopolish/all_nanopolish_files 
+filename=nanopolish/folders.txt
+while read -r line; do 
+          cp "$line"/*.tsv nanopolish/all_nanopolish_files/
+done < "$filename"
+
+###concatenate all files
+find ./nanopolish/all_tsvs/  -type f -exec cat {} \; > all_methylation_data_genome_S.dulcamara.tsv
+#sed -i 's/num_motifs/num_cpgs/g'  all_methylation_data_genome_S.dulcamara.tsv ###it might need this
+
+####remove duplicated headers 
+awk '!/read_name/ || !a[/read_name/]++' all_methylation_data_genome_S.dulcamara.tsv > all_methylation_data_genome_S.dulcamara_no_dups.tsv
+##sed -i 's/num_cpgs/num_motifs/g'  all_methylation_data_genome_Ash_no_dups.tsv
+awk -F'\t' ' $10>=1 {print $0}' OFS='\t' all_methylation_data_genome_S.dulcamara_no_dups.tsv > all_methylation_data_genome_S.dulcamara_no_dups_2.tsv
+python nanopolish/scripts/calculate_methylation_frequency.py all_methylation_data_genome_S.dulcamara_no_dups_2.tsv > all_methylation_data_genome_S.dulcamara_frequency.tsv
+
+
+
+################
+##8.Coverage and GC
+################
+#######for coverage
+#mkdir coverage
+minimap2 -ax map-ont ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta ./unmapped_mitochondria_round2.fastq  -t $SLURM_CPUS_PER_TASK > ./coverage/mapping_unmapped_mito_to_genome.sam
+samtools view -S -bo -h ./coverage/mapping_unmapped_mito_to_genome.sam -o ./coverage/mapping_unmapped_mito_to_genome.bam
+samtools sort -m 1G ./coverage/mapping_unmapped_mito_to_genome.bam -o ./coverage/mapping_unmapped_mito_to_genome_sorted.bam
+samtools index ./coverage/mapping_unmapped_mito_to_genome_sorted.bam
+bedtools genomecov -ibam ./coverage/mapping_unmapped_mito_to_genome_sorted.bam -d > ./coverage/coverage_genome_base.txt
+####awk 'BEGIN{sum=0;}{if(NR%4==2){sum+=length($0);}}END{print sum;}' ./all_fastq_pass.fastq > bases_reads
+
+###for GC
+mkdir GC_content
+awk '!/^>/{gc+=gsub(/[gGcC]/,""); at+=gsub(/[aAtT]/,"");} END{ printf "%.2f%%\n", (gc*100)/(gc+at) }' ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta  > GC_content/GC.txt
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($3 == "gene") print $1,$4,$5,$9}' ./gFACs/Sd_gFACs_entap_unique_ab_initio_out.gtf  > Sd_genes_2.bed
+bedtools nuc -fi ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta -bed Sd_genes_2.bed > GC_content/GC_content_for_each_gene_genome.txt
+
+
+
