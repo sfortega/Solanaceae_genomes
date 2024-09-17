@@ -1,0 +1,264 @@
+################
+##1.Genome assembly
+################
+
+module load bio/minimap2
+module load bio/SAMtools
+module load bio/Flye
+module load bio/Racon
+module load bio/canu
+module load bio/BEDTools
+module load bio/BWA
+module load bio/GNU
+module load vis/gnuplot
+module load bio/RepeatMasker
+module load bio/RepeatModeler
+module load bio/RMBlast
+module load bio/SAMtools
+module load bio/gmap
+module load bio/BLAST/2.2.26-Linux_x86_64
+
+
+flye -t 40 --nano-raw superaccuracy_basecalled/all_fastq_pass.fastq -o flye_raw --genome-size 1.2g --resume
+seqkit stat -a flye_raw/assembly.fasta > flye_sekit.txt
+minimap2 -t $SLURM_CPUS_PER_TASK -ax map-ont flye_raw/assembly.fasta  superaccuracy_basecalled/all_fastq_pass.fastq --secondary=no | samtools sort -m 1G -o ./racon/mapping_flye_all_fastq.sam -T ./racon/tmp.ali
+
+mkdir racon_flye
+racon -m 8 -x 6 -g -8 -w 500 -t 120 superaccuracy_basecalled/all_fastq_pass.fastq ./racon/mapping_flye_all_fastq.sam  flye_raw/assembly.fasta  > racon_flye/S.nigrum_flye_racon.fasta
+seqkit stat -a racon_flye/S.nigrum_flye_racon.fasta > flye_racon_sekit.txt
+ 
+mkdir medaka_flye
+samtools index medaka_flye/S.nigrum_flye_racon_medaka/calls_to_draft.bam
+medaka_consensus -i superaccuracy_basecalled/all_fastq_pass.fastq -d ./racon_flye/S.nigrum_flye_racon.fasta -o medaka_flye/S.nigrum_flye_racon_medaka -t 100 -b 50
+seqkit stat -a medaka_flye/S.nigrum_flye_racon_medaka > flye_racon_sekit.txt
+
+mkdir purge_haplotigs
+sed 's/ /_/g'  medaka_flye/S.nigrum_flye_racon_medaka/consensus.fasta > medaka_flye/S.nigrum_flye_racon_medaka/consensus_no_space.fasta
+sed 's/:/_/g'  medaka_flye/S.nigrum_flye_racon_medaka/consensus_no_space.fasta > medaka_flye/S.nigrum_flye_racon_medaka/consensus_no_space_2.fasta
+ln -s medaka_flye/S.nigrum_flye_racon_medaka/consensus_no_space_2.fasta ./ ###move inside purge_haplotigs
+samtools faidx consensus_no_space_2.fasta
+minimap2 -t $SLURM_CPUS_PER_TASK -ax map-ont consensus_no_space_2.fasta superaccuracy_basecalled/all_fastq_pass.fastq  --secondary=no | samtools sort -m 1G -o S.nigrum_flye_racon_medaka_aligned_all_reads.bam -T tmp.ali
+purge_haplotigs hist -b S.nigrum_flye_racon_medaka_aligned_all_reads.bam -g consensus_no_space_2.fasta -t $SLURM_CPUS_PER_TASK -d 100
+purge_haplotigs cov -i S.nigrum_flye_racon_medaka_aligned_all_reads.bam.genecov -l 10 -m 100 -h 390 -o coverage_stats.csv -j 80 -s 80
+purge_haplotigs purge -g consensus_no_space_2.fasta -t $SLURM_CPUS_PER_TASK -b S.nigrum_flye_racon_medaka_aligned_all_reads.bam  -d -c coverage_stats.csv -o curated_genome_flye_racon_medaka_purge_haplotigs
+seqkit stat -a curated_genome_flye_racon_medaka_purge_haplotigs.fasta > flye_racon_medaka_purge_sekit.txt
+
+####QC
+busco --augustus --long -r -i purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs.fasta -l eudicots_odb10 -c 20 -o results_S.nigrum_genome_eudicots -m genome
+busco --augustus --long -f -i purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs.fasta -l embryophyta_odb10 -c 20 -o results_S.nigrum_genome_embryophyta -m genome
+busco --augustus --long -r -i purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs.fasta -l viridiplantae_odb10 -c 20 -o results_S.nigrum_genome_viridiplantae -m genome
+busco --augustus --long -f -i purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs.fasta -l solanales_odb10  -c 20 -o results_S.nigrum_genome_solanales -m genome
+
+
+################
+##2.Genome Annotation
+################
+
+java -jar trimmomatic-0.39.jar PE \
+ 01.RawData/Sn1/Sn1_2.fq.gz \
+ 01.RawData/Sn1/Sn1_2.fq.gz \
+ S.nigrum_mRNASeq_annotation/Sn_forward_paired.fq.gz \
+ S.nigrum_mRNASeq_annotation/Sn_forward_unpaired.fastq.gz \
+ S.nigrum_mRNASeq_annotation/Sn_reverse_paired.fastq.gz \
+ S.nigrum_mRNASeq_annotation/Sn_reverse_unpaired.fastq.gz \
+ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:keepBothReads LEADING:3 TRAILING:3 MINLEN:36 SLIDINGWINDOW:4:15
+fastqc S.nigrum_mRNASeq_annotation/Sn_forward_paired.fastq.gz --extract -o S.nigrum_mRNASeq_annotation/Sn_fastqc_forward
+fastqc S.nigrum_mRNASeq_annotation/Sn_reverse_paired.fastq.gz --extract -o S.nigrum_mRNASeq_annotation/Sn_fastqc_reverse
+
+
+#####change the name in the curated to something like >contig_1865_segment0_contig_1865_1.0-16057607.0
+###to only contig and number
+sed -E 's/_contig[^[:blank:]].*//' purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs.fasta > purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta
+####this way there are no duplicated sequences
+mkdir ./braker
+####masked genome using RepeatModeler and RepeatMasker
+BuildDatabase -name database_nigrum_braker_genome -engine ncbi  purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta
+RepeatModeler -database database_nigrum_braker_genome -engine ncbi -LTRStruct -pa $SLURM_CPUS_PER_TASK
+RepeatMasker -pa 100 -gff -lib RM_186076.SunFeb262326292023/tmpConsensi.fa purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta -dir genome_masked.fasta
+
+###STAR for mapping
+STAR --runMode genomeGenerate --runThreadN 40 --genomeDir star_genome --genomeFastaFiles genome_masked.fasta/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta.masked
+STAR --twopassMode Basic --genomeDir star_genome --runThreadN 40 --readFilesIn S.nigrum_mRNASeq_annotation/Sn_forward_paired.fq.gz S.nigrum_mRNASeq_annotation/Sn_reverse_paired.fq.gz --readFilesCommand zcat --outFileNamePrefix star_paired --outSAMtype BAM Unsorted
+samtools sort star_pairedAligned.out.bam --threads $SLURM_CPUS_PER_TASK -o  braker/star_paired_sorted.bam
+samtools index braker/star_paired_sorted.bam
+
+###GENEMARK
+####do cp gm_key ~/.gm_key
+gmes_petap.pl --verbose --seq genome_masked.fasta/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta.masked  --cores 200 --EP --dbep proteins_augustus_viridiplantae.fasta --soft_mask 1000
+prothint.py --threads=700 genome_masked.fasta/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta.masked  proteins_augustus_viridiplantae.fasta --geneMarkGtf genemark.gtf 
+###move to folder prothing and then use braker.pl
+braker.pl --useexisting --softmasking --species=Solanum_nigrum_only_proteins --genome=genome_masked.fasta/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta.masked  --cores 120  --epmode --hints=prothint/prothint_augustus.gff --geneMarkGtf=genemark.gtf --AUGUSTUS_CONFIG_PATH=Augustus/config
+cp genemark_es.gtf proteins/genemark.gtf
+
+
+####combine with TSEBRA
+
+######now part with RNA_seq 
+##Alternate protocol 1
+mkdir ./braker_other_outputs_copy/
+bam2hints --intronsonly --in=braker/star_paired_sorted.bam --out=RNA_introns.gff
+filterIntronsFindStrand.pl genome_masked.fasta/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta.masked RNA_introns.gff --score > RNA_introns.f.gff
+gmes_petap.pl --verbose --sequence=genome_masked.fasta/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta.masked --ET=RNA_introns.f.gff --cores=100 --soft_mask 1000
+cp genemark.gtf ./braker_other_outputs_copy/genemark_RNA.gtf	
+braker.pl --softmasking --species=Solanum_nigrum_RNA --genome=genome_masked.fasta/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta.masked  --cores 100 --bam=braker/star_paired_sorted.bam --gff3 --AUGUSTUS_CONFIG_PATH=Augustus/config --geneMarkGtf=genemark.gtf
+
+###TSEBRA first fix IDs
+fix_gtf_ids.py --gtf ./braker_other_outputs_copy/genemark_RNA.gtf --out braker_RNA_fixed.gtf
+fix_gtf_ids.py --gtf ./braker_other_outputs_copy/proteins/genemark.gtf --out braker_proteins_fixed.gtf
+ln -s ./braker/hintsfile.gff ./hintsfile_RNA.gff
+
+tsebra.py -g braker_RNA_fixed.gtf,braker_proteins_fixed.gtf -c TSEBRA/config/keep_ab_initio.cfg -e hintsfile_RNA.gff,hintsfile_prot.gff -o RNA_proteins_braker_combined_ab_initio.gtf
+rename_gtf.py --gtf RNA_proteins_braker_combined_ab_initio.gtf --prefix Sn --translation_tab Sn_translation_ab_initio.tab --out Sn_tsebra_results_RNA_proteins_ab_initio.gtf
+
+###CREATE CDS and PEP FILES
+gtf2aa.pl genome_masked.fasta/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta.masked Sn_tsebra_results_RNA_proteins_ab_initio.gtf Sn_proteins_ab_initio.fa
+tf2gff.pl <Sn_tsebra_results_RNA_proteins_ab_initio.gtf --out=Sn_tsebra_results_RNA_proteins_ab_initio.gff
+gffread -g genome_masked.fasta/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta.masked Sn_tsebra_results_RNA_proteins_ab_initio.gtf -w Sn_cDNA_gfffile_ab_initio.fasta -F
+
+################
+##3.TRANSPOSABLE ELEMENTS
+################
+sed 's/contig_/contig/g' purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta >purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names_2.fasta
+sed 's/segment/s/g' purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names_2.fasta >purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names_3.fasta
+EDTA.pl --genome ./purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names_3.fasta --species others --step all --cds Sn_cDNA_gfffile_ab_initio.fasta --sensitive 0 --anno 1 --evaluate 1  --threads 200
+
+
+
+################
+##4.Genome functional annotation
+################
+###first eggnog and then filtering with gFACs 
+export PERL5LIB=5.26.2:$PERL5LIB
+mkdir ./gFACs
+mkdir eggnog
+mkdir eggnog_database
+download_eggnog_data.py -P --data_dir eggnog_database -M  -H -d  33090 -y
+export EGGNOG_DATA_DIR=eggnog_database
+
+####do first eggnog
+emapper.py --override --cpu 100 -i Sn_cDNA_gfffile_ab_initio.fasta --output Sn_ab_initio --output_dir eggnog -m diamond --itype CDS --decorate_gff Sn_tsebra_results_RNA_proteins_ab_initio.gff
+
+###now can filter with gFAC inside folder
+cp -r /gFACs/ ./
+perl5.26.2 gFACs.pl -f braker_2.1.2_gtf -p Sn_gFACs_entap_unique_ab_initio --rem-all-incompletes --entap-annotation eggnog/Sn_ab_initio.emapper.annotations --fasta purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta -get-fasta-without-introns --rem-genes-without-start-and-stop-codon --entap-annotation --unique-genes-only --annotated-all-genes-only --create-gtf --get-fasta --distributions exon_lengths intron_lengths CDS_lengths gene_lengths exon_position intron_position --compatibility stringtie_1.3.6_gtf --create-gff3 --get-protein-fasta --statistics -O . Sn_tsebra_results_RNA_proteins_ab_initio.gtf
+
+
+mkdir eggnog_after_gFACs
+####egggnog after gFACS to have funcitonal annotaiton!!
+emapper.py --override --cpu 100 -i Sn_gFACs_entap_unique_ab_initio_genes.fasta --output Sn_ab_initio_after_gFACs --output_dir eggnog_after_gFACs -m diamond --itype CDS --decorate_gff ./gFACs/Sn_gFACs_entap_unique_ab_initio_out.gff3
+###this to get the gff3 but you can get it directly in gFACs
+gffread -g braker/genome_masked_new/genomepilon_genome_purge_haplotigs_canu_purge_repeats_LTR_m200_a80_to_Nextera.fasta.masked default_gFACs_entap_unique_stringtie_1.3.6.gtf  -w braker/gFACs/default_gFACs_entap_unique_CDS.fasta -F
+
+
+
+
+################
+##5.Methylation using f5c
+################
+mkdir ./nanopolish/nanopolish_makerange_smaller
+python nanopolish_makerange.py  --segment-length 5000 --overlap-length 0  purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta > nanopolish/nanopolish_makerange_smaller/genome_segmented_for_nanopolish_0.1mb.txt
+mkdir nanopolish/all_tsvs
+f5c index -d superaccuracy_basecalled/fast5_pass superaccuracy_basecalled/all_fastq_pass.fastq
+filename=nanopolish/nanopolish_makerange_smaller/genome_segmented_for_nanopolish_0.1mb.txt
+while read -r line; do
+name="$line"
+	echo "line is -$name"
+	f5c call-methylation --pore r10 -b ./nanopolish/output_genome_sorted_for_nanopolish.bam -g purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta -r superaccuracy_basecalled/all_fastq_pass.fastq  -w "$name"> ./nanopolish/all_tsvs/methylation_genome_divided_$name.tsv 
+done < <(sed -n 200001,220000p "$filename")
+## do for 213886 files
+
+
+
+###combine them
+find ./nanopolish/all_tsvs/  -type f -exec cat {} \; > ./nanopolish/all_methylation_data_genome_S.nigrum.tsv
+sort -u ./nanopolish/all_methylation_data_genome_S.nigrum.tsv > ./nanopolish/all_methylation_data_genome_S.nigrum_nodups.tsv
+###call frequency
+filename=nanopolish/nanopolish_makerange_smaller/genome_segmented_for_nanopolish_0.1mb.txt
+while read -r line; do
+f5c meth-freq -i ./nanopolish/all_tsvs/methylation_genome_divided_${line}.tsv > ./nanopolish/frequency/${line}_frequency.tsv
+done < <(sed -n 1,213886p "$filename")
+find ./nanopolish/frequency/  -type f -exec cat {} \; > ./nanopolish/all_methylation_data_genome_S.nigrum_frequency.tsv
+
+
+################
+##6.Coverage and GC
+################
+
+#######for coverage
+mkdir coverage
+minimap2 -ax map-ont purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs.fasta superaccuracy_basecalled/all_fastq_pass.fastq  -t $SLURM_CPUS_PER_TASK > ./coverage/mapping_unmapped_raw_to_genome.sam
+samtools view -S -bo -h ./coverage/mapping_unmapped_raw_to_genome.sam -o ./coverage/mapping_unmapped_raw_to_genome.bam
+samtools sort -m 1G ./coverage/mapping_unmapped_raw_to_genome.bam -o ./coverage/mapping_unmapped_raw_to_genome_sorted.bam
+samtools index ./coverage/mapping_unmapped_raw_to_genome_sorted.bam
+bedtools genomecov -ibam ./coverage/mapping_unmapped_raw_to_genome_sorted.bam -d > ./coverage/coverage_genome_base.txt
+awk 'BEGIN{sum=0;}{if(NR%4==2){sum+=length($0);}}END{print sum;}' superaccuracy_basecalled/all_fastq_pass.fastq > bases_reads
+
+###for GC t do
+mkdir GC_content
+awk '!/^>/{gc+=gsub(/[gGcC]/,""); at+=gsub(/[aAtT]/,"");} END{ printf "%.2f%%\n", (gc*100)/(gc+at) }' purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta > GC_content/GC.txt
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($3 == "gene") print $1,$4,$5,$9}' Sn_tsebra_results_RNA_proteins_ab_initio.gtf > Sn_genes_2.bed
+###convert2bed -i gtf < Sd_tsebra_results_RNA_proteins_default.gff > GC_content/Sd_tsebra_results_RNA_proteins_default.gff.bed 
+bedtools nuc -fi curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta -bed Sn_genes_2.bed > GC_content/GC_content_for_each_gene_genome.txt
+
+
+################
+##7.Chloroplast assembly 
+################
+####map the genome to the superaccuracy reads, and use the unmapped ones for the mito and chloro
+minimap2 -t $SLURM_CPUS_PER_TASK -ax map-ont purge_haplotigs/curated_genome_flye_racon_medaka_purge_haplotigs_short_names.fasta superaccuracy_basecalled/all_fastq_pass.fastq  --secondary=no | samtools sort -m 1G -o purge_to_all_reads_for_organelles.sam -T tmp.ali
+samtools view -S -bo -h purge_to_all_reads_for_organelles -o purge_to_all_reads_for_organelles.bam
+samtools sort purge_to_all_reads_for_organelles.bam -o purge_to_all_reads_for_organelles_sorted.bam
+samtools view -h -f 4 purge_to_all_reads_for_organelles_sorted.bam > unmapped_purge_to_all_reads_for_organelles_round1.bam
+samtools view -h -F 4 purge_to_all_reads_for_organelles_sorted.bam >mapped_genome_purge_to_all_reads_for_organelles_round1.bam
+cp unmapped_purge_to_all_reads_for_organelles_round1.bam unmapped_purge_to_all_reads_for_organelles_round1_to_use.bam
+samtools fastq unmapped_purge_to_all_reads_for_organelles_round1.bam > unmapped_purge_to_all_reads_for_organelles_round1.fq
+
+####Now map to tomato ref NC_007898.3
+minimap2 -ax map-ont chloroplast/tomato_ref.txt unmapped_purge_to_all_reads_for_organelles_round1.fq -t 40 > alignment_for_chloroplast_1.sam 
+samtools view -S -bo -h alignment_for_chloroplast_1.sam -o alignment_for_chloroplast_1.bam
+samtools bam2fq alignment_for_chloroplast_1.bam > alignment_for_chloroplast_1.fastq
+canu  useGrid=0 gridOptions="-t 40:00:00 --maxMemory=$ ((SLURM_MEM_PER_NODE -1)) -maxThreads=$SLURM_CPUS_PER_TASK" -p chloroplast_canu_genome -d chloroplast_canu_genome genomeSize=155m -nanopore-raw alignment_for_chloroplast_1.fastq stopOnLowCoverage=0.1 minInputCoverage=0.1
+seqkit stat -a chloroplast_canu_genome/chloroplast_canu_genome.contigs.fasta > seqkit_canu_chloroplast
+
+mkdir racon_round1
+bwa index ./canu_chloroplast_round1/canu_chloroplast_round1.contigs.fasta
+bwa mem -t 40 -x ont2d ./canu_chloroplast_round1/canu_chloroplast_round1.contigs.fasta mapped_chloroplasts_round1.fastq > mapping_chloroplasts_round1_aftercanu.sam
+racon -m 8 -x 6 -g -8 -w 500 -t 40 mapped_chloroplasts_round1.fastq mapping_chloroplasts_round1_aftercanu.sam ./canu_chloroplast_round1/canu_chloroplast_round1.contigs.fasta > racon_round1/racon_chloroplasts_round1.fasta
+
+mkdir medaka_round1
+medaka_consensus -i mapped_chloroplasts_round1.fastq -d ./racon_round1/racon_chloroplasts_round1.fasta -o medaka_round1/canu_chloroplasts_round1_medaka_racon -t $SLURM_CPUS_PER_TASK -b 50
+quast.py -t 4 -o ./quast_chloroplast_round1 -R ./canu_chloroplast_round1/canu_chloroplast_round1.contigs.fasta ./racon_round1/racon_chloroplasts_round1.fasta  ./medaka_round1/canu_chloroplasts_round1_medaka_racon/consensus.fasta 
+
+################
+##8.Mitochondria assembly
+################
+####Now map to tomato ref NC_035963.1
+minimap2 -ax map-ont /mitochondria/tomato_ref.txt unmapped_purge_to_all_reads_for_organelles_round1.fq -t 40 > alignment_for_mitochondria_1.sam 
+samtools view -S -bo -h alignment_for_mitochondria_1.sam -o alignment_for_mitochondria_1.bam
+samtools bam2fq alignment_for_mitochondria_1.bam > alignment_for_mitochondria_1.fastq
+canu  useGrid=0 gridOptions="-t 40:00:00 --maxMemory=$ ((SLURM_MEM_PER_NODE -1)) -maxThreads=$SLURM_CPUS_PER_TASK" -p mitochondria_canu_genome -d mitochondria_canu_genome genomeSize=350m -nanopore-raw alignment_for_mitochondria_1.fastq stopOnLowCoverage=0.1 minInputCoverage=0.1
+
+mkdir racon_round1
+bwa index ./canu_mitochondria_round1/canu_mitochondria_round1.contigs.fasta
+bwa mem -t 40 -x ont2d ./canu_mitochondria_round1/canu_mitochondria_round1.contigs.fasta mapped_mitochondria_round1.fastq > mapping_mitochondria_round1_aftercanu.sam
+racon -m 8 -x 6 -g -8 -w 500 -t 40 mapped_mitochondria_round1.fastq mapping_mitochondria_round1_aftercanu.sam ./canu_mitochondria_round1/canu_mitochondria_round1.contigs.fasta > racon_round1/racon_mitochondria_round1.fasta
+mkdir medaka_round1
+medaka_consensus -i mapped_mitochondria_round1.fastq -d ./racon_round1/racon_mitochondria_round1.fasta -o medaka_round1/canu_mitochondria_round1_medaka_racon -t $SLURM_CPUS_PER_TASK -b 50
+quast.py -t 4 -o ./quast_mitochondria_round1 -R ./canu_mitochondria_round1/canu_mitochondria_round1.contigs.fasta ./racon_round1/racon_mitochondria_round1.fasta  ./medaka_round1/canu_mitochondria_round1_medaka_racon/consensus.fasta 
+
+##############Round2
+#minimap2 -ax map-ont ./medaka_racon_mitochondria_round1/consensus.fasta unmapped_purge_to_all_reads_for_organelles_round1.fq -t $SLURM_CPUS_PER_TASK > alignment_for_mitochondria_2.sam  
+samtools view -S -bo -h alignment_for_mitochondria_2.sam -o alignment_for_mitochondria_2.bam
+samtools bam2fq alignment_for_mitochondria_2.bam > alignment_for_mitochondria_2.fastq
+canu  useGrid=0 gridOptions="-t 40:00:00 --maxMemory=$ ((SLURM_MEM_PER_NODE -1)) -maxThreads=$SLURM_CPUS_PER_TASK" -p mitochondria_canu_genome2 -d mitochondria_canu_genome2 genomeSize=350m -nanopore-raw alignment_for_mitochondria_2.fastq stopOnLowCoverage=0.1 minInputCoverage=0.1
+
+mkdir racon_round2
+mkdir medaka_round2
+mkdir quast_mitochondria_round2
+bwa index ./canu_mitochondria_round2/canu_mitochondria_round2.contigs.fasta
+bwa mem -t 40 -x ont2d ./canu_mitochondria_round2/canu_mitochondria_round2.contigs.fasta mapped_mitochondria_round2.fastq > mapping_mitochondria_round2_aftercanu.sam
+racon -m 8 -x 6 -g -8 -w 500 -t 40 mapped_mitochondria_round2.fastq mapping_mitochondria_round2_aftercanu.sam ./canu_mitochondria_round2/canu_mitochondria_round2.contigs.fasta > racon_round2/racon_mitochondria_round2.fasta
+medaka_consensus -i mapped_mitochondria_round2.fastq -d ./racon_round2/racon_mitochondria_round2.fasta -o medaka_round2/medaka_racon_mitochondria_round2 -t $SLURM_CPUS_PER_TASK -b 50
+quast.py -t 4 -o ./quast_mitochondria_round2 -R ./canu_mitochondria_round2/canu_mitochondria_round2.contigs.fasta ./racon_round2/racon_mitochondria_round2.fasta  ./medaka_round2/medaka_racon_mitochondria_round2/consensus.fasta 
+seqkit stat -a medaka_round2/medaka_racon_mitochondria_round2/consensus.fasta > seqkit_mitochondria_medaka_round2.txt
+
