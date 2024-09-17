@@ -1,0 +1,64 @@
+###########
+##1.Disease index after inoculating Ralstonia solanacearum UW551 in tomato Moneymaker or S. dulcamara
+###########
+
+library(ggplot2)
+library(multcompView)
+library(dplyr)
+library(graphics)
+library(FSA)
+library(rcompanion)
+library(ggpubr)
+library(tidyverse)
+library(rstatix)
+library(Rmisc)
+library(flux)
+library(car)
+data <- read.table("disease_scores.txt", header = T, sep = '\t')
+
+color_table2 <-  tibble(
+  Treatment = c("MM_NC","MM_Rs.UW551","Sd_NC","Sd_Rs.UW551","Sn_NC","Sn_Rs.UW551"),
+  Color = c("#DDCC77","#F0E442","#CC6677","#882255","#555555","#999999"))
+
+
+data$Time=as.numeric(data$Time)
+data$Treatment=factor(data$Treatment,levels=c("MM_NC","MM_Rs.UW551","Sd_NC","Sd_Rs.UW551","Sn_NC","Sn_Rs.UW551"))
+data_summary <- summarySE(data = data, measurevar = "Disease", 
+                          groupvars = c("Time", "Treatment"),
+                          na.rm = FALSE, conf.interval = 0.95, .drop = TRUE)
+
+tiff("DI_average.tiff",res=300,he=200,wi=200,units="mm")
+ggplot(data = data_summary, aes(x = Time, y = Disease, 
+                                          group = Treatment, col = Treatment)) +
+    geom_line(size = 1) +
+    geom_errorbar(aes(ymin = Disease-se, ymax = Disease+se), alpha=0.3) +
+       labs(x = "Time (DPI)",
+         y = "Disease Index",
+         col = "Treatment") +scale_colour_manual(values = color_table2$Color)+
+    theme_bw()+
+    theme(panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          panel.grid.major.y = element_blank(),
+          panel.grid.minor.y = element_blank()) + theme(strip.text.x = element_text(size = 30))+ theme( text = element_text(size = 20))
+dev.off()
+
+######Bar plot
+data <- read.table("disease_for_barplot.txt", header = T, sep = '\t')
+data2=data %>% group_by(Treatment)  %>%     dplyr::summarise(count=n(Diseased))
+
+data2=data %>% group_by(Treatment)  %>%     dplyr::summarise(count(Diseased))
+data2=as.data.frame(data2)
+
+data3=data2[grep("Rs.UW551",data2$Treatment),]
+
+
+tiff("barplot_DI.tiff",res=300,he=150,wi=150,units="mm")
+ggplot(data=data3, aes(x=Treatment, y=freq,fill=x)) +
+geom_bar(stat="identity", position="stack") +
+    scale_fill_manual(values=c("#44AA99","black")) +
+    ggtitle("") +ylim(0,18)+ scale_y_continuous(breaks = seq(0, 18, by = 3))+
+       labs(x = "Treatment",
+         y = "Counts")+ 
+theme(strip.text.x = element_text(size = 30))+ theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=0.95))+ theme( text = element_text(size = 20))
+dev.off()
+
