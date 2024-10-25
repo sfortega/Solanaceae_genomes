@@ -328,45 +328,41 @@ EDTA.pl --genome ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fa
 
 
 
+
 ################
-##7.Methylation - using fast5 from ONT
+7.Methylation
 ################
-nanopolish index -d ./fast5_pass/ /mnt/lustre/groups/bio-ash-2019/20220215_SFO_PromethION_gDNA/all_fastq_pass.fastq
-minimap2 -ax map-ont ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta ./all_fastq_pass.fastq -t $SLURM_CPUS_PER_TASK > ./nanopolish/alignment_genome_for_nanopolish.sam
+
+mkdir nanopolish
+minimap2 -ax map-ont 20220215_SFO_PromethION_gDNA/all_fastq_pass.fastq -t $SLURM_CPUS_PER_TASK > ./nanopolish/alignment_genome_for_nanopolish.sam
 samtools view -S -bo -h ./nanopolish/alignment_genome_for_nanopolish.sam -o ./nanopolish/output_genome_for_nanopolish.bam
-samtools sort ./nanopolish/output_genome_for_nanopolish.bam -o output_genome_sorted_for_nanopolish.bam
+samtools sort ./nanopolish/output_genome_for_nanopolish.bam -o nanopolish/output_genome_sorted_for_nanopolish.bam
 samtools index ./nanopolish/output_genome_sorted_for_nanopolish.bam
 
-####divide in smaller fragments to call methylation
 mkdir ./nanopolish/nanopolish_makerange_smaller
-python nanopolish/scripts/nanopolish_makerange.py  --segment-length 2000 --overlap-length 0  ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta > nanopolish/nanopolish_makerange_smaller/genome_segmented_for_nanopolish_0.1mb.txt
-
+python nanopolish_makerange.py  --segment-length 5000 --overlap-length 0 S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta > nanopolish/nanopolish_makerange_smaller/genome_segmented_for_nanopolish_0.1mb.txt
 mkdir nanopolish/all_tsvs
+./f5c/f5c index -d 20220215_SFO_PromethION_gDNA/fast5_pass 20220215_SFO_PromethION_gDNA/all_fastq_pass.fastq
 filename=nanopolish/nanopolish_makerange_smaller/genome_segmented_for_nanopolish_0.1mb.txt
 while read -r line; do
-	name="$line"
-	echo "line is -$name"
-	nanopolish call-methylation -t 40 --verbose --progress -q cpg -r ./all_fastq_pass.fastq -b  ./nanopolish/output_genome_sorted_for_nanopolish.bam -g  ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta -w "$name" > ./nanopolish/all_tsvs/methylation_genome_divided_$name.tsv
-done < <(sed -n 441001,445000p "$filename")
-####repeat loop above for all the lines in the file (total 442301)
+name="$line"
+echo "line is -$name"
+	./f5c/f5c call-methylation --pore r9 -b ./nanopolish/output_genome_sorted_for_nanopolish.bam -g S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta -r 20220215_SFO_PromethION_gDNA/all_fastq_pass.fastq -w "$name" > ./nanopolish/all_tsvs/methylation_genome_divided_$name.tsv 
+done < <(sed -n 170001,180000p "$filename")
+## do for 177910 files
 
 
-###move them to the same folder
-mkdir  nanopolish/all_nanopolish_files 
-filename=nanopolish/folders.txt
-while read -r line; do 
-          cp "$line"/*.tsv nanopolish/all_nanopolish_files/
-done < "$filename"
 
-###concatenate all files
-find ./nanopolish/all_tsvs/  -type f -exec cat {} \; > all_methylation_data_genome_S.dulcamara.tsv
-#sed -i 's/num_motifs/num_cpgs/g'  all_methylation_data_genome_S.dulcamara.tsv ###it might need this
-
-####remove duplicated headers 
-awk '!/read_name/ || !a[/read_name/]++' all_methylation_data_genome_S.dulcamara.tsv > all_methylation_data_genome_S.dulcamara_no_dups.tsv
-##sed -i 's/num_cpgs/num_motifs/g'  all_methylation_data_genome_Ash_no_dups.tsv
-awk -F'\t' ' $10>=1 {print $0}' OFS='\t' all_methylation_data_genome_S.dulcamara_no_dups.tsv > all_methylation_data_genome_S.dulcamara_no_dups_2.tsv
-python nanopolish/scripts/calculate_methylation_frequency.py all_methylation_data_genome_S.dulcamara_no_dups_2.tsv > all_methylation_data_genome_S.dulcamara_frequency.tsv
+###combine them
+find ./nanopolish/all_tsvs/  -type f -exec cat {} \; > ./nanopolish/all_methylation_data_genome_S.dulcamara_new.tsv
+sort -u ./nanopolish/all_methylation_data_genome_S.dulcamara_new.tsv > ./nanopolish/all_methylation_data_genome_S.dulcamara_new_nodups.tsv
+##call frequency
+filename=nanopolish/nanopolish_makerange_smaller/genome_segmented_for_nanopolish_0.1mb.txt
+while read -r line; do
+./f5c/f5c meth-freq -i ./nanopolish/all_tsvs/methylation_genome_divided_${line}.tsv > ./nanopolish/frequency/${line}_frequency.tsv
+done < <(sed -n 1,213886p "$filename")
+find ./nanopolish/frequency/  -type f -exec cat {} \; > ./nanopolish/all_methylation_data_genome_S.dulcamara_new_frequency.tsv
+sort -u ./nanopolish/all_methylation_data_genome_S.dulcamara_new_frequency.tsv > ./nanopolish/all_methylation_data_genome_S.dulcamara_new_frequency_nodups.tsv
 
 
 
