@@ -1,120 +1,241 @@
+###################INDEX
+#################
+###1.1 Map the methylation with genes, upstream (1Kb) or downstream regions for S.dulcamara
+###1.2 Map the methylation with genes, upstream (1Kb) or downstream regions for S.nigrum
+###1.3 Map the TEs coordinates with genes, upstream (1Kb) or downstream regions for S.dulcamara
+###1.4 Map the TEs coordinates with genes, upstream (1Kb) or downstream regions for S.nigrum
+###1.5 TE types in genomic context in S. dulcamara
+###1.6 TE types in genomic context in S. nigrum
+#################
+
+
+
+#################
+###2.1 Methylation in genes - S.dulcamara and S.nigrum
+###2.2 Methylation in upstream regions - S.dulcamara and S.nigrum
+###2.3 Methylation in downstream regions - S.dulcamara and S.nigrum
+###2.4. Combined methylation in genes, upstream, downstream regions for S.dulcamara and S.nigrum
+#################
+
+
+#################
+###3.1 TEs in genes for S.dulcamara and S.nigrum
+###3.2 TEs in upstream regions - S.dulcamara and S.nigrum
+###3.3 TEs in downstream regions - S.dulcamara and S.nigrum
+###3.4. Combined TEs in genes, upstream, downstream regions for S.dulcamara and S.nigrum
+#################
+
+
+#################
+###4.1 Methylation in TIRs - S.dulcamara and S.nigrum
+###4.1.1 Methylation in TIRs - gene body - S.dulcamara and S.nigrum
+###4.1.2 Methylation in TIRs - upstream - S.dulcamara and S.nigrum
+###4.1.3 Methylation in TIRs - downstream - S.dulcamara and S.nigrum
+###4.1.4 Methylation in TIRs - combine and plot - S.dulcamara and S.nigrum
+###4.1.5 Methylation in TIRs - regressions - S.dulcamara and S.nigrum
+#################
+
+###4.2 Methylation in non-TIRs - S.dulcamara and S.nigrum
+###4.2.1 Methylation in non-TIRs - gene body - S.dulcamara and S.nigrum
+###4.2.2 Methylation in non-TIRs - upstream - S.dulcamara and S.nigrum
+###4.2.3 Methylation in non-TIRs - downstream - S.dulcamara and S.nigrum
+###4.2.4 Methylation in non-TIRs - combine and plot - S.dulcamara and S.nigrum
+###4.2.5 Methylation in TIRs - regressions - S.dulcamara and S.nigrum
+#################
+
+#################
+###4.3 Methylation in LTRs - S.dulcamara and S.nigrum
+###4.3.1 Methylation in LRs - gene body - S.dulcamara and S.nigrum
+###4.3.2 Methylation in LRs - upstream - S.dulcamara and S.nigrum
+###4.3.3 Methylation in LRs - downstream - S.dulcamara and S.nigrum
+###4.3.4 Methylation in LRs - combine and plot - S.dulcamara and S.nigrum
+###4.3.5 Methylation in LRs - regressions - S.dulcamara and S.nigrum
+#################
+
+#################
+###5.1 MEthylation the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA ####Sd_g3085.1, Sd_g3087.1, Sd_g3090, Sd_g26139.3, Sd_g8870, Sd_g28574
+###5.2 Proportion test assessing methylation frequency  the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA compared against average in genome
+###5.2.1 Gene body
+###5.2.2 Upstream
+###5.2.3 Downstream
+###5.3 TE type in genes in common between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA - Proportion tests compared against average
+###5.4 Proportion tests to assess content of TIRs in genes in common between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA- compared with average in genome
+###5.4.1 TIRs gene bodies
+###5.4.2 TIRs upstream
+###5.4.3 TIRs downstream
+###5.5 Proportion tests to assess content of non-TIRs in genes in common between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA- compared with average in genome
+###5.5.1 non-TIRs gene bodies
+###5.5.2 non-TIRs upstream
+###5.5.3 non-TIRs downstream
+###5.6 Proportion tests to assess content of LTRs in genes in common between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA- compared with average in genome
+###5.6.1 LTRs gene bodies
+###5.6.2 LTRs upstream
+###5.6.3 LTRs downstream
+#################
+
+
+
 #################
 ###1.1 Map the methylation with genes, upstream (1Kb) or downstream regions for S.dulcamara
 #################
 
-#grep "mRNA" S.dulcamara.annotation.gff3 > S.dulcamara.annotation.genes
-#awk '{print $1,$4,$5, $7, $9}' S.dulcamara.annotation.genes > S.dulcamara.annotation.genes2
-#sed 's/ /\t/g' S.dulcamara.annotation.genes2 > S.dulcamara.annotation.genes3
-#sed 's/chromosome/#chromosome/' all_methylation_data_genome_S.dulcamara_frequency.tsv > dulcamara_meth
-#bedtools intersect -a S.dulcamara.annotation.genes3 -b  dulcamara_meth -wo > dulcamara_meth_genes
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($14 >= 0 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14}'  dulcamara_meth_genes > dulcamara_meth_genes_filt
+grep "mRNA" S.dulcamara.annotation.gff3 > S.dulcamara.annotation.genes
+awk '{print $1,$4,$5, $7, $9}' S.dulcamara.annotation.genes > S.dulcamara.annotation.genes2
+sed 's/ /\t/g' S.dulcamara.annotation.genes2 > S.dulcamara.annotation.genes3
+sed 's/chromosome/#chromosome/' all_methylation_data_genome_S.dulcamara_frequency.tsv > dulcamara_meth
+bedtools intersect -a S.dulcamara.annotation.genes3 -b  dulcamara_meth -wo > dulcamara_meth_genes
 
 
 ###upstream
-#awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$4, $4+1000, $7, $9} else {print $1,$5,$5+1000, $7, $9}}' S.dulcamara.annotation.genes > S.dulcamara.annotation.genes.upstream
-#sed 's/ /\t/g' S.dulcamara.annotation.genes.upstream > S.dulcamara.annotation.genes.upstream2
-#bedtools intersect -a S.dulcamara.annotation.genes.upstream2 -b  dulcamara_meth -wo > dulcamara_meth_genes.upstream
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($14 >=0 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14}'  dulcamara_meth_genes.upstream > dulcamara_meth_genes.upstream_filt
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$4, $4+1000, $7, $9} else {print $1,$5,$5+1000, $7, $9}}' S.dulcamara.annotation.genes > S.dulcamara.annotation.genes.upstream
+sed 's/ /\t/g' S.dulcamara.annotation.genes.upstream > S.dulcamara.annotation.genes.upstream2
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($2 < 0) {print $1,0, $3, $4, $5} else {print $1,$2,$3, $4, $5}}' S.dulcamara.annotation.genes.upstream2 > S.dulcamara.annotation.genes.upstream3
+bedtools intersect -a S.dulcamara.annotation.genes.upstream3 -b  dulcamara_meth -wo > dulcamara_meth_genes.upstream
 
 ###downstream
 awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$5, $5+1000, $7, $9} else {print $1,$4-1000,$4, $7, $9}}' S.dulcamara.annotation.genes > S.dulcamara.annotation.genes.downstream
 sed 's/ /\t/g' S.dulcamara.annotation.genes.downstream > S.dulcamara.annotation.genes.downstream2
-bedtools intersect -a S.dulcamara.annotation.genes.downstream2 -b  dulcamara_meth -wo > dulcamara_meth_genes.downstream
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($14 >=0 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14}'  dulcamara_meth_genes.downstream > dulcamara_meth_genes.downstream_filt
-
-#mkdir files_meth
-#mv *_filt > files_meth
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($2 < 0) {print $1,0, $3, $4, $5} else {print $1,$2,$3, $4, $5}}' S.dulcamara.annotation.genes.downstream2 > S.dulcamara.annotation.genes.downstream3
+bedtools intersect -a S.dulcamara.annotation.genes.downstream3 -b  dulcamara_meth -wo > dulcamara_meth_genes.downstream
 
 
+####move to files_meth_new/
 
 #################
 ###1.2 Map the methylation with genes, upstream (1Kb) or downstream regions for S.nigrum
 #################
 
-#grep "mRNA" S.nigrum.annotation.gff3 > S.nigrum.annotation.genes
-#awk '{print $1,$4,$5, $7, $9}' S.nigrum.annotation.genes > S.nigrum.annotation.genes2
-#sed 's/ /\t/g' S.nigrum.annotation.genes2 > S.nigrum.annotation.genes3
-#sed 's/chromosome/#chromosome/' all_methylation_data_genome_S.nigrum_frequency.tsv > nigrum_meth
-#bedtools intersect -a S.nigrum.annotation.genes3 -b  nigrum_meth -wo > nigrum_meth_genes
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($14 >= 0 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14}'  nigrum_meth_genes > nigrum_meth_genes_filt
+grep "mRNA" S.nigrum.annotation.gff3 > S.nigrum.annotation.genes
+awk '{print $1,$4,$5, $7, $9}' S.nigrum.annotation.genes > S.nigrum.annotation.genes2
+sed 's/ /\t/g' S.nigrum.annotation.genes2 > S.nigrum.annotation.genes3
+sed 's/chromosome/#chromosome/' all_methylation_data_genome_S.nigrum_frequency.tsv > nigrum_meth
+bedtools intersect -a S.nigrum.annotation.genes3 -b  nigrum_meth -wo > nigrum_meth_genes
 
 ###upstream
-#awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$4, $4+1000, $7, $9} else {print $1,$5,$5+1000, $7, $9}}' S.nigrum.annotation.genes > S.nigrum.annotation.genes.upstream
-#sed 's/ /\t/g' S.nigrum.annotation.genes.upstream > S.nigrum.annotation.genes.upstream2
-#bedtools intersect -a S.nigrum.annotation.genes.upstream2 -b  nigrum_meth -wo > nigrum_meth_genes.upstream
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($14 >=0 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14}'  nigrum_meth_genes.upstream > nigrum_meth_genes.upstream_filt
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$4, $4+1000, $7, $9} else {print $1,$5,$5+1000, $7, $9}}' S.nigrum.annotation.genes > S.nigrum.annotation.genes.upstream
+sed 's/ /\t/g' S.nigrum.annotation.genes.upstream > S.nigrum.annotation.genes.upstream2
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($2 < 0) {print $1,0, $3, $4, $5} else {print $1,$2,$3, $4, $5}}' S.nigrum.annotation.genes.upstream2 > S.nigrum.annotation.genes.upstream3
+bedtools intersect -a S.nigrum.annotation.genes.upstream3 -b  nigrum_meth -wo > nigrum_meth_genes.upstream
 
 ###downstream
-#awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$5, $5+1000, $7, $9} else {print $1,$4-1000,$4, $7, $9}}' S.nigrum.annotation.genes > S.nigrum.annotation.genes.downstream
-#sed 's/ /\t/g' S.nigrum.annotation.genes.downstream > S.nigrum.annotation.genes.downstream2
-#bedtools intersect -a S.nigrum.annotation.genes.downstream2 -b  nigrum_meth -wo > nigrum_meth_genes.downstream
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($14 >=0 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14}'  nigrum_meth_genes.downstream > nigrum_meth_genes.downstream_filt
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$5, $5+1000, $7, $9} else {print $1,$4-1000,$4, $7, $9}}' S.nigrum.annotation.genes > S.nigrum.annotation.genes.downstream
+sed 's/ /\t/g' S.nigrum.annotation.genes.downstream > S.nigrum.annotation.genes.downstream2
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($2 < 0) {print $1,0, $3, $4, $5} else {print $1,$2,$3, $4, $5}}' S.nigrum.annotation.genes.downstream2 > S.nigrum.annotation.genes.downstream3
+bedtools intersect -a S.nigrum.annotation.genes.downstream3 -b  nigrum_meth -wo > nigrum_meth_genes.downstream
 
-#mkdir files_meth
-#mv *_filt files_meth
-
-
+####move to files_meth_new/
 
 
 #################
 ###1.3 Map the TEs coordinates with genes, upstream (1Kb) or downstream regions for S.dulcamara
 #################
 
-#awk '{print $1,$4,$5, $3}' S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.mod.EDTA.TEanno.gff3 > dulcamara_TEs
-#sed 's/ /\t/g' nigrum_TEs > nigrum_TEs2
-#sed 's/contig/contig_/g' nigrum_TEs2 > nigrum_TEs3
-#sed 's/s/segment/g' nigrum_TEs3 > nigrum_TEs4
-
-#sed 's/ /\t/g' dulcamara_TEs > dulcamara_TEs2
-#sed 's/_p/_pilon/g' dulcamara_TEs2 > dulcamara_TEs3
+awk '{print $1,$4,$5, $3}' S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta.mod.EDTA.TEanno.gff3 > dulcamara_TEs
+sed 's/ /\t/g' nigrum_TEs > nigrum_TEs2
+sed 's/contig/contig_/g' nigrum_TEs2 > nigrum_TEs3
+sed 's/s/segment/g' nigrum_TEs3 > nigrum_TEs4
+sed 's/ /\t/g' dulcamara_TEs > dulcamara_TEs2
+sed 's/_p/_pilon/g' dulcamara_TEs2 > dulcamara_TEs3
 
 ######dulcamara
-#grep "mRNA" S.dulcamara.annotation.gff3 > S.dulcamara.annotation.genes
-#awk '{print $1,$4,$5, $7, $9}' S.dulcamara.annotation.genes > S.dulcamara.annotation.genes2
-#sed 's/ /\t/g' S.dulcamara.annotation.genes2 > S.dulcamara.annotation.genes3
-#sed 's/chromosome/#chromosome/' all_methylation_data_genome_S.dulcamara_frequency.tsv > dulcamara_meth
-#bedtools intersect -a S.dulcamara.annotation.genes3 -b  dulcamara_TEs3 -wo > dulcamara_TEs_genes
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($10 >= 0 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10}'  dulcamara_TEs_genes > dulcamara_TEs_genes_filt
+grep "mRNA" S.dulcamara.annotation.gff3 > S.dulcamara.annotation.genes
+awk '{print $1,$4,$5, $7, $9}' S.dulcamara.annotation.genes > S.dulcamara.annotation.genes2
+sed 's/ /\t/g' S.dulcamara.annotation.genes2 > S.dulcamara.annotation.genes3
+sed 's/chromosome/#chromosome/' all_methylation_data_genome_S.dulcamara_frequency.tsv > dulcamara_meth
+bedtools intersect -a S.dulcamara.annotation.genes3 -b  dulcamara_TEs3 -wo > dulcamara_TEs_genes
 
 ###upstream
-#awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$4, $4+1000, $7, $9} else {print $1,$5,$5+1000, $7, $9}}' S.dulcamara.annotation.genes > S.dulcamara.annotation.genes.upstream
-#sed 's/ /\t/g' S.dulcamara.annotation.genes.upstream > S.dulcamara.annotation.genes.upstream2
-#bedtools intersect -a S.dulcamara.annotation.genes.upstream2 -b dulcamara_TEs3 -wo > -wo > dulcamara_TEs_genes.upstream
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($10 >= 0 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10}'  dulcamara_TEs_genes.upstream > dulcamara_TEs_genes.upstream_filt
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$4, $4+1000, $7, $9} else {print $1,$5,$5+1000, $7, $9}}' S.dulcamara.annotation.genes > S.dulcamara.annotation.genes.upstream
+sed 's/ /\t/g' S.dulcamara.annotation.genes.upstream > S.dulcamara.annotation.genes.upstream2
+bedtools intersect -a S.dulcamara.annotation.genes.upstream3 -b dulcamara_TEs3 -wo > -wo > dulcamara_TEs_genes.upstream
 
 ###downstream
-#awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$5, $5+1000, $7, $9} else {print $1,$4-1000,$4, $7, $9}}' S.dulcamara.annotation.genes > S.dulcamara.annotation.genes.downstream
-#sed 's/ /\t/g' S.dulcamara.annotation.genes.downstream > S.dulcamara.annotation.genes.downstream2
-#bedtools intersect -a S.dulcamara.annotation.genes.upstream2 -b dulcamara_TEs3 -wo > -wo > dulcamara_TEs_genes.downstream
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($10 >= 0 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10}'  dulcamara_TEs_genes.downstream > dulcamara_TEs_genes.downstream_filt
-
-#mkdir files_meth
-#mv *_filt > files_meth
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$5, $5+1000, $7, $9} else {print $1,$4-1000,$4, $7, $9}}' S.dulcamara.annotation.genes > S.dulcamara.annotation.genes.downstream
+sed 's/ /\t/g' S.dulcamara.annotation.genes.downstream > S.dulcamara.annotation.genes.downstream2
+bedtools intersect -a S.dulcamara.annotation.genes.downstream3 -b dulcamara_TEs3 -wo > -wo > dulcamara_TEs_genes.downstream
 
 
 #################
 ###1.4 Map the TEs coordinates with genes, upstream (1Kb) or downstream regions for S.nigrum
 #################
-#awk '{print $1,$4,$5, $3}' curated_genome_flye_racon_medaka_purge_haplotigs_short_names_3.fasta.mod.EDTA.TEanno.gff3 > nigrum_TEs
-#grep "mRNA" S.nigrum.annotation.gff3 > S.nigrum.annotation.genes
-#awk '{print $1,$4,$5, $7, $9}' S.nigrum.annotation.genes > S.nigrum.annotation.genes2
-#sed 's/ /\t/g' S.nigrum.annotation.genes2 > S.nigrum.annotation.genes3
-#sed 's/chromosome/#chromosome/' all_methylation_data_genome_S.nigrum_frequency.tsv > nigrum_meth
-#bedtools intersect -a S.nigrum.annotation.genes3 -b  nigrum_TEs4 -wo > nigrum_TEs_genes
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($10 >= 0 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10}'  nigrum_TEs_genes > nigrum_TEs_genes_filt
+awk '{print $1,$4,$5, $3}' curated_genome_flye_racon_medaka_purge_haplotigs_short_names_3.fasta.mod.EDTA.TEanno.gff3 > nigrum_TEs
+grep "mRNA" S.nigrum.annotation.gff3 > S.nigrum.annotation.genes
+awk '{print $1,$4,$5, $7, $9}' S.nigrum.annotation.genes > S.nigrum.annotation.genes2
+sed 's/ /\t/g' S.nigrum.annotation.genes2 > S.nigrum.annotation.genes3
+sed 's/chromosome/#chromosome/' all_methylation_data_genome_S.nigrum_frequency.tsv > nigrum_meth
+bedtools intersect -a S.nigrum.annotation.genes3 -b  nigrum_TEs4 -wo > nigrum_TEs_genes
 
 
 ###upstream
-#awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$4, $4+1000, $7, $9} else {print $1,$5,$5+1000, $7, $9}}' S.nigrum.annotation.genes > S.nigrum.annotation.genes.upstream
-#sed 's/ /\t/g' S.nigrum.annotation.genes.upstream > S.nigrum.annotation.genes.upstream2
-#bedtools intersect -a S.nigrum.annotation.genes.upstream2 -b nigrum_TEs4 -wo > -wo > nigrum_TEs_genes.upstream
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($10 >= 0 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10}'  nigrum_TEs_genes.upstream > nigrum_TEs_genes.upstream_filt
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$4, $4+1000, $7, $9} else {print $1,$5,$5+1000, $7, $9}}' S.nigrum.annotation.genes > S.nigrum.annotation.genes.upstream
+sed 's/ /\t/g' S.nigrum.annotation.genes.upstream > S.nigrum.annotation.genes.upstream2
+bedtools intersect -a S.nigrum.annotation.genes.upstream3 -b nigrum_TEs4 -wo > -wo > nigrum_TEs_genes.upstream
 
 ###downstream
-#awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$5, $5+1000, $7, $9} else {print $1,$4-1000,$4, $7, $9}}' S.nigrum.annotation.genes > S.nigrum.annotation.genes.downstream
-#sed 's/ /\t/g' S.nigrum.annotation.genes.downstream > S.nigrum.annotation.genes.downstream2
-#bedtools intersect -a S.nigrum.annotation.genes.downstream2 -b nigrum_TEs4 -wo > -wo > nigrum_TEs_genes.downstream
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($10 >= 0 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10}'  nigrum_TEs_genes.downstream > nigrum_TEs_genes.downstream_filt
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$5, $5+1000, $7, $9} else {print $1,$4-1000,$4, $7, $9}}' S.nigrum.annotation.genes > S.nigrum.annotation.genes.downstream
+sed 's/ /\t/g' S.nigrum.annotation.genes.downstream > S.nigrum.annotation.genes.downstream2
+bedtools intersect -a S.nigrum.annotation.genes.downstream3 -b nigrum_TEs4 -wo > -wo > nigrum_TEs_genes.downstream
+
+
+
+#################
+###1.5 TE types in genomic context in S. dulcamara
+#################
+grep "TIR" dulcamara_TEs_genes > dulcamara_TEs_TIR_genes
+grep "helitron" dulcamara_TEs_genes > dulcamara_TEs_non_TIR_genes
+grep "LTR" dulcamara_TEs_genes > dulcamara_TEs_LTR_genes
+bedtools intersect -a dulcamara_TEs_TIR_genes -b  dulcamara_meth -wo > dulcamara_meth_TIR_genes
+bedtools intersect -a dulcamara_TEs_non_TIR_genes -b  dulcamara_meth -wo > dulcamara_meth_non_TIR_genes
+bedtools intersect -a dulcamara_TEs_LTR_genes -b  dulcamara_meth -wo > dulcamara_meth_LTR_genes
+
+###upstream
+grep "TIR" dulcamara_TEs_genes.upstream > dulcamara_TEs_TIR_genes.upstream
+grep "helitron" dulcamara_TEs_genes.upstream > dulcamara_TEs_non_TIR_genes.upstream
+grep "LTR" dulcamara_TEs_genes.upstream > dulcamara_TEs_LTR_genes.upstream
+bedtools intersect -a dulcamara_TEs_TIR_genes.upstream -b  dulcamara_meth -wo > dulcamara_meth_TIR_genes.upstream
+bedtools intersect -a dulcamara_TEs_non_TIR_genes.upstream -b  dulcamara_meth -wo > dulcamara_meth_non_TIR_genes.upstream
+bedtools intersect -a dulcamara_TEs_LTR_genes.upstream -b  dulcamara_meth -wo > dulcamara_meth_LTR_genes.upstream
+
+
+###downstream
+grep "TIR" dulcamara_TEs_genes.downstream > dulcamara_TEs_TIR_genes.downstream
+grep "helitron" dulcamara_TEs_genes.downstream > dulcamara_TEs_non_TIR_genes.downstream
+grep "LTR" dulcamara_TEs_genes.downstream > dulcamara_TEs_LTR_genes.downstream
+bedtools intersect -a dulcamara_TEs_TIR_genes.downstream -b  dulcamara_meth -wo > dulcamara_meth_TIR_genes.downstream
+bedtools intersect -a dulcamara_TEs_non_TIR_genes.downstream -b  dulcamara_meth -wo > dulcamara_meth_non_TIR_genes.downstream
+bedtools intersect -a dulcamara_TEs_LTR_genes.downstream -b  dulcamara_meth -wo > dulcamara_meth_LTR_genes.downstream
+
+
+
+#################
+###1.6 TE types in genomic context in S. nigrum
+#################
+grep "TIR" nigrum_TEs_genes > nigrum_TEs_TIR_genes
+grep "helitron" nigrum_TEs_genes > nigrum_TEs_non_TIR_genes
+grep "LTR" nigrum_TEs_genes > nigrum_TEs_LTR_genes
+bedtools intersect -a nigrum_TEs_TIR_genes -b  nigrum_meth -wo > nigrum_meth_TIR_genes
+bedtools intersect -a nigrum_TEs_non_TIR_genes -b  nigrum_meth -wo > nigrum_meth_non_TIR_genes
+bedtools intersect -a nigrum_TEs_LTR_genes -b  nigrum_meth -wo > nigrum_meth_LTR_genes
+
+###upstream
+grep "TIR" nigrum_TEs_genes.upstream > nigrum_TEs_TIR_genes.upstream
+grep "helitron" nigrum_TEs_genes.upstream > nigrum_TEs_non_TIR_genes.upstream
+grep "LTR" nigrum_TEs_genes.upstream > nigrum_TEs_LTR_genes.upstream
+bedtools intersect -a nigrum_TEs_TIR_genes.upstream -b  nigrum_meth -wo > nigrum_meth_TIR_genes.upstream
+bedtools intersect -a nigrum_TEs_non_TIR_genes.upstream -b  nigrum_meth -wo > nigrum_meth_non_TIR_genes.upstream
+bedtools intersect -a nigrum_TEs_LTR_genes.upstream -b  nigrum_meth -wo > nigrum_meth_LTR_genes.upstream
+
+
+###downstream
+grep "TIR" nigrum_TEs_genes.downstream > nigrum_TEs_TIR_genes.downstream
+grep "helitron" nigrum_TEs_genes.downstream > nigrum_TEs_non_TIR_genes.downstream
+grep "LTR" nigrum_TEs_genes.downstream > nigrum_TEs_LTR_genes.downstream
+bedtools intersect -a nigrum_TEs_TIR_genes.downstream -b  nigrum_meth -wo > nigrum_meth_TIR_genes.downstream
+bedtools intersect -a nigrum_TEs_non_TIR_genes.downstream -b  nigrum_meth -wo > nigrum_meth_non_TIR_genes.downstream
+bedtools intersect -a nigrum_TEs_LTR_genes.downstream -b  nigrum_meth -wo > nigrum_meth_LTR_genes.downstream
+
+
+
 
 
 #################
@@ -122,7 +243,7 @@ awk 'BEGIN{OFS="\t";FS="\t"} {if ($10 >= 0 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$1
 #################
 #########################change to R
 #################### dulcamara
-genes=read.table("files_meth/dulcamara_meth_genes_filt", header=F, sep="\t")
+genes=read.table("files_meth_new/dulcamara_meth_genes", header=F, sep="\t")
 header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
 colnames(genes)<-c(header)
 genes$Gene_size=genes$end_gene - genes$start_gene
@@ -136,14 +257,12 @@ genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_diff
 genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
 genes$start_meth_percentage = 100*genes$start_meth_percentage
 genes$end_meth_percentage = 100*genes$end_meth_percentage
-write.table(genes, "/users/sfo503/scratch/dulcamara_nigrum/files_meth/dulcamara_meth_genes_filt_coordinates", col.names=T, sep="\t")
+write.table(genes, "files_meth_new/dulcamara_meth_genes_filt_coordinates", col.names=T, sep="\t")
 
 
 ##############intervals
 cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
 cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
-cut_list2=as.data.frame(by(genes$methylated_frequency, cuts, max)) ##ok
-cut_list3=as.data.frame(by(genes$methylated_frequency, cuts, min)) ##ok
 cut_list$coordinates<-rownames(cut_list)
 cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
 cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
@@ -158,7 +277,7 @@ colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_
 
 #################### nigrum
 library(dplyr)
-genes_n=read.table("files_meth/nigrum_meth_genes_filt", header=F, sep="\t")
+genes_n=read.table("files_meth_new/nigrum_meth_genes", header=F, sep="\t")
 header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
 colnames(genes_n)<-c(header)
 genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
@@ -172,14 +291,12 @@ genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_
 genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
 genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
 genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
-write.table(genes_n, "files_meth/nigrum_meth_genes_filt_coordinates", col.names=T, sep="\t")
+write.table(genes_n, "files_meth_new/nigrum_meth_genes_filt_coordinates", col.names=T, sep="\t")
 
 ##############intervals
 #####average by 5%
 cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
 cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
-cut_list2_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, max)) ##ok
-cut_list3_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, min)) ##ok
 cut_list_n$coordinates<-rownames(cut_list_n)
 cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
 cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
@@ -213,7 +330,7 @@ nig<-cut_list_final3[grep("S.nigrum",cut_list_final3$variable),]
 mean(dulc$value)
 mean(nig$value)
 #nigrum - average is  0.7888288
-#dulcamara average is 0.6398363
+#dulcamara average is 0.6593832
 
 
 #################
@@ -221,7 +338,7 @@ mean(nig$value)
 #################
 #########################change to R
 #################### dulcamara
-genes=read.table("files_meth/dulcamara_meth_genes.upstream_filt", header=F, sep="\t")
+genes=read.table("files_meth_new/dulcamara_meth_genes.upstream", header=F, sep="\t")
 header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
 colnames(genes)<-c(header)
 genes$Gene_size=genes$end_gene - genes$start_gene
@@ -236,12 +353,10 @@ genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_differen
 genes$start_meth_percentage = 100*genes$start_meth_percentage
 genes$end_meth_percentage = 100*genes$end_meth_percentage
 
-write.table(genes, "files_meth/dulcamara_meth_genes.upstream_filt_coordinates", col.names=T, sep="\t")
+write.table(genes, "files_meth_new/dulcamara_meth_genes.upstream_filt_coordinates", col.names=T, sep="\t")
 
 cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
 cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
-cut_list2=as.data.frame(by(genes$methylated_frequency, cuts, max)) ##ok
-cut_list3=as.data.frame(by(genes$methylated_frequency, cuts, min)) ##ok
 cut_list$coordinates<-rownames(cut_list)
 cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
 cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
@@ -257,7 +372,7 @@ colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_
 
 #################### nigrum
 library(dplyr)
-genes_n=read.table("files_meth/nigrum_meth_genes.upstream_filt", header=F, sep="\t")
+genes_n=read.table("files_meth_new/nigrum_meth_genes.upstream", header=F, sep="\t")
 header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
 colnames(genes_n)<-c(header)
 genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
@@ -271,14 +386,12 @@ genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_
 genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
 genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
 genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
-write.table(genes_n, "files_meth/nigrum_meth_genes.upstream_filt_coordinates", col.names=T, sep="\t")
+write.table(genes_n, "files_meth_new/nigrum_meth_genes.upstream_filt_coordinates", col.names=T, sep="\t")
 
 ##############intervals
 #####average by 5%
 cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
 cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
-cut_list2_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, max)) ##ok
-cut_list3_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, min)) ##ok
 cut_list_n$coordinates<-rownames(cut_list_n)
 cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
 cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
@@ -312,8 +425,9 @@ dulc<-cut_list_final3[grep("S.dulcamara",cut_list_final3$variable),]
 nig<-cut_list_final3[grep("S.nigrum",cut_list_final3$variable),]
 mean(dulc$value)
 mean(nig$value)
-#nigrum - average is  0.6536616
-#dulcamara average is 0.4547009
+#nigrum - average is 0.6719592
+#dulcamara average is 0.5015785
+
 
 
 #################
@@ -322,7 +436,7 @@ mean(nig$value)
 #########################change to R
 #################### dulcamara
 library(dplyr)
-genes=read.table("files_meth/dulcamara_meth_genes.downstream_filt", header=F, sep="\t")
+genes=read.table("files_meth_new/dulcamara_meth_genes.downstream", header=F, sep="\t")
 header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
 colnames(genes)<-c(header)
 genes$Gene_size=genes$end_gene - genes$start_gene
@@ -336,14 +450,12 @@ genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_diff
 genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
 genes$start_meth_percentage = 100*genes$start_meth_percentage
 genes$end_meth_percentage = 100*genes$end_meth_percentage
-write.table(genes, "files_meth/dulcamara_meth_genes.downstream_filt_coordinates", col.names=T, sep="\t")
+write.table(genes, "files_meth_new/dulcamara_meth_genes.downstream_filt_coordinates", col.names=T, sep="\t")
 
 
 ##############intervals
 cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
 cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
-cut_list2=as.data.frame(by(genes$methylated_frequency, cuts, max)) ##ok
-cut_list3=as.data.frame(by(genes$methylated_frequency, cuts, min)) ##ok
 cut_list$coordinates<-rownames(cut_list)
 cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
 cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
@@ -358,7 +470,7 @@ colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_
 
 #################### nigrum
 library(dplyr)
-genes_n=read.table("files_meth/nigrum_meth_genes.downstream_filt", header=F, sep="\t")
+genes_n=read.table("files_meth_new/nigrum_meth_genes.downstream_filt", header=F, sep="\t")
 header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
 colnames(genes_n)<-c(header)
 genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
@@ -372,23 +484,12 @@ genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_
 genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
 genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
 genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
-write.table(genes_n, "files_meth/nigrum_meth_genes.downstream_filt_coordinates", col.names=T, sep="\t")
+write.table(genes_n, "files_meth_new/nigrum_meth_genes.downstream_filt_coordinates", col.names=T, sep="\t")
 
-library(ggplot2)
-tiff("files_meth/genes.downstream_lines_dulcamara.tiff", res=100, he=200, wi=200, units="mm")
-ggplot(genes_n, aes(x = start_meth_percentage, y = methylated_frequency)) +
-  geom_segment(aes(xend = end_meth_percentage, yend = methylated_frequency), colour = "black") +
-  geom_point(size = 3) +
-  geom_point(aes(x = end_meth_percentage), size = 3) +
-  theme_bw() + geom_hline(yintercept = mean(genes_n$methylated_frequency), color="blue")+
-  theme(legend.position = "none") + xlim(1,100)
-dev.off()
 ##############intervals
 #####average by 5%
 cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
 cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
-cut_list2_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, max)) ##ok
-cut_list3_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, min)) ##ok
 cut_list_n$coordinates<-rownames(cut_list_n)
 cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
 cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
@@ -425,7 +526,7 @@ nig<-cut_list_final3[grep("S.nigrum",cut_list_final3$variable),]
 mean(dulc$value)
 mean(nig$value)
 #nigrum - average is  0.7139822
-#dulcamara average is 0.497558
+#dulcamara average is 0.4987571
 
 
 #################
@@ -525,393 +626,148 @@ dev.off()
 #########################change to R
 #################### dulcamara
 library(dplyr)
-genes=read.table("files_meth/dulcamara_TEs_genes_filt", header=F, sep="\t")
+genes=read.table("dulcamara_TEs_genes", header=F, sep="\t")
 header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_TE", "end_TE", "TE_type", "overlapping")
 colnames(genes)<-c(header)
-genes$Gene_size=genes$end_gene - genes$start_gene
-###222115 15
-genes$start_gene_percentage=c(1)
-genes$end_gene_percentage=c(100)
-genes$start_TE=as.numeric(genes$start_TE)
-genes$start_gene=as.numeric(genes$start_gene)
-####need to create a new column that is start and end of TE because the coordinates of TEs can be before or after
 
-genes$new_TE_start=with(genes,ifelse(genes$start_TE < genes$start_gene, genes$start_gene,genes$start_TE))
-genes$new_TE_end=with(genes,ifelse(genes$end_TE > genes$end_gene, genes$end_gene,genes$end_TE))
+genes_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=27429-genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) ###[1] 2.14
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE) ###[1] 5.55
+genes_average_sd
+genes_number= 27429
 
 
-genes$start_TE_start_gene_difference=genes$new_TE_start- genes$start_gene
-genes$end_TE_start_gene_difference=genes$new_TE_end- genes$start_gene
-genes$start_TE_start_gene_difference=as.numeric(genes$start_TE_start_gene_difference)
-genes$end_TE_start_gene_difference=as.numeric(genes$end_TE_start_gene_difference)
-genes$Gene_size=as.numeric(genes$Gene_size)
-
-genes$start_TE_start_gene_difference=with(genes,ifelse(genes$start_TE_start_gene_difference ==0, 1,genes$start_TE_start_gene_difference))
-
-na_counts_base <- lapply(genes, function(x) sum(is.na(x)))
-
-genes=genes %>% mutate(start_TE_percentage = start_TE_start_gene_difference / Gene_size)
-genes=genes %>% mutate(end_TE_percentage = end_TE_start_gene_difference / Gene_size)
-genes$start_TE_percentage = 100*genes$start_TE_percentage
-genes$end_TE_percentage = 100*genes$end_TE_percentage
-write.table(genes, "files_meth/dulcamara_TE_genes_filt_coordinates", col.names=T, sep="\t")
-
-genes$TE_frequency=genes$overlapping/genes$Gene_size
-cuts <- cut(genes$end_TE_percentage, breaks=seq(1, max(genes$start_TE_percentage)+5, 5))
-cut_list=as.data.frame(by(genes$TE_frequency, cuts, mean))
-cut_list2=as.data.frame(by(genes$TE_frequency, cuts, max)) ##ok
-cut_list3=as.data.frame(by(genes$TE_frequency, cuts, min)) ##ok
-cut_list$coordinates<-rownames(cut_list)
-cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
-cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
-
-library(stringr)
-cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
-cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
-cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
-cut_list$x=as.numeric(cut_list$x)
-cut_list$middle_coordinates=cut_list$end_coordinates-3
-colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+#[1] 2.190711
+#[1] 4.262152
 
 
 #################### nigrum
 library(dplyr)
-genes_n=read.table("files_meth/nigrum_TEs_genes_filt", header=F, sep="\t")
+genes_n=read.table("nigrum_TEs_genes", header=F, sep="\t")
 header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_TE", "end_TE", "TE_type", "overlapping")
 colnames(genes_n)<-c(header)
-genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
-genes_n$start_gene_percentage=c(1)
-genes_n$end_gene_percentage=c(100)
-genes_n$start_TE=as.numeric(genes_n$start_TE)
-genes_n$start_gene=as.numeric(genes_n$start_gene)
-####need to create a new column that is start and end of TE because the coordinates of TEs can be before or after
+genes_average=genes_n %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=39466 -genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) ###[1] 2.14
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE) ###[1] 5.55
+genes_average_sd
+genes_number= 39466 
 
-genes_n$new_TE_start=with(genes_n,ifelse(genes_n$start_TE < genes_n$start_gene, genes_n$start_gene,genes_n$start_TE))
-genes_n$new_TE_end=with(genes_n,ifelse(genes_n$end_TE > genes_n$end_gene, genes_n$end_gene,genes_n$end_TE))
 
-
-genes_n$start_TE_start_gene_difference=genes_n$new_TE_start- genes_n$start_gene
-genes_n$end_TE_start_gene_difference=genes_n$new_TE_end- genes_n$start_gene
-genes_n$start_TE_start_gene_difference=as.numeric(genes_n$start_TE_start_gene_difference)
-genes_n$end_TE_start_gene_difference=as.numeric(genes_n$end_TE_start_gene_difference)
-genes_n$Gene_size=as.numeric(genes_n$Gene_size)
-
-genes_n$start_TE_start_gene_difference=with(genes_n,ifelse(genes_n$start_TE_start_gene_difference ==0, 1,genes_n$start_TE_start_gene_difference))
-
-na_counts_base <- lapply(genes_n, function(x) sum(is.na(x)))
-
-genes_n=genes_n %>% mutate(start_TE_percentage = start_TE_start_gene_difference / Gene_size)
-genes_n=genes_n %>% mutate(end_TE_percentage = end_TE_start_gene_difference / Gene_size)
-genes_n$start_TE_percentage = 100*genes_n$start_TE_percentage
-genes_n$end_TE_percentage = 100*genes_n$end_TE_percentage
-
-write.table(genes_n, "files_meth/nigrum_TE_genes_n_filt_coordinates", col.names=T, sep="\t")
-
-genes_n$TE_frequency=genes_n$overlapping/genes_n$Gene_size
-cuts_n <- cut(genes_n$end_TE_percentage, breaks=seq(1, max(genes_n$start_TE_percentage)+5, 5))
-cut_list_n=as.data.frame(by(genes_n$TE_frequency, cuts_n, mean))
-cut_list2_n=as.data.frame(by(genes_n$TE_frequency, cuts_n, max)) ##ok
-cut_list3_n=as.data.frame(by(genes_n$TE_frequency, cuts_n, min)) ##ok
-cut_list_n$coordinates<-rownames(cut_list_n)
-cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
-cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
-
-library(stringr)
-cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
-cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
-cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
-cut_list_n$x=as.numeric(cut_list_n$x)
-cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
-colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
-cut_list_final=left_join(cut_list, cut_list_n)
-write.table(cut_list_final, "files_meth/dulcamara_nigrum_TE_genes_intervals", col.names=T, sep="\t")
-library(tidyr)
-library(reshape2)
-library(data.table)
-###make it long
-cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
-cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
-cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
-cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
-
-cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
-cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
-cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
-###add a column with species and the frequency should be in one
-cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
-cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
-
-#nigrum - average is  0.07054823
-#dulcamara average is 0.05386441
+#[1] 2.867785
+#[1] 5.123569
 
 
 
+#################
+###3.2 TEs in upstream regions - S.dulcamara and S.nigrum
+#################
+#########################change to R
+#################### dulcamara
+genes=read.table("dulcamara_TEs_genes.upstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_TE", "end_TE", "TE_type", "overlapping")
+colnames(genes)<-c(header)
 
+genes_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=27429-genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) ###[1] 2.14
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE) ###[1] 5.55
+genes_average_sd
+genes_number= 27429
+#[1] 1.178862
+#[1] 1.242837
+
+
+#################### nigrum
+genes_n=read.table("nigrum_TEs_genes.upstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_TE", "end_TE", "TE_type", "overlapping")
+colnames(genes_n)<-c(header)
+genes_average=genes_n %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=39466-genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) ###[1] 2.14
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE) ###[1] 5.55
+genes_average_sd
+genes_number= 39466
+
+
+#[1] 1.673973
+#[1] 1.503693
 
 
 
 
 #################
-###3.2 Methylation in upstream regions - S.dulcamara and S.nigrum
+###3.3 TEs in downstream regions - S.dulcamara and S.nigrum
 #################
 #########################change to R
 #################### dulcamara
 
 library(dplyr)
-genes=read.table("files_meth/dulcamara_TEs_genes.upstream_filt", header=F, sep="\t")
+genes=read.table("dulcamara_TEs_genes.downstream", header=F, sep="\t")
 header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_TE", "end_TE", "TE_type", "overlapping")
 colnames(genes)<-c(header)
-genes$Gene_size=genes$end_gene - genes$start_gene
-###222115 15
-genes$start_gene_percentage=c(1)
-genes$end_gene_percentage=c(100)
-genes$start_TE=as.numeric(genes$start_TE)
-genes$start_gene=as.numeric(genes$start_gene)
-####need to create a new column that is start and end of TE because the coordinates of TEs can be before or after
 
-genes$new_TE_start=with(genes,ifelse(genes$start_TE < genes$start_gene, genes$start_gene,genes$start_TE))
-genes$new_TE_end=with(genes,ifelse(genes$end_TE > genes$end_gene, genes$end_gene,genes$end_TE))
-
-
-genes$start_TE_start_gene_difference=genes$new_TE_start- genes$start_gene
-genes$end_TE_start_gene_difference=genes$new_TE_end- genes$start_gene
-genes$start_TE_start_gene_difference=as.numeric(genes$start_TE_start_gene_difference)
-genes$end_TE_start_gene_difference=as.numeric(genes$end_TE_start_gene_difference)
-genes$Gene_size=as.numeric(genes$Gene_size)
-
-genes$start_TE_start_gene_difference=with(genes,ifelse(genes$start_TE_start_gene_difference ==0, 1,genes$start_TE_start_gene_difference))
-
-na_counts_base <- lapply(genes, function(x) sum(is.na(x)))
-
-genes=genes %>% mutate(start_TE_percentage = start_TE_start_gene_difference / Gene_size)
-genes=genes %>% mutate(end_TE_percentage = end_TE_start_gene_difference / Gene_size)
-genes$start_TE_percentage = 100*genes$start_TE_percentage
-genes$end_TE_percentage = 100*genes$end_TE_percentage
-write.table(genes, "files_meth/dulcamara_TE_genes.upstream_filt_coordinates", col.names=T, sep="\t")
-
-genes$TE_frequency=genes$overlapping/genes$Gene_size
-cuts <- cut(genes$end_TE_percentage, breaks=seq(1, max(genes$start_TE_percentage)+5, 5))
-cut_list=as.data.frame(by(genes$TE_frequency, cuts, mean))
-cut_list2=as.data.frame(by(genes$TE_frequency, cuts, max)) ##ok
-cut_list3=as.data.frame(by(genes$TE_frequency, cuts, min)) ##ok
-cut_list$coordinates<-rownames(cut_list)
-cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
-cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
-
-library(stringr)
-cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
-cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
-cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
-cut_list$x=as.numeric(cut_list$x)
-cut_list$middle_coordinates=cut_list$end_coordinates-3
-colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+genes_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=27429-genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) ###[1] 2.14
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE) ###[1] 5.55
+genes_average_sd
+genes_number= 27429
+#[1] 0.9620839
+#[1] 1.158135
 
 
 #################### nigrum
-library(dplyr)
-genes_n=read.table("files_meth/nigrum_TEs_genes.upstream_filt", header=F, sep="\t")
+genes_n=read.table("nigrum_TEs_genes.downstream", header=F, sep="\t")
 header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_TE", "end_TE", "TE_type", "overlapping")
 colnames(genes_n)<-c(header)
-genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
-genes_n$start_gene_percentage=c(1)
-genes_n$end_gene_percentage=c(100)
-genes_n$start_TE=as.numeric(genes_n$start_TE)
-genes_n$start_gene=as.numeric(genes_n$start_gene)
-####need to create a new column that is start and end of TE because the coordinates of TEs can be before or after
-
-genes_n$new_TE_start=with(genes_n,ifelse(genes_n$start_TE < genes_n$start_gene, genes_n$start_gene,genes_n$start_TE))
-genes_n$new_TE_end=with(genes_n,ifelse(genes_n$end_TE > genes_n$end_gene, genes_n$end_gene,genes_n$end_TE))
-
-
-genes_n$start_TE_start_gene_difference=genes_n$new_TE_start- genes_n$start_gene
-genes_n$end_TE_start_gene_difference=genes_n$new_TE_end- genes_n$start_gene
-genes_n$start_TE_start_gene_difference=as.numeric(genes_n$start_TE_start_gene_difference)
-genes_n$end_TE_start_gene_difference=as.numeric(genes_n$end_TE_start_gene_difference)
-genes_n$Gene_size=as.numeric(genes_n$Gene_size)
-
-genes_n$start_TE_start_gene_difference=with(genes_n,ifelse(genes_n$start_TE_start_gene_difference ==0, 1,genes_n$start_TE_start_gene_difference))
-
-na_counts_base <- lapply(genes_n, function(x) sum(is.na(x)))
-
-genes_n=genes_n %>% mutate(start_TE_percentage = start_TE_start_gene_difference / Gene_size)
-genes_n=genes_n %>% mutate(end_TE_percentage = end_TE_start_gene_difference / Gene_size)
-genes_n$start_TE_percentage = 100*genes_n$start_TE_percentage
-genes_n$end_TE_percentage = 100*genes_n$end_TE_percentage
-
-write.table(genes_n, "files_meth/nigrum_TE_genes.upstream_n_filt_coordinates", col.names=T, sep="\t")
-
-genes_n$TE_frequency=genes_n$overlapping/genes_n$Gene_size
-cuts_n <- cut(genes_n$end_TE_percentage, breaks=seq(1, max(genes_n$start_TE_percentage)+5, 5))
-cut_list_n=as.data.frame(by(genes_n$TE_frequency, cuts_n, mean))
-cut_list2_n=as.data.frame(by(genes_n$TE_frequency, cuts_n, max)) ##ok
-cut_list3_n=as.data.frame(by(genes_n$TE_frequency, cuts_n, min)) ##ok
-cut_list_n$coordinates<-rownames(cut_list_n)
-cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
-cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
-
-library(stringr)
-cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
-cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
-cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
-cut_list_n$x=as.numeric(cut_list_n$x)
-cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
-colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
-
-cut_list_final=left_join(cut_list, cut_list_n)
-write.table(cut_list_final, "files_meth/dulcamara_nigrum_TE_genes.upstream_intervals", col.names=T, sep="\t")
-library(tidyr)
-library(reshape2)
-library(data.table)
-###make it long
-cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
-cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
-cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
-cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
-
-cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
-cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
-cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
-###add a column with species and the frequency should be in one
-cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
-cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
- mean(cut_list_n$nigrum_freq)
-#[1] 0.1938195
- mean(cut_list$dulcamara_freq)
-# 0.1782439
+genes_average=genes_n %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=39466-genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) ###[1] 2.14
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE) ###[1] 5.55
+genes_average_sd
+genes_number= 39466
 
 
-
-#################
-###3.3 Methylation in downstream regions - S.dulcamara and S.nigrum
-#################
-#########################change to R
-#################### dulcamara
-
-library(dplyr)
-genes=read.table("files_meth/dulcamara_TEs_genes.downstream_filt", header=F, sep="\t")
-header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_TE", "end_TE", "TE_type", "overlapping")
-colnames(genes)<-c(header)
-genes$Gene_size=genes$end_gene - genes$start_gene
-###222115 15
-genes$start_gene_percentage=c(1)
-genes$end_gene_percentage=c(100)
-genes$start_TE=as.numeric(genes$start_TE)
-genes$start_gene=as.numeric(genes$start_gene)
-####need to create a new column that is start and end of TE because the coordinates of TEs can be before or after
-
-genes$new_TE_start=with(genes,ifelse(genes$start_TE < genes$start_gene, genes$start_gene,genes$start_TE))
-genes$new_TE_end=with(genes,ifelse(genes$end_TE > genes$end_gene, genes$end_gene,genes$end_TE))
-
-
-genes$start_TE_start_gene_difference=genes$new_TE_start- genes$start_gene
-genes$end_TE_start_gene_difference=genes$new_TE_end- genes$start_gene
-genes$start_TE_start_gene_difference=as.numeric(genes$start_TE_start_gene_difference)
-genes$end_TE_start_gene_difference=as.numeric(genes$end_TE_start_gene_difference)
-genes$Gene_size=as.numeric(genes$Gene_size)
-
-genes$start_TE_start_gene_difference=with(genes,ifelse(genes$start_TE_start_gene_difference ==0, 1,genes$start_TE_start_gene_difference))
-
-na_counts_base <- lapply(genes, function(x) sum(is.na(x)))
-
-genes=genes %>% mutate(start_TE_percentage = start_TE_start_gene_difference / Gene_size)
-genes=genes %>% mutate(end_TE_percentage = end_TE_start_gene_difference / Gene_size)
-genes$start_TE_percentage = 100*genes$start_TE_percentage
-genes$end_TE_percentage = 100*genes$end_TE_percentage
-write.table(genes, "files_meth/dulcamara_TE_genes.downstream_filt_coordinates", col.names=T, sep="\t")
-
-genes$TE_frequency=genes$overlapping/genes$Gene_size
-cuts <- cut(genes$end_TE_percentage, breaks=seq(1, max(genes$start_TE_percentage)+5, 5))
-cut_list=as.data.frame(by(genes$TE_frequency, cuts, mean))
-cut_list2=as.data.frame(by(genes$TE_frequency, cuts, max)) ##ok
-cut_list3=as.data.frame(by(genes$TE_frequency, cuts, min)) ##ok
-cut_list$coordinates<-rownames(cut_list)
-cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
-cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
-
-library(stringr)
-cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
-cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
-cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
-cut_list$x=as.numeric(cut_list$x)
-cut_list$middle_coordinates=cut_list$end_coordinates-3
-colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
-
-
-#################### nigrum
-library(dplyr)
-genes_n=read.table("files_meth/nigrum_TEs_genes.downstream_filt", header=F, sep="\t")
-header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_TE", "end_TE", "TE_type", "overlapping")
-colnames(genes_n)<-c(header)
-genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
-genes_n$start_gene_percentage=c(1)
-genes_n$end_gene_percentage=c(100)
-genes_n$start_TE=as.numeric(genes_n$start_TE)
-genes_n$start_gene=as.numeric(genes_n$start_gene)
-####need to create a new column that is start and end of TE because the coordinates of TEs can be before or after
-
-genes_n$new_TE_start=with(genes_n,ifelse(genes_n$start_TE < genes_n$start_gene, genes_n$start_gene,genes_n$start_TE))
-genes_n$new_TE_end=with(genes_n,ifelse(genes_n$end_TE > genes_n$end_gene, genes_n$end_gene,genes_n$end_TE))
-
-
-genes_n$start_TE_start_gene_difference=genes_n$new_TE_start- genes_n$start_gene
-genes_n$end_TE_start_gene_difference=genes_n$new_TE_end- genes_n$start_gene
-genes_n$start_TE_start_gene_difference=as.numeric(genes_n$start_TE_start_gene_difference)
-genes_n$end_TE_start_gene_difference=as.numeric(genes_n$end_TE_start_gene_difference)
-genes_n$Gene_size=as.numeric(genes_n$Gene_size)
-
-genes_n$start_TE_start_gene_difference=with(genes_n,ifelse(genes_n$start_TE_start_gene_difference ==0, 1,genes_n$start_TE_start_gene_difference))
-
-na_counts_base <- lapply(genes_n, function(x) sum(is.na(x)))
-
-genes_n=genes_n %>% mutate(start_TE_percentage = start_TE_start_gene_difference / Gene_size)
-genes_n=genes_n %>% mutate(end_TE_percentage = end_TE_start_gene_difference / Gene_size)
-genes_n$start_TE_percentage = 100*genes_n$start_TE_percentage
-genes_n$end_TE_percentage = 100*genes_n$end_TE_percentage
-
-write.table(genes_n, "files_meth/nigrum_TE_genes.downstream_n_filt_coordinates", col.names=T, sep="\t")
-
-genes_n$TE_frequency=genes_n$overlapping/genes_n$Gene_size
-cuts_n <- cut(genes_n$end_TE_percentage, breaks=seq(1, max(genes_n$start_TE_percentage)+5, 5))
-cut_list_n=as.data.frame(by(genes_n$TE_frequency, cuts_n, mean))
-cut_list2_n=as.data.frame(by(genes_n$TE_frequency, cuts_n, max)) ##ok
-cut_list3_n=as.data.frame(by(genes_n$TE_frequency, cuts_n, min)) ##ok
-cut_list_n$coordinates<-rownames(cut_list_n)
-cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
-cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
-
-library(stringr)
-cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
-cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
-cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
-cut_list_n$x=as.numeric(cut_list_n$x)
-cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
-colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
-
-
-
-cut_list_final=left_join(cut_list, cut_list_n)
-write.table(cut_list_final, "files_meth/dulcamara_nigrum_TE_genes.downstream_intervals", col.names=T, sep="\t")
-library(tidyr)
-library(reshape2)
-library(data.table)
-###make it long
-cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
-cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
-cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
-cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
-
-cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
-cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
-cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
-###add a column with species and the frequency should be in one
-cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
-cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
-#[1] 0.2242494 ##nigrum
-#[1] 0.1782439 ##dulcamara
-
-
-
-
+#[1] 1.40635
+#[1] 1.410359
 
 
 
@@ -1010,44 +866,1364 @@ dev.off()
 
 
 
+#################
+###4.1 Methylation in TIRs - S.dulcamara and S.nigrum
+#################
 
 #################
-###4. Correlation between methylation and TES in S.dulcamara and S.nigrum
+###4.1.1 Methylation in TIRs - gene body - S.dulcamara and S.nigrum
 #################
-TEs=read.table("files_meth/dulcamara_nigrum_TE_all_intervals", header=T, sep="\t")
-meth=read.table("files_meth/dulcamara_nigrum_meth_all_intervals", header=T, sep="\t")
-colnames(meth)=sub("value","meth_frequency",colnames(meth))
-colnames(TEs)=sub("value","TEs",colnames(TEs))
-Total=left_join(meth, TEs)
-Total$start_coordinates=as.numeric(Total$start_coordinates)
-Total$area=with(Total,ifelse(Total$start_coordinates <100, "+1Kb",
-ifelse(Total$start_coordinates >200,"-1Kb", "Gene body")))
+#################### dulcamara
+library(dplyr)
+genes=read.table("files_meth_new_TEs/dulcamara_meth_TIR_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
 
-strip=c("Gray90","White","Gray90")
-library(ggh4x)
-strip <- strip_themed(background_x = elem_list_rect(fill =c("Gray80","White","Gray80")))
-tiff("files_meth/correlation_meth_TE_gene3.tiff",res=300,he=100,wi=300,units="mm")
-ggscatter(Total, x = "meth_frequency" , y ="TEs", add = "reg.line", conf.int = TRUE, color="variable",palette=c("#CC6677", "black"),shape = "variable",size =6,           
-cor.coef = TRUE, cor.coef.size = 0,
-          cor.coeff.args = list(label.y = 16),
-         xlab = "Methylation frequency", ylab = "TE size (bp)/ Gene body size (bp)")+facet_wrap2(. ~ area,strip=strip)+ xlim(0,1)+
-  stat_cor(aes(color = factor(variable)),label.y=c(0.9, 0.8), method = "pearson",size = 5.8)+
-ylim(0,1)+ theme(legend.text = element_text(face = "italic"))+theme(text = element_text(size = 13))
-dev.off()
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+write.table(genes, "files_meth_new_TEs/dulcamara_meth_TIR_genes_filt_coordinates", col.names=T, sep="\t")
+
+##############intervals
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+#################### nigrum
+library(dplyr)
+genes_n=read.table("files_meth_new_TEs/nigrum_meth_TIR_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "files_meth_new_TEs/nigrum_meth_TIR_genes_filt_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+###########group 
+cut_list_final=left_join(cut_list, cut_list_n)
+write.table(cut_list_final, "files_meth_new_TEs/dulcamara_nigrum_TIR_meth_genes_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
+###add a column with species and the frequency should be in one
+cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
+cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
+
+dulc<-cut_list_final3[grep("S.dulcamara",cut_list_final3$variable),]
+nig<-cut_list_final3[grep("S.nigrum",cut_list_final3$variable),]
+mean(dulc$value)
+mean(nig$value)
+#[1] 0.7824507
+#[1] 0.8510372
 
 
 
+#################
+###4.1.2 Methylation in TIRs - upstream - S.dulcamara and S.nigrum
+#################
+#################### dulcamara
+library(dplyr)
+genes=read.table("files_meth_new_TEs/dulcamara_meth_TIR_genes.upstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+
+write.table(genes, "files_meth_new_TEs/dulcamara_meth_TIR_genes.upstream_filt_coordinates", col.names=T, sep="\t")
+
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+#################### nigrum
+library(dplyr)
+genes_n=read.table("files_meth_new_TEs/nigrum_meth_TIR_genes.upstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "files_meth_new_TEs/nigrum_meth_TIR_genes.upstream_filt_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+###########group
+
+cut_list_final=left_join(cut_list, cut_list_n)
+write.table(cut_list_final, "files_meth_new_TEs/dulcamara_nigrum_meth_TIR_genes.upstream_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
+cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
+cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
+
+dulc<-cut_list_final3[grep("S.dulcamara",cut_list_final3$variable),]
+nig<-cut_list_final3[grep("S.nigrum",cut_list_final3$variable),]
+mean(dulc$value)
+mean(nig$value)
+#[1] 0.5219614
+#[1] 0.6755946
+
+
+
+#################
+###4.1.3 Methylation in TIRs - downstream - S.dulcamara and S.nigrum
+#################
+library(dplyr)
+genes=read.table("files_meth_new_TEs/dulcamara_meth_TIR_genes.downstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+write.table(genes, "files_meth_new_TEs/dulcamara_meth_TIR_genes.downstream_filt_coordinates", col.names=T, sep="\t")
+
+
+##############intervals
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+#################### nigrum
+library(dplyr)
+genes_n=read.table("files_meth_new_TEs/nigrum_meth_TIR_genes.downstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "files_meth_new_TEs/nigrum_meth_TIR_genes.downstream_filt_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+###########group
+
+cut_list_final=left_join(cut_list, cut_list_n)
+write.table(cut_list_final, "files_meth_new_TEs/dulcamara_nigrum_meth_TIR_genes.downstream_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
+###add a column with species and the frequency should be in one
+cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
+cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
+
+dulc<-cut_list_final3[grep("S.dulcamara",cut_list_final3$variable),]
+nig<-cut_list_final3[grep("S.nigrum",cut_list_final3$variable),]
+mean(dulc$value)
+mean(nig$value)
+
+#[1] 0.5950069
+#[1] 0.7415865
+
+
+
+
+#################
+###4.1.4 Methylation in TIRs - combine and plot - S.dulcamara and S.nigrum
+#################
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+library(data.table)
+library(stringr)
+
+genes=read.table("files_meth_new_TEs/dulcamara_nigrum_TIR_meth_genes_intervals", header=T, sep="\t")
+upstream=read.table("files_meth_new_TEs/dulcamara_nigrum_meth_TIR_genes.upstream_intervals", header=T, sep="\t")
+downstream=read.table("files_meth_new_TEs/dulcamara_nigrum_meth_TIR_genes.downstream_intervals", header=T, sep="\t")
+upstream$start_coordinates_all=upstream$start_coordinates
+upstream$end_coordinates_all=upstream$end_coordinates
+
+genes$start_coordinates_all=genes$start_coordinates+100
+genes$end_coordinates_all=genes$end_coordinates+100
+
+downstream$start_coordinates_all=downstream$start_coordinates+200
+downstream$end_coordinates_all=downstream$end_coordinates+200
+
+combined=rbind(upstream,genes,downstream)
+combined$new_coordinates=paste(combined$start_coordinates_all, combined$end_coordinates_all, sep=",")
+
+combined2=as.data.frame(melt(setDT(combined), id.vars = "new_coordinates"))
+combined2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(combined2$new_coordinates, ',', 2)
+combined2$start_coordinates=as.numeric(combined2$start_coordinates)
+combined2$end_coordinates=as.numeric(combined2$end_coordinates)
+combined2$variable=sub("_freq","",combined2$variable)
+combined3 <- combined2[grep("dulcamara|nigrum", combined2$variable),]
+
+combined3$middle_coordinates=with(combined3,ifelse(combined3$start_coordinates <= 6, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates < 6, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 11, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 16, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 21, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 26, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 31, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 36, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 41, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 46, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 51, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 56, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 61, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 66, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 71, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 76, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 81, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 86, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 91, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 96, combined3$end_coordinates-3,
+	ifelse(combined3$start_coordinates <= 100 & combined3$start_coordinates > 200, combined3$end_coordinates-103,
+		ifelse(combined3$start_coordinates <= 200 & combined3$start_coordinates>300, combined3$end_coordinates-203,"")))))))))))))))))))))))
+
+
+###add a column with species and the frequency should be in one
+combined3$variable=sub("dulcamara", "S.dulcamara", combined3$variable)
+combined3$variable=sub("nigrum", "S.nigrum", combined3$variable)
+
+###add a column with species and the frequency should be in one
 color_table <-  tibble(
   Treatment = c("S.dulcamara","S.nigrum"),
   Color = c("#CC6677", "black"))
 
 
+combined3$middle_coordinates=as.numeric(combined3$middle_coordinates)
+combined3$value=as.numeric(combined3$value)
+write.table(combined3, "files_meth_new_TEs/dulcamara_nigrum_TIR_meth_all_intervals", col.names=T, sep="\t")
+
+tiff("files_meth_new_TEs/both_TIR_all.tiff", res=300, he=65, wi=90, units="mm")
+
+par(mar=c(1,1,1,15))
+p=ggplot(combined3, aes(x = middle_coordinates, y = value, colour=variable)) +
+   geom_point(size = 0.1) +
+  theme_bw() +geom_line(aes(x = middle_coordinates))+ylim(0,1)+
+  xlim(0,300)+xlab("")+ ylab("Methylation frequency (genes with TIRs)")+
+theme(plot.margin = margin(t = 1,  # Top margin
+                             r = 25,  # Right margin
+                             b = 1,  # Bottom margin
+                             l = 1)) # Left margin
+
+p=p+scale_x_continuous(breaks = c(0,150,300), 
+labels=c("-1Kb","Gene body",  "+1Kb"))+ theme(legend.text = element_text(face = "italic"))+ theme( text = element_text(size = 7))
+
+p=p+scale_colour_manual(values = color_table$Color)
+p=p+annotate(geom = "rect", xmin=0, xmax=100, ymin=0, ymax=1,
+           fill = "gray80", colour = NA, alpha = 0.5)
+
+p=p+annotate(geom = "rect", xmin=200, xmax=300, ymin=0, ymax=1,
+           fill = "gray80", colour = NA, alpha = 0.5)
+
+
+print(p)
+dev.off()
 
 
 
 
 #################
-###5. MEthylation and TES in the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA ####Sd_g3085.1, Sd_g3087.1, Sd_g3090, Sd_g26139.3, Sd_g8870, Sd_g28574
+###4.1.5 Methylation in TIRs - regressions - S.dulcamara and S.nigrum
+#################
+################# gene body
+i="S.dulcamara"
+xlabel=substitute(expr = paste("Methylation frequency in ", italic(i), " gene bodies (with TIRs)"),
+                      env = list(i=i))
+i="S.nigrum"
+ylabel=substitute(expr = paste("Methylation frequency in ", italic(i), " gene bodies (with TIRs)"),
+                      env = list(i=i))
+library(ggpubr)
+tiff("files_meth_new_TEs/TIRs_comparison_gene_body.tiff",res=300,he=60,wi=60,units="mm")
+ggscatter(genes, x = "dulcamara_freq", y = "nigrum_freq",          
+ add = "reg.line", conf.int = TRUE,palette=c("#CC6677", "black"),size =1.5, cor.coef = TRUE, cor.coef.size = 2.0,
+          cor.coeff.args = list(label.y = 0.95),
+          xlab = c(xlabel), ylab = c(ylabel))+theme(text = element_text(size =4.0))+ylim(0.5,1)+xlim(0.5,1)
+dev.off()
+
+
+################# upstream
+i="S.dulcamara"
+xlabel=substitute(expr = paste("Methylation frequency in ", italic(i), " upstream regions (with TIRs)"),
+                      env = list(i=i))
+i="S.nigrum"
+ylabel=substitute(expr = paste("Methylation frequency in ", italic(i), " upstream regions (with TIRs)"),
+                      env = list(i=i))
+
+library(ggpubr)
+tiff("files_meth_new_TEs/TIRs_comparison_upstream.tiff",res=300,he=60,wi=60,units="mm")
+ggscatter(upstream, x = "dulcamara_freq", y = "nigrum_freq",          
+ add = "reg.line", conf.int = TRUE,palette=c("#CC6677", "black"),size =1.5, cor.coef = TRUE, cor.coef.size = 2.0,
+          cor.coeff.args = list(label.y = 0.95),
+          xlab = c(xlabel), ylab = c(ylabel))+theme(text = element_text(size =4.0))+ylim(0.5,1)+xlim(0.5,1)
+dev.off()
+
+
+################# downstream
+i="S.dulcamara"
+xlabel=substitute(expr = paste("Methylation frequency in ", italic(i), " downstream regions (with TIRs)"),
+                      env = list(i=i))
+i="S.nigrum"
+ylabel=substitute(expr = paste("Methylation frequency in ", italic(i), " downstream regions (with TIRs)"),
+                      env = list(i=i))
+
+library(ggpubr)
+tiff("files_meth_new_TEs/TIRs_comparison_downstream.tiff",res=300,he=60,wi=60,units="mm")
+ggscatter(downstream, x = "dulcamara_freq", y = "nigrum_freq",          
+ add = "reg.line", conf.int = TRUE,palette=c("#CC6677", "black"),size =1.5, cor.coef = TRUE, cor.coef.size = 2.0,
+          cor.coeff.args = list(label.y = 0.95),
+          xlab = c(xlabel), ylab = c(ylabel))+theme(text = element_text(size =4.0))+ylim(0.5,1)+xlim(0.5,1)
+dev.off()
+
+
+
+#################
+###4.2 Methylation in non-TIRs - S.dulcamara and S.nigrum
+#################
+
+#################
+###4.2.1 Methylation in non-TIRs - gene body - S.dulcamara and S.nigrum
+#################
+#################### dulcamara
+library(dplyr)
+genes=read.table("files_meth_new_TEs/dulcamara_meth_non_TIR_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+write.table(genes, "files_meth_new_TEs/dulcamara_meth_non_TIR_genes_filt_coordinates", col.names=T, sep="\t")
+
+
+##############intervals
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+#################### nigrum
+library(dplyr)
+genes_n=read.table("files_meth_new_TEs/nigrum_meth_non_TIR_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "files_meth_new_TEs/nigrum_meth_non_TIR_genes_filt_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+###########group
+
+cut_list_final=left_join(cut_list, cut_list_n)
+write.table(cut_list_final, "files_meth_new_TEs/dulcamara_nigrum_non_TIR_meth_genes_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
+###add a column with species and the frequency should be in one
+cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
+cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
+
+dulc<-cut_list_final3[grep("S.dulcamara",cut_list_final3$variable),]
+nig<-cut_list_final3[grep("S.nigrum",cut_list_final3$variable),]
+mean(dulc$value)
+mean(nig$value)
+#[1] 0.7837077
+#[1] 0.849746
+
+
+#################
+###4.2.2 Methylation in non-TIRs - upstream - S.dulcamara and S.nigrum
+#################
+#################### dulcamara
+library(dplyr)
+genes=read.table("files_meth_new_TEs/dulcamara_meth_non_TIR_genes.upstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+
+write.table(genes, "files_meth_new_TEs/dulcamara_meth_non_TIR_genes.upstream_filt_coordinates", col.names=T, sep="\t")
+
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+#################### nigrum
+library(dplyr)
+genes_n=read.table("files_meth_new_TEs/nigrum_meth_non_TIR_genes.upstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "files_meth_new_TEs/nigrum_meth_non_TIR_genes.upstream_filt_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+###########group
+
+cut_list_final=left_join(cut_list, cut_list_n)
+write.table(cut_list_final, "files_meth_new_TEs/dulcamara_nigrum_meth_non_TIR_genes.upstream_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
+cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
+cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
+
+dulc<-cut_list_final3[grep("S.dulcamara",cut_list_final3$variable),]
+nig<-cut_list_final3[grep("S.nigrum",cut_list_final3$variable),]
+mean(dulc$value)
+mean(nig$value)
+#[1]  0.5475141
+#[1] 0.675256
+
+
+#################
+###4.2.3 Methylation in non-TIRs - downstream - S.dulcamara and S.nigrum
+#################
+#################### dulcamara
+library(dplyr)
+genes=read.table("files_meth_new_TEs/dulcamara_meth_non_TIR_genes.downstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+write.table(genes, "files_meth_new_TEs/dulcamara_meth_non_TIR_genes.downstream_filt_coordinates", col.names=T, sep="\t")
+
+
+##############intervals
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+#################### nigrum
+library(dplyr)
+genes_n=read.table("files_meth_new_TEs/nigrum_meth_non_TIR_genes.downstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "files_meth_new_TEs/nigrum_meth_non_TIR_genes.downstream_filt_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+###########group
+
+cut_list_final=left_join(cut_list, cut_list_n)
+write.table(cut_list_final, "files_meth_new_TEs/dulcamara_nigrum_meth_non_TIR_genes.downstream_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
+###add a column with species and the frequency should be in one
+cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
+cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
+
+dulc<-cut_list_final3[grep("S.dulcamara",cut_list_final3$variable),]
+nig<-cut_list_final3[grep("S.nigrum",cut_list_final3$variable),]
+mean(dulc$value)
+mean(nig$value)
+
+#[1] 0.5690856
+#[1] 0.7383858
+
+#################
+###4.2.4 Methylation in non-TIRs - combine and plot - S.dulcamara and S.nigrum
+#################
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+library(data.table)
+library(stringr)
+
+
+genes=read.table("files_meth_new_TEs/dulcamara_nigrum_non_TIR_meth_genes_intervals", header=T, sep="\t")
+upstream=read.table("files_meth_new_TEs/dulcamara_nigrum_meth_non_TIR_genes.upstream_intervals", header=T, sep="\t")
+downstream=read.table("files_meth_new_TEs/dulcamara_nigrum_meth_non_TIR_genes.downstream_intervals", header=T, sep="\t")
+upstream$start_coordinates_all=upstream$start_coordinates
+upstream$end_coordinates_all=upstream$end_coordinates
+
+genes$start_coordinates_all=genes$start_coordinates+100
+genes$end_coordinates_all=genes$end_coordinates+100
+
+downstream$start_coordinates_all=downstream$start_coordinates+200
+downstream$end_coordinates_all=downstream$end_coordinates+200
+
+combined=rbind(upstream,genes,downstream)
+combined$new_coordinates=paste(combined$start_coordinates_all, combined$end_coordinates_all, sep=",")
+
+combined2=as.data.frame(melt(setDT(combined), id.vars = "new_coordinates"))
+combined2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(combined2$new_coordinates, ',', 2)
+combined2$start_coordinates=as.numeric(combined2$start_coordinates)
+combined2$end_coordinates=as.numeric(combined2$end_coordinates)
+combined2$variable=sub("_freq","",combined2$variable)
+combined3 <- combined2[grep("dulcamara|nigrum", combined2$variable),]
+
+combined3$middle_coordinates=with(combined3,ifelse(combined3$start_coordinates <= 6, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates < 6, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 11, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 16, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 21, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 26, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 31, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 36, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 41, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 46, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 51, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 56, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 61, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 66, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 71, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 76, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 81, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 86, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 91, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 96, combined3$end_coordinates-3,
+	ifelse(combined3$start_coordinates <= 100 & combined3$start_coordinates > 200, combined3$end_coordinates-103,
+		ifelse(combined3$start_coordinates <= 200 & combined3$start_coordinates>300, combined3$end_coordinates-203,"")))))))))))))))))))))))
+
+
+###add a column with species and the frequency should be in one
+combined3$variable=sub("dulcamara", "S.dulcamara", combined3$variable)
+combined3$variable=sub("nigrum", "S.nigrum", combined3$variable)
+
+###add a column with species and the frequency should be in one
+color_table <-  tibble(
+  Treatment = c("S.dulcamara","S.nigrum"),
+  Color = c("#CC6677", "black"))
+
+
+combined3$middle_coordinates=as.numeric(combined3$middle_coordinates)
+combined3$value=as.numeric(combined3$value)
+write.table(combined3, "files_meth_new_TEs/dulcamara_nigrum_non_TIR_meth_all_intervals", col.names=T, sep="\t")
+
+tiff("files_meth_new_TEs/both_non_TIR_all.tiff", res=300, he=65, wi=90, units="mm")
+
+par(mar=c(1,1,1,15))
+p=ggplot(combined3, aes(x = middle_coordinates, y = value, colour=variable)) +
+   geom_point(size = 0.1) +
+  theme_bw() +geom_line(aes(x = middle_coordinates))+ylim(0,1)+
+  xlim(0,300)+xlab("")+ ylab("Methylation frequency (genes with non-TIRs)")+
+theme(plot.margin = margin(t = 1,  # Top margin
+                             r = 25,  # Right margin
+                             b = 1,  # Bottom margin
+                             l = 1)) # Left margin
+
+p=p+scale_x_continuous(breaks = c(0,150,300), 
+labels=c("-1Kb","Gene body",  "+1Kb"))+ theme(legend.text = element_text(face = "italic"))+ theme( text = element_text(size = 7))
+
+p=p+scale_colour_manual(values = color_table$Color)
+p=p+annotate(geom = "rect", xmin=0, xmax=100, ymin=0, ymax=1,
+           fill = "gray80", colour = NA, alpha = 0.5)
+
+p=p+annotate(geom = "rect", xmin=200, xmax=300, ymin=0, ymax=1,
+           fill = "gray80", colour = NA, alpha = 0.5)
+
+
+print(p)
+dev.off()
+
+
+
+#################
+###4.2.5 Methylation in TIRs - regressions - S.dulcamara and S.nigrum
+#################
+################# gene body
+i="S.dulcamara"
+xlabel=substitute(expr = paste("Methylation frequency in ", italic(i), " gene bodies (with non-TIRs)"),
+                      env = list(i=i))
+i="S.nigrum"
+ylabel=substitute(expr = paste("Methylation frequency in ", italic(i), " gene bodies (with non-TIRs)"),
+                      env = list(i=i))
+library(ggpubr)
+tiff("files_meth_new_TEs/non_TIRs_comparison_gene_body.tiff",res=300,he=60,wi=60,units="mm")
+ggscatter(genes, x = "dulcamara_freq", y = "nigrum_freq",          
+ add = "reg.line", conf.int = TRUE,palette=c("#CC6677", "black"),size =1.5, cor.coef = TRUE, cor.coef.size = 2.0,
+          cor.coeff.args = list(label.y = 0.95),
+          xlab = c(xlabel), ylab = c(ylabel))+theme(text = element_text(size =4.0))+ylim(0.5,1)+xlim(0.5,1)
+dev.off()
+
+################# upstream
+i="S.dulcamara"
+xlabel=substitute(expr = paste("Methylation frequency in ", italic(i), " upstream regions (with non-TIRs)"),
+                      env = list(i=i))
+i="S.nigrum"
+ylabel=substitute(expr = paste("Methylation frequency in ", italic(i), " upstream regions (with non-TIRs)"),
+                      env = list(i=i))
+
+library(ggpubr)
+tiff("files_meth_new_TEs/non_TIRs_comparison_upstream.tiff",res=300,he=60,wi=60,units="mm")
+ggscatter(upstream, x = "dulcamara_freq", y = "nigrum_freq",          
+ add = "reg.line", conf.int = TRUE,palette=c("#CC6677", "black"),size =1.5, cor.coef = TRUE, cor.coef.size = 2.0,
+          cor.coeff.args = list(label.y = 0.95),
+          xlab = c(xlabel), ylab = c(ylabel))+theme(text = element_text(size =4.0))+ylim(0.5,1)+xlim(0.5,1)
+dev.off()
+
+################# downstream
+i="S.dulcamara"
+xlabel=substitute(expr = paste("Methylation frequency in ", italic(i), " downstream regions (with non-TIRs)"),
+                      env = list(i=i))
+i="S.nigrum"
+ylabel=substitute(expr = paste("Methylation frequency in ", italic(i), " downstream regions (with non-TIRs)"),
+                      env = list(i=i))
+
+library(ggpubr)
+tiff("files_meth_new_TEs/non_TIRs_comparison_downstream.tiff",res=300,he=60,wi=60,units="mm")
+ggscatter(downstream, x = "dulcamara_freq", y = "nigrum_freq",          
+ add = "reg.line", conf.int = TRUE,palette=c("#CC6677", "black"),size =1.5, cor.coef = TRUE, cor.coef.size = 2.0,
+          cor.coeff.args = list(label.y = 0.95),
+          xlab = c(xlabel), ylab = c(ylabel))+theme(text = element_text(size =4.0))+ylim(0.5,1)+xlim(0.5,1)
+dev.off()
+
+
+
+
+
+
+#################
+###4.3 Methylation in LTRs - S.dulcamara and S.nigrum
+#################
+
+#################
+###4.3.1 Methylation in LRs - gene body - S.dulcamara and S.nigrum
+#################
+#################### dulcamara
+library(dplyr)
+genes=read.table("files_meth_new_TEs/dulcamara_meth_LTR_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+write.table(genes, "files_meth_new_TEs/dulcamara_meth_LTR_genes_filt_coordinates", col.names=T, sep="\t")
+
+
+##############intervals
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+#################### nigrum
+library(dplyr)
+genes_n=read.table("files_meth_new_TEs/nigrum_meth_LTR_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "files_meth_new_TEs/nigrum_meth_LTR_genes_filt_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+
+###########group 
+cut_list_final=left_join(cut_list, cut_list_n)
+write.table(cut_list_final, "files_meth_new_TEs/dulcamara_nigrum_LTR_meth_genes_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
+###add a column with species and the frequency should be in one
+cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
+cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
+
+dulc<-cut_list_final3[grep("S.dulcamara",cut_list_final3$variable),]
+nig<-cut_list_final3[grep("S.nigrum",cut_list_final3$variable),]
+mean(dulc$value)
+mean(nig$value)
+#[1] 0.8093692
+#[1] 0.873232
+
+
+#################
+###4.3.2 Methylation in LRs - upstream - S.dulcamara and S.nigrum
+#################
+#################### dulcamara
+library(dplyr)
+genes=read.table("files_meth_new_TEs/dulcamara_meth_LTR_genes.upstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+
+write.table(genes, "files_meth_new_TEs/dulcamara_meth_LTR_genes.upstream_filt_coordinates", col.names=T, sep="\t")
+
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+#################### nigrum
+library(dplyr)
+genes_n=read.table("files_meth_new_TEs/nigrum_meth_LTR_genes.upstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "files_meth_new_TEs/nigrum_meth_LTR_genes.upstream_filt_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+###########group 
+
+cut_list_final=left_join(cut_list, cut_list_n)
+write.table(cut_list_final, "files_meth_new_TEs/dulcamara_nigrum_meth_LTR_genes.upstream_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
+cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
+cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
+
+dulc<-cut_list_final3[grep("S.dulcamara",cut_list_final3$variable),]
+nig<-cut_list_final3[grep("S.nigrum",cut_list_final3$variable),]
+mean(dulc$value)
+mean(nig$value)
+
+#[1] 0.6941495
+#[1] 0.8063193
+
+
+#################
+###4.3.3 Methylation in LRs - downstream - S.dulcamara and S.nigrum
+#################
+#################### dulcamara
+library(dplyr)
+genes=read.table("files_meth_new_TEs/dulcamara_meth_LTR_genes.downstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+write.table(genes, "files_meth_new_TEs/dulcamara_meth_LTR_genes.downstream_filt_coordinates", col.names=T, sep="\t")
+
+
+##############intervals
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+#################### nigrum
+library(dplyr)
+genes_n=read.table("files_meth_new_TEs/nigrum_meth_LTR_genes.downstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "files_meth_new_TEs/nigrum_meth_LTR_genes.downstream_filt_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+###########group
+
+cut_list_final=left_join(cut_list, cut_list_n)
+write.table(cut_list_final, "files_meth_new_TEs/dulcamara_nigrum_meth_LTR_genes.downstream_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
+###add a column with species and the frequency should be in one
+cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
+cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
+
+dulc<-cut_list_final3[grep("S.dulcamara",cut_list_final3$variable),]
+nig<-cut_list_final3[grep("S.nigrum",cut_list_final3$variable),]
+mean(dulc$value)
+mean(nig$value)
+
+#[1]0.7044436
+#[1] 0.8354092
+
+
+
+
+#################
+###4.3.4 Methylation in LRs - combine and plot - S.dulcamara and S.nigrum
+#################
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+library(data.table)
+library(stringr)
+
+
+genes=read.table("files_meth_new_TEs/dulcamara_nigrum_LTR_meth_genes_intervals", header=T, sep="\t")
+upstream=read.table("files_meth_new_TEs/dulcamara_nigrum_meth_LTR_genes.upstream_intervals", header=T, sep="\t")
+downstream=read.table("files_meth_new_TEs/dulcamara_nigrum_meth_LTR_genes.downstream_intervals", header=T, sep="\t")
+upstream$start_coordinates_all=upstream$start_coordinates
+upstream$end_coordinates_all=upstream$end_coordinates
+
+genes$start_coordinates_all=genes$start_coordinates+100
+genes$end_coordinates_all=genes$end_coordinates+100
+
+downstream$start_coordinates_all=downstream$start_coordinates+200
+downstream$end_coordinates_all=downstream$end_coordinates+200
+
+combined=rbind(upstream,genes,downstream)
+combined$new_coordinates=paste(combined$start_coordinates_all, combined$end_coordinates_all, sep=",")
+
+combined2=as.data.frame(melt(setDT(combined), id.vars = "new_coordinates"))
+combined2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(combined2$new_coordinates, ',', 2)
+combined2$start_coordinates=as.numeric(combined2$start_coordinates)
+combined2$end_coordinates=as.numeric(combined2$end_coordinates)
+combined2$variable=sub("_freq","",combined2$variable)
+combined3 <- combined2[grep("dulcamara|nigrum", combined2$variable),]
+
+combined3$middle_coordinates=with(combined3,ifelse(combined3$start_coordinates <= 6, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates < 6, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 11, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 16, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 21, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 26, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 31, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 36, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 41, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 46, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 51, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 56, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 61, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 66, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 71, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 76, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 81, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 86, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 91, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 96, combined3$end_coordinates-3,
+	ifelse(combined3$start_coordinates <= 100 & combined3$start_coordinates > 200, combined3$end_coordinates-103,
+		ifelse(combined3$start_coordinates <= 200 & combined3$start_coordinates>300, combined3$end_coordinates-203,"")))))))))))))))))))))))
+
+
+###add a column with species and the frequency should be in one
+combined3$variable=sub("dulcamara", "S.dulcamara", combined3$variable)
+combined3$variable=sub("nigrum", "S.nigrum", combined3$variable)
+
+###add a column with species and the frequency should be in one
+color_table <-  tibble(
+  Treatment = c("S.dulcamara","S.nigrum"),
+  Color = c("#CC6677", "black"))
+
+
+combined3$middle_coordinates=as.numeric(combined3$middle_coordinates)
+combined3$value=as.numeric(combined3$value)
+###add a column with species and the frequency should be in one
+color_table <-  tibble(
+  Treatment = c("S.dulcamara","S.nigrum"),
+  Color = c("#CC6677", "black"))
+
+
+combined3$middle_coordinates=as.numeric(combined3$middle_coordinates)
+combined3$value=as.numeric(combined3$value)
+write.table(combined3, "files_meth_new_TEs/dulcamara_nigrum_meth_LTR_all_intervals", col.names=T, sep="\t")
+
+tiff("files_meth_new_TEs/both_LTR_all.tiff", res=300, he=65, wi=90, units="mm")
+
+par(mar=c(1,1,1,15))
+p=ggplot(combined3, aes(x = middle_coordinates, y = value, colour=variable)) +
+   geom_point(size = 0.1) +
+  theme_bw() +geom_line(aes(x = middle_coordinates))+ylim(0,1)+
+  xlim(0,300)+xlab("")+ ylab("Methylation frequency (genes with LTRs)")+
+theme(plot.margin = margin(t = 1,  # Top margin
+                             r = 25,  # Right margin
+                             b = 1,  # Bottom margin
+                             l = 1)) # Left margin
+
+p=p+scale_x_continuous(breaks = c(0,150,300), 
+labels=c("-1Kb","Gene body",  "+1Kb"))+ theme(legend.text = element_text(face = "italic"))+ theme( text = element_text(size = 7))
+
+
+
+p=p+scale_colour_manual(values = color_table$Color)
+p=p+annotate(geom = "rect", xmin=0, xmax=100, ymin=0, ymax=1,
+           fill = "gray80", colour = NA, alpha = 0.5)
+
+p=p+annotate(geom = "rect", xmin=200, xmax=300, ymin=0, ymax=1,
+           fill = "gray80", colour = NA, alpha = 0.5)
+
+
+print(p)
+dev.off()
+
+
+
+
+#################
+###4.3.5 Methylation in LRs - regressions - S.dulcamara and S.nigrum
+#################
+################# gene body
+i="S.dulcamara"
+xlabel=substitute(expr = paste("Methylation frequency in ", italic(i), " gene bodies (with LTRs)"),
+                      env = list(i=i))
+i="S.nigrum"
+ylabel=substitute(expr = paste("Methylation frequency in ", italic(i), " gene bodies (with LTRs)"),
+                      env = list(i=i))
+library(ggpubr)
+tiff("files_meth_new_TEs/LTRs_comparison_gene_body.tiff",res=300,he=60,wi=60,units="mm")
+ggscatter(genes, x = "dulcamara_freq", y = "nigrum_freq",          
+ add = "reg.line", conf.int = TRUE,palette=c("#CC6677", "black"),size =1.5, cor.coef = TRUE, cor.coef.size = 2.0,
+          cor.coeff.args = list(label.y = 0.95),
+          xlab = c(xlabel), ylab = c(ylabel))+theme(text = element_text(size =4.0))+ylim(0.5,1)+xlim(0.5,1)
+dev.off()
+
+################# upstream
+i="S.dulcamara"
+xlabel=substitute(expr = paste("Methylation frequency in ", italic(i), " upstream regions (with LTRs)"),
+                      env = list(i=i))
+i="S.nigrum"
+ylabel=substitute(expr = paste("Methylation frequency in ", italic(i), " upstream regions (with LTRs)"),
+                      env = list(i=i))
+
+library(ggpubr)
+tiff("files_meth_new_TEs/LTRs_comparison_upstream.tiff",res=300,he=60,wi=60,units="mm")
+ggscatter(upstream, x = "dulcamara_freq", y = "nigrum_freq",          
+ add = "reg.line", conf.int = TRUE,palette=c("#CC6677", "black"),size =1.5, cor.coef = TRUE, cor.coef.size = 2.0,
+          cor.coeff.args = list(label.y = 0.95),
+          xlab = c(xlabel), ylab = c(ylabel))+theme(text = element_text(size =4.0))+ylim(0.5,1)+xlim(0.5,1)
+dev.off()
+
+################# downstream
+i="S.dulcamara"
+xlabel=substitute(expr = paste("Methylation frequency in ", italic(i), " downstream regions (with LTRs)"),
+                      env = list(i=i))
+i="S.nigrum"
+ylabel=substitute(expr = paste("Methylation frequency in ", italic(i), " downstream regions (with LTRs)"),
+                      env = list(i=i))
+
+library(ggpubr)
+tiff("files_meth_new_TEs/LTRs_comparison_downstream.tiff",res=300,he=60,wi=60,units="mm")
+ggscatter(downstream, x = "dulcamara_freq", y = "nigrum_freq",          
+ add = "reg.line", conf.int = TRUE,palette=c("#CC6677", "black"),size =1.5, cor.coef = TRUE, cor.coef.size = 2.0,
+          cor.coeff.args = list(label.y = 0.95),
+          xlab = c(xlabel), ylab = c(ylabel))+theme(text = element_text(size =4.0))+ylim(0.5,1)+xlim(0.5,1)
+dev.off()
+
+
+
+
+#################
+###5.1 MEthylation the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA ####Sd_g3085.1, Sd_g3087.1, Sd_g3090, Sd_g26139.3, Sd_g8870, Sd_g28574
 #################
 #grep "mRNA" S.dulcamara.annotation.gff3 > S.dulcamara.annotation.genes
 #awk '{print $1,$4,$5, $7, $9}' S.dulcamara.annotation.genes > S.dulcamara.annotation.genes2
@@ -1074,24 +2250,20 @@ write.table(combined,"genes/genes_interest_Sd_Sa_coordinates", col.names=T, sep=
 sed 's/"//g' genes/genes_interest_Sd_Sa_coordinates > genes/genes_interest_Sd_Sa_coordinates2
 sed 's/Contig/#Contig/g' genes/genes_interest_Sd_Sa_coordinates2 > genes/genes_interest_Sd_Sa_coordinates3
 bedtools intersect -a genes/genes_interest_Sd_Sa_coordinates3 -b  dulcamara_meth -wo > dulcamara_meth_genes_interest_Sd_Sa
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($14 >=0 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14}'  dulcamara_meth_genes_interest_Sd_Sa > dulcamara_meth_genes_interest_Sd_Sa_filt
 
 ###upstream
 awk 'BEGIN{OFS="\t";FS="\t"} {if ($4 == "+") {print $1,$2, $2+1000, $4,$5} else {print $1,$3,$3+1000, $4,$5}}' genes/genes_interest_Sd_Sa_coordinates3 > genes/genes_interest_Sd_Sa_coordinates.genes.upstream
 sed 's/ /\t/g' genes/genes_interest_Sd_Sa_coordinates.genes.upstream > genes/genes_interest_Sd_Sa_coordinates.genes.upstream2
-bedtools intersect -a genes/genes_interest_Sd_Sa_coordinates.genes.upstream2 -b  dulcamara_meth -wo > dulcamara_meth_genes_interest_Sd_Sa.upstream
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($14 >=0) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14}'  dulcamara_meth_genes_interest_Sd_Sa.upstream > dulcamara_meth_genes_interest_Sd_Sa.upstream_filt
+bedtools intersect -a genes/genes_interest_Sd_Sa_coordinates.genes.upstream3 -b  dulcamara_meth -wo > dulcamara_meth_genes_interest_Sd_Sa.upstream
 
 ###downstream
 awk 'BEGIN{OFS="\t";FS="\t"} {if ($7 == "+") {print $1,$3, $3+1000, $4,$5} else {print $1,$2-1000,$2, $4,$5}}' genes/genes_interest_Sd_Sa_coordinates3 > genes/genes_interest_Sd_Sa_coordinates.genes.downstream
 sed 's/ /\t/g' genes/genes_interest_Sd_Sa_coordinates.genes.downstream > genes/genes_interest_Sd_Sa_coordinates.genes.downstream2
-bedtools intersect -a genes/genes_interest_Sd_Sa_coordinates.genes.downstream2 -b  dulcamara_meth -wo > dulcamara_meth_genes_interest_Sd_Sa.downstream
-awk 'BEGIN{OFS="\t";FS="\t"} {if ($14 >=0) print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14}'  dulcamara_meth_genes_interest_Sd_Sa.downstream > dulcamara_meth_genes_interest_Sd_Sa.downstream_filt
+bedtools intersect -a genes/genes_interest_Sd_Sa_coordinates.genes.downstream3 -b  dulcamara_meth -wo > dulcamara_meth_genes_interest_Sd_Sa.downstream
 
-mv *filt genes/
-
+#####move to genes_new_meth/
 #########################change to R
-genes=read.table("genes/dulcamara_meth_genes_interest_Sd_Sa_filt", header=F, sep="\t")
+genes=read.table("genes_new_meth/dulcamara_meth_genes_interest_Sd_Sa", header=F, sep="\t")
 header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
 colnames(genes)<-c(header)
 genes$Gene_size=genes$end_gene - genes$start_gene
@@ -1104,12 +2276,12 @@ genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_diff
 genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
 genes$start_meth_percentage = 100*genes$start_meth_percentage
 genes$end_meth_percentage = 100*genes$end_meth_percentage
-write.table(genes, "genes/dulcamara_meth_genes_interest_Sd_Sa_filt_coordinates", col.names=T, sep="\t")
+write.table(genes, "genes_new_meth/dulcamara_meth_genes_interest_Sd_Sa_filt_coordinates", col.names=T, sep="\t")
 
 
 
 ##########Upstream
-genes_up=read.table("genes/dulcamara_meth_genes_interest_Sd_Sa.upstream_filt", header=F, sep="\t")
+genes_up=read.table("genes_new_meth/dulcamara_meth_genes_interest_Sd_Sa.upstream", header=F, sep="\t")
 header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
 colnames(genes_up)<-c(header)
 genes_up$Gene_size=genes_up$end_gene - genes_up$start_gene
@@ -1122,12 +2294,12 @@ genes_up=genes_up %>% mutate(start_meth_percentage = start_methylation_start_gen
 genes_up=genes_up %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
 genes_up$start_meth_percentage = 100*genes_up$start_meth_percentage
 genes_up$end_meth_percentage = 100*genes_up$end_meth_percentage
-write.table(genes_up, "genes/dulcamara_meth_genes.upstream_interest_Sd_Sa_filt_coordinates", col.names=T, sep="\t")
+write.table(genes_up, "genes_new_meth/dulcamara_meth_genes.upstream_interest_Sd_Sa_filt_coordinates", col.names=T, sep="\t")
 
 
 
 ##########downstream
-genes_down=read.table("genes/dulcamara_meth_genes_interest_Sd_Sa.downstream_filt", header=F, sep="\t")
+genes_down=read.table("genes_new_meth/dulcamara_meth_genes_interest_Sd_Sa.downstream", header=F, sep="\t")
 header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
 colnames(genes_down)<-c(header)
 genes_down$Gene_size=genes_down$end_gene - genes_down$start_gene
@@ -1140,7 +2312,7 @@ genes_down=genes_down %>% mutate(start_meth_percentage = start_methylation_start
 genes_down=genes_down %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
 genes_down$start_meth_percentage = 100*genes_down$start_meth_percentage
 genes_down$end_meth_percentage = 100*genes_down$end_meth_percentage
-write.table(genes_down, "genes/dulcamara_meth_genes.downstream_interest_Sd_Sa_filt_coordinates", col.names=T, sep="\t")
+write.table(genes_down, "genes_new_meth/dulcamara_meth_genes.downstream_interest_Sd_Sa_filt_coordinates", col.names=T, sep="\t")
 
 ###########subset genes of interest
 genes_filt=subset(genes,genes$Gene_ID=="Sd_g3085.1"| genes$Gene_ID=="Sd_g3087.1"|genes$Gene_ID=="Sd_g3090"| genes$Gene_ID=="Sd_g26139.3"|genes$Gene_ID=="Sd_g8870" | genes$Gene_ID=="Sd_g28574")
@@ -1157,12 +2329,13 @@ genes_filt_average=genes_filt %>%
 # A tibble: 6 × 2
 #  Gene_ID      mean
 #  <chr>       <dbl>
-#1 Sd_g26139.3 0.423
-#2 Sd_g28574   0.25
-#3 Sd_g3085.1  0.897
-#4 Sd_g3087.1  0.909
-#5 Sd_g3090    0.909
-#6 Sd_g8870    0.394
+1 Sd_g26139.3 0.422
+2 Sd_g28574   0.273
+3 Sd_g3085.1  0.912
+4 Sd_g3087.1  0.909
+5 Sd_g3090    0.934
+6 Sd_g8870    0.381
+
 
 
 genes_up_filt_average=genes_up_filt %>%
@@ -1170,24 +2343,1017 @@ genes_up_filt_average=genes_up_filt %>%
   summarise(mean=mean(methylated_frequency,na.rm=TRUE))
 #  Gene_ID      mean
 #  <chr>       <dbl>
-#1 Sd_g26139.3 0.17
-#2 Sd_g28574   0.451
-#3 Sd_g3085.1  0.898
-#4 Sd_g3087.1  0.848
-#5 Sd_g3090    0.904
-#6 Sd_g8870    0.484
+1 Sd_g26139.3 0.386
+2 Sd_g28574   0.569
+3 Sd_g3085.1  0.903
+4 Sd_g3087.1  0.876
+5 Sd_g3090    0.891
+6 Sd_g8870    0.476
+
+
 
 genes_down_filt_average=genes_down_filt %>%
   group_by(Gene_ID) %>%
   summarise(mean=mean(methylated_frequency,na.rm=TRUE))
 #  Gene_ID      mean
 #  <chr>       <dbl>
-#1 Sd_g26139.3 0.388
-#2 Sd_g28574   0.59
-#3 Sd_g3085.1  0.923
-#4 Sd_g3087.1  0.936
-#5 Sd_g3090    0.821
-#6 Sd_g8870    0.482
+1 Sd_g26139.3 0.910
+2 Sd_g28574   0.501
+3 Sd_g3085.1  0.936
+4 Sd_g3087.1  0.960
+5 Sd_g3090    0.841
+6 Sd_g8870    0.721
 
 
+
+
+#################
+###5.2 Proportion test assessing methylation frequency  the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA compared against average in genome
+#################
+
+#################
+###5.2.1 Gene body
+#################
+
+library(data.table)
+genes=read.table("files_meth_new/dulcamara_meth_genes_new", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+###222115 15
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+
+
+methylation_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(mean_freq=mean(methylated_frequency,na.rm=TRUE)) 
+methylation_average$Gene_ID=str_split(methylation_average$Gene_ID, ';', simplify = TRUE)[,2]
+methylation_average$Gene_ID=sub("Name=","",methylation_average$Gene_ID)
+
+
+genes_number= as.numeric(nlevels(factor(methylation_average$Gene_ID)))
+add_zeros=27429
+methylation_average_vector=c(methylation_average$mean_freq, rep(0,add_zeros))
+methylation_average_mean=mean(methylation_average_vector, na.rm=TRUE) 
+methylation_average_mean
+methylation_average_sd=sd(methylation_average_vector, na.rm=TRUE) 
+methylation_average_sd
+genes_number= 27429
+
+#[1] 0.2691557
+#[1] 0.3511239
+
+
+genes_interest=read.table("genes_new_meth/genes_interest_Sd_Sa", header=F, sep="\t")
+genes_interest_meth=methylation_average[methylation_average$Gene_ID %in% genes_interest$V1,]
+genes_interest_meth_df=as.data.frame(genes_interest_meth)
+
+       Gene_ID  mean_freq
+1    Sd_g10795 0.90600000
+2    Sd_g17302 0.92490909
+3    Sd_g17303 0.96260000
+4     Sd_g2132 0.95300000
+5    Sd_g22346 1.00000000
+6    Sd_g23837 0.91844444
+7    Sd_g24797 0.02914286
+8    Sd_g24798 0.03400000
+9    Sd_g25582 0.84971429
+10   Sd_g25667 0.93780000
+11 Sd_g26139.3 0.42208824
+12   Sd_g26175 0.96876471
+13 Sd_g26594.1 0.01530000
+14   Sd_g28152 0.03890909
+15   Sd_g28300 0.94012500
+16   Sd_g28574 0.27300000
+17 Sd_g29231.1 0.94542202
+18  Sd_g3085.1 0.91195000
+19  Sd_g3087.1 0.90934545
+20    Sd_g3090 0.93350000
+21     Sd_g327 0.92950000
+22     Sd_g368 0.89720000
+23     Sd_g369 0.84470833
+24     Sd_g370 0.83357692
+25  Sd_g4070.1 0.88335714
+26  Sd_g4147.1 0.58614141
+27  Sd_g5379.2 0.94010000
+28     Sd_g877 0.96966667
+29    Sd_g8870 0.38127778
+30    Sd_g9301 0.92500000
+
+
+
+
+Z_statistic <- (0.38127778 - genes_average_mean) / (genes_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+#[1] 0
+#[1] 1
+#[1] 0
+
+
+
+Z_statistic <- (0.273000 - methylation_average_mean) / (methylation_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+
+#[1] 0
+#[1] 1
+#[1] 0
+
+#################
+###5.2.2 Upstream
+#################
+
+library(data.table)
+genes=read.table("files_meth_new/dulcamara_meth_genes.upstream_new", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+###222115 15
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+
+
+methylation_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(mean_freq=mean(methylated_frequency,na.rm=TRUE)) 
+methylation_average$Gene_ID=str_split(methylation_average$Gene_ID, ';', simplify = TRUE)[,2]
+methylation_average$Gene_ID=sub("Name=","",methylation_average$Gene_ID)
+
+
+genes_number= as.numeric(nlevels(factor(methylation_average$Gene_ID)))
+add_zeros=27429
+methylation_average_vector=c(methylation_average$mean_freq, rep(0,add_zeros))
+methylation_average_mean=mean(methylation_average_vector, na.rm=TRUE) 
+methylation_average_mean
+methylation_average_sd=sd(methylation_average_vector, na.rm=TRUE) 
+methylation_average_sd
+genes_number= 27429
+
+#[1] 0.2473925
+#[1] 0.3284017
+
+
+genes_interest=read.table("genes_new_meth/genes_interest_Sd_Sa", header=F, sep="\t")
+genes_interest_meth=methylation_average[methylation_average$Gene_ID %in% genes_interest$V1,]
+genes_interest_meth_df=as.data.frame(genes_interest_meth)
+
+
+       Gene_ID mean_freq
+1    Sd_g10795 0.8175000
+2    Sd_g17302 0.9517500
+3    Sd_g17303 0.9447500
+4     Sd_g2132 0.8978462
+5    Sd_g22346 0.8953333
+6    Sd_g23837 0.8970000
+7    Sd_g24797 0.5027000
+8    Sd_g24798 0.1397500
+9    Sd_g25582 0.8947857
+10   Sd_g25667 0.4993529
+11 Sd_g26139.3 0.3858889
+12   Sd_g26175 0.8496000
+13 Sd_g26594.1 0.3437500
+14   Sd_g28152 0.3531538
+15   Sd_g28300 0.9182000
+16   Sd_g28574 0.5687778
+17 Sd_g29231.1 0.9238889
+18  Sd_g3085.1 0.9026250
+19  Sd_g3087.1 0.8756667
+20    Sd_g3090 0.8910000
+21     Sd_g327 0.9551818
+22     Sd_g368 0.9293750
+23     Sd_g369 0.9164444
+24     Sd_g370 0.9371000
+25  Sd_g4070.1 0.9545000
+26  Sd_g4147.1 0.1296923
+27  Sd_g5379.2 0.9756667
+28     Sd_g877 0.9597500
+29    Sd_g8870 0.4756000
+30    Sd_g9301 0.8997368
+
+
+Z_statistic <- (0.1397500 - methylation_average_mean) / (methylation_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+#[1] 0
+#[1] 1
+#[1] 0
+
+
+
+Z_statistic <- (0.3437500- methylation_average_mean) / (methylation_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+#[1] 0
+#[1] 0
+#[1] 1
+
+
+
+
+#################
+###5.2.3 Downstream
+#################
+
+
+library(data.table)
+genes=read.table("files_meth_new/dulcamara_meth_genes.downstream_new", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+###222115 15
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+
+
+methylation_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(mean_freq=mean(methylated_frequency,na.rm=TRUE)) 
+methylation_average$Gene_ID=str_split(methylation_average$Gene_ID, ';', simplify = TRUE)[,2]
+methylation_average$Gene_ID=sub("Name=","",methylation_average$Gene_ID)
+
+
+genes_number= as.numeric(nlevels(factor(methylation_average$Gene_ID)))
+add_zeros=27429
+methylation_average_vector=c(methylation_average$mean_freq, rep(0,add_zeros))
+methylation_average_mean=mean(methylation_average_vector, na.rm=TRUE) 
+methylation_average_mean
+methylation_average_sd=sd(methylation_average_vector, na.rm=TRUE) 
+methylation_average_sd
+genes_number= 27429
+
+#[1] 0.2491443
+#[1] 0.328626
+
+genes_interest=read.table("genes_new_meth/genes_interest_Sd_Sa", header=F, sep="\t")
+genes_interest_meth=methylation_average[methylation_average$Gene_ID %in% genes_interest$V1,]
+genes_interest_meth_df=as.data.frame(genes_interest_meth)
+genes_interest_meth_df
+
+       Gene_ID mean_freq
+1    Sd_g10795 0.9756667
+2    Sd_g17302 0.9603333
+3    Sd_g17303 0.9404167
+4     Sd_g2132 0.9066250
+5    Sd_g22346 0.7136667
+6    Sd_g23837 0.8494375
+7    Sd_g24797 0.1480769
+8    Sd_g24798 0.1480769
+9    Sd_g25582 0.8999000
+10   Sd_g25667 0.8933333
+11 Sd_g26139.3 0.9096842
+12   Sd_g26175 0.1850000
+13 Sd_g26594.1 0.3838750
+14   Sd_g28152 0.3568571
+15   Sd_g28300 0.9193333
+16   Sd_g28574 0.5006154
+17 Sd_g29231.1 0.8213333
+18  Sd_g3085.1 0.9360000
+19  Sd_g3087.1 0.9595000
+20    Sd_g3090 0.8414375
+21     Sd_g327 0.8803333
+22     Sd_g368 0.8108000
+23     Sd_g369 0.9852500
+24     Sd_g370 0.9102222
+25  Sd_g4070.1 0.9663333
+26  Sd_g4147.1 0.2473846
+27  Sd_g5379.2 0.7041429
+28     Sd_g877 0.9773636
+29    Sd_g8870 0.7214615
+30    Sd_g9301 0.9208462
+
+
+Z_statistic <- (0.2473846 - methylation_average_mean) / (methylation_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+#[1] 0.3751564
+#[1] 0.8124218
+#[1] 0.1875782
+
+
+
+Z_statistic <- (0.3568571- methylation_average_mean) / (methylation_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+
+#[1] 0
+#[1] 0
+#[1] 1
+
+
+
+
+
+Z_statistic <- (0.1850000- methylation_average_mean) / (methylation_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+#[1] 0
+#[1] 0
+#[1] 1
+
+#################
+###5.3 TE type in genes in common between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA - Proportion tests compared against average
+#################
+bedtools intersect -a genes/genes_interest_Sd_Sa_coordinates3 -b  files_meth_new_TEs/dulcamara_TEs_TIR_genes -wo > genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_TIR.genes
+bedtools intersect -a genes/genes_interest_Sd_Sa_coordinates3 -b  files_meth_new_TEs/dulcamara_TEs_non_TIR_genes -wo > genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_non_TIR.genes
+bedtools intersect -a genes/genes_interest_Sd_Sa_coordinates3 -b  files_meth_new_TEs/dulcamara_TEs_LTR_genes -wo > genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_LTR.genes
+
+bedtools intersect -a genes/genes_interest_Sd_Sa_coordinates.genes.upstream3 -b  files_meth_new_TEs/dulcamara_TEs_TIR_genes.upstream -wo > genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_TIR.upstream3
+bedtools intersect -a genes/genes_interest_Sd_Sa_coordinates.genes.upstream3 -b  files_meth_new_TEs/dulcamara_TEs_non_TIR_genes.upstream -wo > genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_non_TIR.upstream3
+bedtools intersect -a genes/genes_interest_Sd_Sa_coordinates.genes.upstream3 -b  files_meth_new_TEs/dulcamara_TEs_LTR_genes.upstream -wo > genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_LTR.upstream3
+
+bedtools intersect -a genes/genes_interest_Sd_Sa_coordinates.genes.downstream3 -b  files_meth_new_TEs/dulcamara_TEs_TIR_genes.downstream -wo > genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_TIR.downstream3
+bedtools intersect -a genes/genes_interest_Sd_Sa_coordinates.genes.downstream3 -b  files_meth_new_TEs/dulcamara_TEs_non_TIR_genes.downstream -wo > genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_non_TIR.downstream3
+bedtools intersect -a genes/genes_interest_Sd_Sa_coordinates.genes.downstream3 -b  files_meth_new_TEs/dulcamara_TEs_LTR_genes.downstream -wo > genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_LTR.downstream3
+
+cat genes_new_meth/types/*.genes > genes_new_meth/types/all_Sd_Sa.genes
+cat genes_new_meth/types/*.upstream3 > genes_new_meth/types/all_Sd_Sa.upstream
+cat genes_new_meth/types/*.downstream3 > genes_new_meth/types/all_Sd_Sa.downstream
+
+#########################change to R
+#################
+###5.4 Proportion tests to assess content of TIRs in genes in common between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA- compared with average in genome
+#################
+
+#################
+###5.4.1 TIRs gene bodies
+#################
+library(dplyr)
+library(data.table)
+genes=read.table("files_meth_new_TEs/dulcamara_TEs_TIR_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping")
+colnames(genes)<-c(header)
+
+Sd_genes=read.table("genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_TIR.genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID","Contig2", "start_gene2", "end_gene2", "strand2","annotation", "contig_TE", "start_TE","end_TE","TE_type","overalap", "overlapping")
+colnames(Sd_genes)<-c(header)
+
+
+genes_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=27429-genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) 
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE)
+genes_average_sd
+genes_number= 27429
+
+#[1] 1.292865
+#[1] 2.52286
+
+genes_average_Sd=Sd_genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n())
+genes_average_Sd_df=as.data.frame(genes_average_Sd)
+genes_average_Sd_df
+
+      Gene_ID total_count
+1   Sd_g17302           1
+2   Sd_g17303           1
+3 Sd_g29231.1           4
+4  Sd_g3085.1           1
+5  Sd_g3087.1           1
+6  Sd_g4070.1           1
+
+
+Z_statistic <- (4 - genes_average_mean) / (genes_average_sd/ sqrt(genes_number))
+Z_statistic
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+#[1] 177.714
+
+#[1] 0
+#[1] 0
+#[1] 1
+
+#################
+###5.4.2 TIRs upstream
+#################
+
+genes=read.table("files_meth_new_TEs/dulcamara_TEs_TIR_genes.upstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping")
+colnames(genes)<-c(header)
+
+Sd_genes=read.table("genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_TIR.upstream3", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID","Contig2", "start_gene2", "end_gene2", "strand2","annotation", "contig_TE", "start_TE","end_TE","TE_type","overalap", "overlapping")
+colnames(Sd_genes)<-c(header)
+
+genes_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=24193-genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) 
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE) 
+genes_average_sd
+genes_number= 24193
+
+
+#[1] 0.7581532
+#[1] 0.9489698
+
+
+genes_average_Sd=Sd_genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n())
+genes_average_Sd_df=as.data.frame(genes_average_Sd)
+genes_average_Sd_df
+
+      Gene_ID total_count
+1   Sd_g17303           1
+2   Sd_g22346           1
+3   Sd_g25667           1
+4 Sd_g26139.3           1
+5   Sd_g28152           1
+6     Sd_g368           1
+7  Sd_g5379.2           1
+
+
+
+Z_statistic <- (1 - genes_average_mean) / (genes_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+
+#[1] 0
+#[1] 0
+#[1] 1
+
+
+
+
+#################
+###5.4.3 TIRs downstream
+#################
+
+genes=read.table("files_meth_new_TEs/dulcamara_TEs_TIR_genes.downstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping")
+colnames(genes)<-c(header)
+
+Sd_genes=read.table("genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_TIR.downstream3", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID","Contig2", "start_gene2", "end_gene2", "strand2","annotation", "contig_TE", "start_TE","end_TE","TE_type","overalap", "overlapping")
+colnames(Sd_genes)<-c(header)
+
+genes_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=27429-genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) 
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE) 
+genes_average_sd
+genes_number= 27429
+
+genes_average_Sd=Sd_genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n())
+genes_average_Sd_df=as.data.frame(genes_average_Sd)
+genes_average_Sd_df
+
+
+#[1] 0.5341062
+#[1] 0.8334235
+
+     Gene_ID total_count
+1  Sd_g17303           1
+2  Sd_g24797           2
+3  Sd_g24798           2
+4  Sd_g28574           1
+5 Sd_g4070.1           1
+6 Sd_g4147.1           1
+
+
+
+Z_statistic <- (1 - genes_average_mean) / (genes_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+#[1] 0
+#[1] 0
+#[1] 1
+
+
+#################
+###5.5 Proportion tests to assess content of non-TIRs in genes in common between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA- compared with average in genome
+#################
+
+#################
+###5.5.1 non-TIRs gene bodies
+#################
+library(dplyr)
+library(data.table)
+genes=read.table("files_meth_new_TEs/dulcamara_TEs_non_TIR_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping")
+colnames(genes)<-c(header)
+
+Sd_genes=read.table("genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_non_TIR.genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID","Contig2", "start_gene2", "end_gene2", "strand2","annotation", "contig_TE", "start_TE","end_TE","TE_type","overalap", "overlapping")
+colnames(Sd_genes)<-c(header)
+
+
+genes_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=27429-genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) 
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE) 
+genes_average_sd
+genes_number= 27429
+#[1] 0.4382223
+#[1] 1.048596
+
+genes_average_Sd=Sd_genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n())
+genes_average_Sd_df=as.data.frame(genes_average_Sd)
+genes_average_Sd_df
+      Gene_ID total_count
+1   Sd_g28300           1
+2 Sd_g29231.1           5
+3     Sd_g368           1
+4    Sd_g8870           1
+5    Sd_g9301           2
+
+
+
+Z_statistic <- (1 - genes_average_mean) / (genes_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+
+#[1] 0
+#[1] 0
+#[1] 1
+
+
+Z_statistic <- (5 - genes_average_mean) / (genes_average_sd/ sqrt(genes_number))
+Z_statistic
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+#[1] 720.4947
+#[1] 0
+#[1] 0
+#[1] 1
+#################
+###5.5.2 non-TIRs upstream
+#################
+
+genes=read.table("files_meth_new_TEs/dulcamara_TEs_non_TIR_genes.upstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping")
+colnames(genes)<-c(header)
+
+Sd_genes=read.table("genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_non_TIR.upstream3", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID","Contig2", "start_gene2", "end_gene2", "strand2","annotation", "contig_TE", "start_TE","end_TE","TE_type","overalap", "overlapping")
+colnames(Sd_genes)<-c(header)
+
+genes_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=27429-genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) 
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE) 
+genes_average_sd
+genes_number= 27429
+
+#[1] 0.2467826
+#[1] 0.5326762
+
+genes_average_Sd=Sd_genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n())
+genes_average_Sd_df=as.data.frame(genes_average_Sd)
+genes_average_Sd_df
+      Gene_ID total_count
+1  Sd_g22346           1
+2  Sd_g28300           1
+3    Sd_g368           1
+4    Sd_g369           1
+5    Sd_g370           1
+6 Sd_g4147.1           1
+7   Sd_g9301           1
+
+
+
+
+Z_statistic <- (1 - genes_average_mean) / (genes_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+#[1] 0
+#[1] 0
+#[1] 1
+
+
+
+#################
+###5.5.3 non-TIRs downstream
+#################
+
+genes=read.table("files_meth_new_TEs/dulcamara_TEs_non_TIR_genes.downstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping")
+colnames(genes)<-c(header)
+
+Sd_genes=read.table("genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_non_TIR.downstream3", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID","Contig2", "start_gene2", "end_gene2", "strand2","annotation", "contig_TE", "start_TE","end_TE","TE_type","overalap", "overlapping")
+colnames(Sd_genes)<-c(header)
+
+genes_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=27429-genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) 
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE) 
+genes_average_sd
+genes_number= 27429
+
+#[1] 0.1900543
+#[1] 0.4645932
+
+genes_average_Sd=Sd_genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n())
+genes_average_Sd_df=as.data.frame(genes_average_Sd)
+genes_average_Sd_df
+      Gene_ID total_count
+1 Sd_g10795           1
+2 Sd_g28300           2
+3  Sd_g9301           2
+
+
+
+Z_statistic <- (1 - genes_average_mean) / (genes_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+#[1] 0
+#[1] 0
+#[1] 1
+
+
+
+
+
+#################
+###5.6 Proportion tests to assess content of LTRs in genes in common between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA- compared with average in genome
+#################
+
+#################
+###5.6.1 LTRs gene bodies
+#################
+library(dplyr)
+library(data.table)
+genes=read.table("files_meth_new_TEs/dulcamara_TEs_LTR_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping")
+colnames(genes)<-c(header)
+
+Sd_genes=read.table("genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_LTR.genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID","Contig2", "start_gene2", "end_gene2", "strand2","annotation", "contig_TE", "start_TE","end_TE","TE_type","overalap", "overlapping")
+colnames(Sd_genes)<-c(header)
+
+
+genes_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=27429-genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) 
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE) 
+genes_average_sd
+genes_number= 27429
+#[1] 0.4368005
+#[1] 1.781687
+
+genes_average_Sd=Sd_genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n())
+genes_average_Sd_df=as.data.frame(genes_average_Sd)
+genes_average_Sd_df
+ 
+      Gene_ID total_count
+1    Sd_g2132           1
+2 Sd_g26139.3           4
+3  Sd_g3087.1           2
+4  Sd_g4147.1           8
+5  Sd_g5379.2           2
+
+
+Z_statistic <- (4 - genes_average_mean) / (genes_average_sd/ sqrt(genes_number))
+Z_statistic
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+
+
+#[1] 331.2178
+
+#[1] 0
+#[1] 0
+#[1] 1
+
+
+
+Z_statistic <- (1 - genes_average_mean) / (genes_average_sd/ sqrt(genes_number))
+Z_statistic
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+
+#[1] 52.35231
+#[1] 0
+#[1] 0
+#[1] 1
+
+#################
+###5.6.2 LTRs upstream
+#################
+
+genes=read.table("files_meth_new_TEs/dulcamara_TEs_LTR_genes.upstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping")
+colnames(genes)<-c(header)
+
+Sd_genes=read.table("genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_LTR.upstream3", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID","Contig2", "start_gene2", "end_gene2", "strand2","annotation", "contig_TE", "start_TE","end_TE","TE_type","overalap", "overlapping")
+colnames(Sd_genes)<-c(header)
+
+genes_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=27429-genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) 
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE) 
+genes_average_sd
+genes_number= 27429
+
+#[1] 0.2420066
+#[1] 0.6019256
+
+genes_average_Sd=Sd_genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n())
+genes_average_Sd_df=as.data.frame(genes_average_Sd)
+genes_average_Sd_df
+  Gene_ID total_count
+     Gene_ID total_count
+1   Sd_g2132           3
+2  Sd_g24797           2
+3  Sd_g24798           2
+4 Sd_g5379.2           1
+5   Sd_g8870           1
+6   Sd_g9301           1
+
+
+
+Z_statistic <- (1 - genes_average_mean) / (genes_average_sd/ sqrt(genes_number))
+Z_statistic
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+#[1] 208.5583
+#[1] 0
+#[1] 0
+#[1] 1
+
+
+
+
+Z_statistic <- (3 - genes_average_mean) / (genes_average_sd/ sqrt(genes_number))
+Z_statistic
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+#[1] 758.849
+#[1] 0
+#[1] 0
+#[1] 1
+
+
+
+#################
+###5.6.3 LTRs downstream
+#################
+
+
+genes=read.table("files_meth_new_TEs/dulcamara_TEs_LTR_genes.downstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping")
+colnames(genes)<-c(header)
+
+Sd_genes=read.table("genes_new_meth/types/dulcamara_meth_genes_interest_Sd_Sa_LTR.downstream3", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID","Contig2", "start_gene2", "end_gene2", "strand2","annotation", "contig_TE", "start_TE","end_TE","TE_type","overalap", "overlapping")
+colnames(Sd_genes)<-c(header)
+
+genes_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n()) 
+#####have to add zeros to all genes without so it reduces the average
+genes_number= as.numeric(nlevels(factor(genes_average$Gene_ID)))
+add_zeros=27429-genes_number
+genes_average_vector=c(genes_average$total_count, rep(0,add_zeros))
+genes_average_mean=mean(genes_average_vector, na.rm=TRUE) ###[1] 7.07
+genes_average_mean
+genes_average_sd=sd(genes_average_vector, na.rm=TRUE) ###[1] 11.10
+genes_average_sd
+genes_number= 27429
+
+#[1] 0.2185643
+#[1] 0.5613424
+
+genes_average_Sd=Sd_genes %>%
+  group_by(Gene_ID) %>%
+  summarise(total_count=n())
+genes_average_Sd_df=as.data.frame(genes_average_Sd)
+genes_average_Sd_df
+      Gene_ID total_count
+1    Sd_g2132           4
+2   Sd_g25667           1
+3 Sd_g26139.3           1
+4   Sd_g28300           1
+5     Sd_g327           1
+6     Sd_g369           1
+7     Sd_g370           1
+8  Sd_g5379.2           1
+
+
+Z_statistic <- (4 - genes_average_mean) / (genes_average_sd/ sqrt(genes_number))
+Z_statistic
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+#[1] 1115.665
+#[1] 0
+#[1] 0
+#[1] 1
 
