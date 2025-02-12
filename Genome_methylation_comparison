@@ -45,15 +45,15 @@
 
 #################
 ###4.3 Methylation in LTRs - S.dulcamara and S.nigrum
-###4.3.1 Methylation in LRs - gene body - S.dulcamara and S.nigrum
-###4.3.2 Methylation in LRs - upstream - S.dulcamara and S.nigrum
-###4.3.3 Methylation in LRs - downstream - S.dulcamara and S.nigrum
-###4.3.4 Methylation in LRs - combine and plot - S.dulcamara and S.nigrum
-###4.3.5 Methylation in LRs - regressions - S.dulcamara and S.nigrum
+###4.3.1 Methylation in LTRs - gene body - S.dulcamara and S.nigrum
+###4.3.2 Methylation in LTRs - upstream - S.dulcamara and S.nigrum
+###4.3.3 Methylation in LTRs - downstream - S.dulcamara and S.nigrum
+###4.3.4 Methylation in LTRs - combine and plot - S.dulcamara and S.nigrum
+###4.3.5 Methylation in LTRs - regressions - S.dulcamara and S.nigrum
 #################
 
 #################
-###5.1 MEthylation the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA ####Sd_g3085.1, Sd_g3087.1, Sd_g3090, Sd_g26139.3, Sd_g8870, Sd_g28574
+###5.1 MEthylation the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA ####Sd_g8870, Sd_g28574
 ###5.2 Proportion test assessing methylation frequency  the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA compared against average in genome
 ###5.2.1 Gene body
 ###5.2.2 Upstream
@@ -1764,7 +1764,7 @@ dev.off()
 #################
 
 #################
-###4.3.1 Methylation in LRs - gene body - S.dulcamara and S.nigrum
+###4.3.1 Methylation in LTRs - gene body - S.dulcamara and S.nigrum
 #################
 #################### dulcamara
 library(dplyr)
@@ -1862,7 +1862,7 @@ mean(nig$value)
 
 
 #################
-###4.3.2 Methylation in LRs - upstream - S.dulcamara and S.nigrum
+###4.3.2 Methylation in LTRs - upstream - S.dulcamara and S.nigrum
 #################
 #################### dulcamara
 library(dplyr)
@@ -1960,7 +1960,7 @@ mean(nig$value)
 
 
 #################
-###4.3.3 Methylation in LRs - downstream - S.dulcamara and S.nigrum
+###4.3.3 Methylation in LTRs - downstream - S.dulcamara and S.nigrum
 #################
 #################### dulcamara
 library(dplyr)
@@ -2061,7 +2061,7 @@ mean(nig$value)
 
 
 #################
-###4.3.4 Methylation in LRs - combine and plot - S.dulcamara and S.nigrum
+###4.3.4 Methylation in LTRs - combine and plot - S.dulcamara and S.nigrum
 #################
 library(ggplot2)
 library(dplyr)
@@ -2170,7 +2170,7 @@ dev.off()
 
 
 #################
-###4.3.5 Methylation in LRs - regressions - S.dulcamara and S.nigrum
+###4.3.5 Methylation in LTRs - regressions - S.dulcamara and S.nigrum
 #################
 ################# gene body
 i="S.dulcamara"
@@ -2223,7 +2223,7 @@ dev.off()
 
 
 #################
-###5.1 MEthylation the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA ####Sd_g3085.1, Sd_g3087.1, Sd_g3090, Sd_g26139.3, Sd_g8870, Sd_g28574
+###5.1 MEthylation the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA ####Sd_g8870, Sd_g28574
 #################
 #grep "mRNA" S.dulcamara.annotation.gff3 > S.dulcamara.annotation.genes
 #awk '{print $1,$4,$5, $7, $9}' S.dulcamara.annotation.genes > S.dulcamara.annotation.genes2
@@ -2326,15 +2326,11 @@ write.table(genes_down_filt, "genes/dulcamara_meth_genes.downstream_interest_Sd_
 genes_filt_average=genes_filt %>%
   group_by(Gene_ID) %>%
   summarise(mean=mean(methylated_frequency,na.rm=TRUE))
-# A tibble: 6 × 2
+
 #  Gene_ID      mean
 #  <chr>       <dbl>
-1 Sd_g26139.3 0.422
-2 Sd_g28574   0.273
-3 Sd_g3085.1  0.912
-4 Sd_g3087.1  0.909
-5 Sd_g3090    0.934
-6 Sd_g8870    0.381
+ Sd_g26139.3 0.422
+ Sd_g8870    0.381
 
 
 
@@ -2343,12 +2339,8 @@ genes_up_filt_average=genes_up_filt %>%
   summarise(mean=mean(methylated_frequency,na.rm=TRUE))
 #  Gene_ID      mean
 #  <chr>       <dbl>
-1 Sd_g26139.3 0.386
-2 Sd_g28574   0.569
-3 Sd_g3085.1  0.903
-4 Sd_g3087.1  0.876
-5 Sd_g3090    0.891
-6 Sd_g8870    0.476
+ Sd_g28574   0.569
+ Sd_g8870    0.476
 
 
 
@@ -2357,12 +2349,8 @@ genes_down_filt_average=genes_down_filt %>%
   summarise(mean=mean(methylated_frequency,na.rm=TRUE))
 #  Gene_ID      mean
 #  <chr>       <dbl>
-1 Sd_g26139.3 0.910
-2 Sd_g28574   0.501
-3 Sd_g3085.1  0.936
-4 Sd_g3087.1  0.960
-5 Sd_g3090    0.841
-6 Sd_g8870    0.721
+ Sd_g28574   0.501
+ Sd_g8870    0.721
 
 
 
