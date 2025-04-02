@@ -181,9 +181,144 @@ sed 's/: /,/g' ./Orthofinder_outdir/SpeciesIDs.txt | cut -f 1 -d"." >> config.tx
 
 
 
-########AFTER PART2, continue then here
-##4. RETRIEVE GENES  IN ORTHOGROUPS CORRESPONDING TO ONLY S.dulcamara or to S.dulcamara + S.americanum SP2773 (both resistant)
-#######
+
+
+
+#############
+##2.Venn Diagram
+#############
+data=read.table("Orthogroups.GeneCount.txt",header=T,row.names=1)
+
+####divide in 
+data_1=data[,c(1,8)] ##2773 americanum ###keep total column
+data_2=data[,c(2,8)] ###lycopersicum
+data_3=data[,c(3,8)] ##2775 americanum
+data_4=data[,c(4,8)] ##dulcamara
+data_5=data[,c(5,8)] ##tuberosum
+data_6=data[,c(6,8)] ##melongena
+data_7=data[,c(7,8)] ##nigrum
+tomato<-c()
+eggplant<-c()
+potato<-c()
+dulcamara<-c()
+americanum2773<-c()
+americanum2775<-c()
+nigrum<-c()
+
+data_1$Orthogroup=rownames(data_1) ##2773
+data_2$Orthogroup=rownames(data_2) ##lycopersicum
+data_3$Orthogroup=rownames(data_3) ##2775
+data_4$Orthogroup=rownames(data_4) ##dulcamara
+data_5$Orthogroup=rownames(data_5) ##tuberosum
+data_6$Orthogroup=rownames(data_6) ##melongena
+data_7$Orthogroup=rownames(data_7) ##nigrum
+
+###these below need to be manually changed to the data_X that correspond
+for(i in 1:nrow(data_6)) { 
+  new_value<-rep(data_6[i,3],each=data_6[i,1])
+  eggplant <- c(eggplant,new_value)
+}
+
+for(i in 1:nrow(data_2)) { 
+  new_value<-rep(data_2[i,3],each=data_2[i,1])
+  tomato <- c(tomato,new_value)
+}
+
+for(i in 1:nrow(data_5)) { 
+  new_value<-rep(data_5[i,3],each=data_5[i,1])
+  potato <- c(potato,new_value)
+}
+
+
+for(i in 1:nrow(data_1)) { 
+  new_value<-rep(data_1[i,3],each=data_1[i,1])
+  americanum2773 <- c(americanum2773,new_value)
+}
+
+for(i in 1:nrow(data_3)) { 
+  new_value<-rep(data_3[i,3],each=data_3[i,1])
+  americanum2775 <- c(americanum2775,new_value)
+}
+
+for(i in 1:nrow(data_4)) { 
+  new_value<-rep(data_4[i,3],each=data_4[i,1])
+  dulcamara <- c(dulcamara,new_value)
+}
+
+for(i in 1:nrow(data_7)) { 
+  new_value<-rep(data_7[i,3],each=data_7[i,1])
+  nigrum <- c(nigrum,new_value)
+}
+
+library(UpSetR)
+library(tidyverse)
+
+listInput <- list(S.dulcamara=as.vector(dulcamara),S.nigrum=as.vector(nigrum),S.tuberosum = as.vector(potato), 
+S.lycopersicum = as.vector(tomato),S.melongena = as.vector(eggplant),S.americanum.SP2773=as.vector(americanum2773),S.americanum.SP2775=as.vector(americanum2775))
+tiff("venn.tiff",res=300,he=340,wi=500,units="mm")
+##upset(fromList(listInput), order.by = "freq")
+upset(fromList(listInput), sets = c("S.dulcamara", "S.nigrum", "S.americanum.SP2773","S.americanum.SP2775", "S.lycopersicum", "S.melongena", 
+    "S.tuberosum"), mb.ratio = c(0.55, 0.45), order.by = "freq", empty.intersections = "on", nsets = 6, point.size = 3.5, , number.angles = 15,line.size = 2,
+    keep.order = TRUE,  mainbar.y.label = "Number of Orthogroups in common", sets.x.label = "Total Orthogroups",
+text.scale = c(2.2, 2.2, 2.2, 2, 2, 2.2) )
+dev.off()
+
+
+#############
+3. Retrieve genes
+#############
+
+######extract intersections
+listInput <- list(S.dulcamara=dulcamara,S.nigrum=nigrum,S.tuberosum = potato, S.lycopersicum = tomato,S.melongena = eggplant,S.americanum.SP2773=americanum2773
+,S.americanum.SP2775=americanum2775)
+
+df2 <- data.frame(gene=unique(unlist(listInput)))
+df1 <- lapply(listInput,function(x){
+  data.frame(gene = x)
+}) %>% 
+  bind_rows(.id = "path")
+
+head(df1)
+df_int <- lapply(df2$gene,function(x){
+  # pull the name of the intersections
+  intersection <- df1 %>% 
+    dplyr::filter(gene==x) %>% 
+    arrange(path) %>% 
+    pull("path") %>% 
+    paste0(collapse = "|")
+  
+  # build the dataframe
+data.frame(gene = x,int = intersection)
+}) %>% 
+  bind_rows()
+
+df4=df_int %>% 
+  group_by(int) %>% 
+  summarise(n=n()) %>% 
+  arrange(desc(n))
+
+
+write.table(df4,"venn_table.txt",sep="\t")
+write.table(df_int,"venn_table2.txt",sep="\t")
+
+#####subset
+df_int_subset=dplyr::filter(df_int, grepl('S.americanum.SP2773|S.dulcamara', int))
+df_int_subset2=dplyr::filter(df_int_subset, !grepl('S.lycopersicum|S.tuberosum|S.melongena|S.nigrum|S.americanum.SP2775', int)) ##54 orthogroups considering the 19 in common (see below) and only Sd and only Sa2773
+#####127
+write.table(df_int_subset2,"/users/sfo503/scratch/dulcamara_synima2/venn_table2_54_sd_sa2773.txt",sep="\t")
+df_int_subset3=dplyr::filter(df_int_subset2, grepl('S.americanum.SP2773', int) & grepl('S.dulcamara', int)) ###only 19 orthogroups in common between both
+write.table(df_int_subset3,"venn_table2_19_common_sd_sa2773.txt",sep="\t")
+###total is 8 orthogroups only in Sp3772, 27 only in Sd and 19 in common, check all
+
+df_int_subset_test=dplyr::filter(df_int_subset2, !grepl('S.americanum.SP2773', int))
+##27 orthogroups only in Sd
+write.table(df_int_subset_test,"venn_table2_27_sd_only.txt",sep="\t")
+
+
+
+########## 
+##3.1.Gene names in orthogroups only present in S.dulcamara or S.dulcamara + S.americanum SP2773 (both resistant)
+########## 
 
 filename=venn_table2_19_common_sd_sa2773_names #########only names so keep only that column
 while read -r line; do
@@ -202,5 +337,181 @@ while read -r line; do
 done < "$filename"
 
 grep -Eow "Sd_g\w+.[0-9]" genes_sd_only > Sd_only_genes  ###90 genes
+
+
+########## 
+##3.2.Gene names in orthogroups only present in S.nigrum or shared with susceptible plant species
+########## 
+
+df_int_subset=dplyr::filter(df_int, grepl('S.nigrum', int))
+df_int_subset2=dplyr::filter(df_int_subset, !grepl('S.lycopersicum|S.tuberosum|S.melongena|S.habrochaites|S.chilense|S.dulcamara|S.americanum.SP2775|S.americanum.SP2773', int))
+#61
+write.table(df_int_subset2,"venn_table2_61_sn_only.txt",sep="\t") ###only S.nigrum
+###########################
+df_int_subset=dplyr::filter(df_int, grepl('S.nigrum|S.lycopersicum|S.tuberosum|S.melongena|S.habrochaites|S.chilense|S.dulcamara|S.americanum.SP2775|', int))
+df_int_subset2=dplyr::filter(df_int_subset, !grepl('S.dulcamara|S.americanum.SP2773', int))
+#3531
+write.table(df_int_subset2,"venn_table2_3531_all_susceptible_only.txt",sep="\t")####shared with susceptible
+
+
+
+########## 
+##4. GO enrichments 
+###########
+
+######GO
+library(topGO)
+library(stringr)
+library(tidyverse)
+#Read in the data in a way that TopGO wants it
+geneID2GO <-readMappings(file = "sd_gos_mod")
+geneNames<-names(geneID2GO)
+annota=read.table("Sd_gFACs_entap_unique_ab_initio_after_gFACs_names.emapper.annotations",header=T,sep="\t",fill=T,quote="") 
+
+
+###COMMON in SD and SAmer2773 30 genes
+Genes=read.table("Sd_sa2773_genes", header=F)
+Factor=as.factor(Genes$V1)
+Genes_factor<-factor(as.integer(geneNames %in% Factor))##puede ser que la linea de antes no haga falta, quitar aqui el _factor
+names(Genes_factor)<-geneNames
+
+## use BP or MF or CC
+GOdata <- new("topGOdata", ontology = "MF", allGenes = Genes_factor, annot = annFUN.gene2GO, gene2GO = geneID2GO,geneSel=myself,nodeSize=5)
+resultFISHER<- runTest(GOdata, algorithm = "weight01", statistic = "fisher")
+allGO=usedGO(GOdata)
+allres=GenTable(GOdata,weightFisher=resultFISHER,orderBy="weightFisher",topNodes=length(allGO))
+padj=round(p.adjust(allres$weightFisher,method="fdr"),digits=4)
+all_res_final<-cbind(allres,padj)
+all_res_final=all_res_final[order(all_res_final$padj),]
+all_res_final$weightFisher=as.numeric(all_res_final$weightFisher)
+all_res_final_p=subset(all_res_final,all_res_final$weightFisher <=0.05)
+write.table(all_res_final[1:50,],"Sd_Sa2773_30genes_GO_MF.txt",quote=F,sep="\t",row.names=T,col.names=T,dec=".")
+subsetting=Genes
+colnames(subsetting)<-c("query")
+subset_join=merge(subsetting,annota,by="query")
+match=subset_join  %>% 
+  mutate(Matched = ifelse(str_detect(GOs, paste(all_res_final$GO.ID, collapse = "|")), "Yes", "No"))
+Genes_reg_BP=subset(match, match$Matched=="Yes")
+Genes_reg_BP=as.data.frame(Genes_reg_BP)
+write.table(Genes_reg_BP,"Sd_Sa2773_30genes_GO_MF_genes_0.05.txt",quote=F,sep="\t",row.names=T,col.names=T,dec=".")
+
+Genes_annota=left_join(Genes, annota, by=c("V1"="query"))
+write.table(Genes_annota, "Sd_Sa2773_30genes_annota.txt", col.names=T,sep="\t")
+
+############################
+
+###only in SD 90 genes
+Genes=read.table("Sd_only_genes", header=F)
+Factor=as.factor(Genes$V1)
+Genes_factor<-factor(as.integer(geneNames %in% Factor))##puede ser que la linea de antes no haga falta, quitar aqui el _factor
+names(Genes_factor)<-geneNames
+
+## use BP or MF or CC
+GOdata <- new("topGOdata", ontology = "CC", allGenes = Genes_factor, annot = annFUN.gene2GO, gene2GO = geneID2GO,geneSel=myself,nodeSize=5)
+resultFISHER<- runTest(GOdata, algorithm = "weight01", statistic = "fisher")
+allGO=usedGO(GOdata)
+allres=GenTable(GOdata,weightFisher=resultFISHER,orderBy="weightFisher",topNodes=length(allGO))
+padj=round(p.adjust(allres$weightFisher,method="fdr"),digits=4)
+all_res_final<-cbind(allres,padj)
+all_res_final=all_res_final[order(all_res_final$padj),]
+all_res_final$weightFisher=as.numeric(all_res_final$weightFisher)
+all_res_final_p=subset(all_res_final,all_res_final$weightFisher <=0.05)
+write.table(all_res_final[1:50,],"Sd_only_90_genes_GO_CC.txt",quote=F,sep="\t",row.names=T,col.names=T,dec=".")
+subsetting=Genes
+colnames(subsetting)<-c("query")
+subset_join=merge(subsetting,annota,by="query")
+match=subset_join  %>% 
+  mutate(Matched = ifelse(str_detect(GOs, paste(all_res_final$GO.ID, collapse = "|")), "Yes", "No"))
+Genes_reg_BP=subset(match, match$Matched=="Yes")
+Genes_reg_BP=as.data.frame(Genes_reg_BP)
+write.table(Genes_reg_BP,"Sd_only_90_genes_GO_CC_genes_0.05.txt",quote=F,sep="\t",row.names=T,col.names=T,dec=".")
+
+Genes_annota=left_join(Genes, annota, by=c("V1"="query"))
+write.table(Genes_annota, "Sd_only_90_genes_annota.txt", col.names=T,sep="\t")
+######################exit R
+
+
+
+
+
+
+########## 
+##5. Identify NLRs in orthogroups in common between resistant and susceptible species
+###########
+
+########## 
+##5.1.1 Identify NLRs in S. dulcamara-only Orthogroups and S.dulcamara and S.americanum SP2773 shared orthgoroups
+##########
+grep -wFf NLR/Sd_sa2773_genes_common_orthofinder NLR/NLR_dulcamara_genome_genes > NLR/NLR_dulcamara_genome_genes_match_orthofinder_Sd_Sa ###NONE
+grep -wFf NLR/Sd_only_90_genes NLR/NLR_dulcamara_genome_genes > NLR/NLR_dulcamara_genome_genes_match_orthofinder_Sd ###NONE
+
+
+
+
+########## 
+##5.2 Identify NLRs in S. nigrum-only Orthogroups and in orthogroups shared between all susceptible species
+########## 
+##5.2.1 Identify NLRs in S. nigrum-only Orthogroups
+##########
+
+##################After section 3.2 continue here --?61 orthogroups that lead to 471 genes
+awk '{print $2}' venn_table2_61_sn_only.txt > venn_table2_61_sn_only_OG.txt
+sed 's/"//g' venn_table2_61_sn_only_OG.txt >  venn_table2_61_sn_only_OG2.txt
+
+filename=venn_table2_61_sn_only_OG2.txt #########USE HERE THE FILE venn
+while read -r line; do
+	name="$line"
+	grep -w "$line" Orthogroups.txt >> Sn_61_genes
+done < "$filename"
+
+filename2=Sn_61_genes 
+while read -r line; do
+	name="$line"
+	grep -Eow "Sn_g\w+"  Sn_61_genes > Sn_61_genes_list
+done < "$filename2"
+
+uniq Sn_61_genes_list > Sn_61_genes_list_unique
+
+
+filename3=Sn_61_genes_list_unique 
+while read -r line2; do
+	grep -w "$line2" Sn_ab_initio_after_gFACs.emapper.annotations >> Sn_61_genes_list_unique_annotation
+done < "$filename3"
+grep -wFf Sn_61_genes_list_unique NLR_nigrum_genome_genes > NLR_nigrum_genome_genes_match_orthofinder_Sn ###NONE
+#####NONE
+
+########## 
+##5.2.2 Identify NLRs in Orthogroups shared between S. nigrum and susceptible species
+##########
+##################3531 orthogroups in all susceptible species
+awk '{print $2}' venn_table2_3531_all_susceptible_only.txt > venn_table2_3531_all_susceptible_only_OG.txt
+sed 's/"//g' venn_table2_3531_all_susceptible_only_OG.txt >  venn_table2_3531_all_susceptible_only_OG2.txt
+
+filename=venn_table2_3531_all_susceptible_only_OG2.txt 
+while read -r line; do
+	name="$line"
+	grep -w "$line" Orthogroups.txt >> 3531_all_susceptible_genes
+done < "$filename"
+
+filename2=3531_all_susceptible_genes
+while read -r line; do
+	name="$line"
+	grep -Eow "Sn_g\w+"  3531_all_susceptible_genes > 3531_all_susceptible_genes_list
+done < "$filename2"
+
+uniq 3531_all_susceptible_genes_list > 3531_all_susceptible_genes_unique
+
+
+filename3=3531_all_susceptible_genes_unique 
+while read -r line2; do
+	grep -w "$line2" Sn_ab_initio_after_gFACs.emapper.annotations >> 3531_all_susceptible_genes_genes_list_unique_annotation
+done < "$filename3"
+grep -wFf 3531_all_susceptible_genes_unique NLR_nigrum_genome_genes > NLR_nigrum_genome_genes_match_orthofinder_3531_all_susceptible_genes ###NONE
+####there are 53 NLRs in common between these-->  methylations and plots
+
+
+
+
+
 
 
