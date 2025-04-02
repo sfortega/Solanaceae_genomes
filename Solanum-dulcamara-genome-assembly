@@ -385,4 +385,143 @@ awk 'BEGIN{OFS="\t";FS="\t"} {if ($3 == "gene") print $1,$4,$5,$9}' ./gFACs/Sd_g
 bedtools nuc -fi ./pilon/S.dulcamara_genome_purge_haplotigs_to_Illumina_pilon.fasta -bed Sd_genes_2.bed > GC_content/GC_content_for_each_gene_genome.txt
 
 
+################
+##9.NLR-Annotator
+################
+
+#####NLR annotator
+java -Xmx280g -jar NLR-Annotator-v2.1b.jar -i S.dulcamara.genome.fa -x NLR-Annotator/src/mot.txt -y NLR-Annotator/src/store.txt -o NLR_dulcamara_genome.txt
+
+####now match these with genes 
+awk '{print $1,$4,$5,$6,$3,$7}' NLR/NLR_dulcamara_genome.txt > NLR/NLR_dulcamara_genome_mod.txt
+sed 's/ /\t/g' NLR/NLR_dulcamara_genome_mod.txt> NLR/NLR_dulcamara_genome_mod2.txt
+bedtools intersect -a NLR/NLR_dulcamara_genome_mod2.txt -b S.dulcamara.annotation.genes3  -wo > NLR/NLR_dulcamara_genome_genes
+
+
+
+
+################
+##10. Psuedochromosome
+################
+#####download previous S. dulcamara genome
+mkdir daSolDulc1
+wget -P ./daSolDulc1 https://www.ebi.ac.uk/ena/browser/api/fasta/OX359261?download=true
+cp ./daSolDulc1/OX359261?download=true daSolDulc1_chr10
+wget -P ./daSolDulc1 https://www.ebi.ac.uk/ena/browser/api/fasta/OX359258?download=true
+cp ./daSolDulc1/OX359258?download=true daSolDulc1_chr7
+wget -P ./daSolDulc1 https://www.ebi.ac.uk/ena/browser/api/fasta/OX359259?download=true
+cp ./daSolDulc1/OX359259?download=true daSolDulc1_chr8
+wget -P ./daSolDulc1 https://www.ebi.ac.uk/ena/browser/api/fasta/OX359254?download=true
+cp ./daSolDulc1/OX359254?download=true daSolDulc1_chr3
+wget -P ./daSolDulc1 https://www.ebi.ac.uk/ena/browser/api/fasta/OX359253?download=true
+cp ./daSolDulc1/OX359253?download=true daSolDulc1_chr2
+wget -P ./daSolDulc1 https://www.ebi.ac.uk/ena/browser/api/fasta/OX359263?download=true
+cp ./daSolDulc1/OX359263?download=true daSolDulc1_chr12
+wget -P ./daSolDulc1 https://www.ebi.ac.uk/ena/browser/api/fasta/OX359260?download=true
+cp ./daSolDulc1/OX359260?download=true daSolDulc1_chr9
+wget -P ./daSolDulc1 https://www.ebi.ac.uk/ena/browser/api/fasta/OX359252?download=true
+cp ./daSolDulc1/OX359252?download=true daSolDulc1_chr1
+wget -P ./daSolDulc1 https://www.ebi.ac.uk/ena/browser/api/fasta/OX359256?download=true
+cp ./daSolDulc1/OX359256?download=true daSolDulc1_chr5
+wget -P ./daSolDulc1 https://www.ebi.ac.uk/ena/browser/api/fasta/OX359255?download=true
+cp ./daSolDulc1/OX359255?download=true daSolDulc1_chr4
+wget -P ./daSolDulc1 https://www.ebi.ac.uk/ena/browser/api/fasta/OX359257?download=true
+cp ./daSolDulc1/OX359257?download=true daSolDulc1_chr6
+wget -P ./daSolDulc1 https://www.ebi.ac.uk/ena/browser/api/fasta/OX359262?download=true
+cp ./daSolDulc1/OX359262?download=true daSolDulc1_chr11
+cat ./daSolDulc1_chr* > daSolDulc1/daSolDulc1_genome.fa
+
+
+sed -i 's/ENA|OX359252|OX359252.1 Solanum dulcamara genome assembly, chromosome: 1/daSolDulc1_chr1/g' daSolDulc1/daSolDulc1_genome.fa
+sed -i  's/ENA|OX359261|OX359261.1 Solanum dulcamara genome assembly, chromosome: 10/daSolDulc1_chr10/g' daSolDulc1/daSolDulc1_genome.fa
+sed -i  's/ENA|OX359262|OX359262.1 Solanum dulcamara genome assembly, chromosome: 11/daSolDulc1_chr11/g' daSolDulc1/daSolDulc1_genome.fa
+sed -i  's/ENA|OX359263|OX359263.1 Solanum dulcamara genome assembly, chromosome: 12/daSolDulc1_chr12/g' daSolDulc1/daSolDulc1_genome.fa
+sed -i  's/ENA|OX359253|OX359253.1 Solanum dulcamara genome assembly, chromosome: 2/daSolDulc1_chr2/g' daSolDulc1/daSolDulc1_genome.fa
+sed -i  's/ENA|OX359254|OX359254.1 Solanum dulcamara genome assembly, chromosome: 3/daSolDulc1_chr3/g' daSolDulc1/daSolDulc1_genome.fa
+sed -i  's/ENA|OX359255|OX359255.1 Solanum dulcamara genome assembly, chromosome: 4/daSolDulc1_chr4/g' daSolDulc1/daSolDulc1_genome.fa
+sed -i   's/ENA|OX359256|OX359256.1 Solanum dulcamara genome assembly, chromosome: 5/daSolDulc1_chr5/g' daSolDulc1/daSolDulc1_genome.fa
+sed -i  's/ENA|OX359257|OX359257.1 Solanum dulcamara genome assembly, chromosome: 6/daSolDulc1_chr6/g' daSolDulc1/daSolDulc1_genome.fa
+sed -i  's/ENA|OX359258|OX359258.1 Solanum dulcamara genome assembly, chromosome: 7/daSolDulc1_chr7/g' daSolDulc1/daSolDulc1_genome.fa
+sed -i  's/ENA|OX359259|OX359259.1 Solanum dulcamara genome assembly, chromosome: 8/daSolDulc1_chr8/g' daSolDulc1/daSolDulc1_genome.fa
+sed -i  's/ENA|OX359260|OX359260.1 Solanum dulcamara genome assembly, chromosome: 9/daSolDulc1_chr9/g' daSolDulc1/daSolDulc1_genome.fa
+
+###ntJoin for assembling contigs into psuedochromosomes
+
+ntJoin assemble target=S.dulcamara.genome.fa target_weight=1 references=daSolDulc1/daSolDulc1_genome.fa reference_weights='2' k=16 w=500 time=True mkt=True agp=True no_cut=True ###ok 16 and 500
+cp out.k16.w500.n1.agp dulcamara_daSolDulc1_out.k16.w500.n1.agp
+cp out.k16.w500.n1.path dulcamara_daSolDulc1_out.k16.w500.n1.path
+
+
+#####nucmer for plotting
+nucmer -c 500 -b 100 -l 1000 daSolDulc1/daSolDulc1_genome.fa S.dulcamara.genome.fa.k16.w500.n1.assigned.scaffolds.fa
+cp out.delta dulcamara_daSolDulc1_16_500_c500_b100_l1000.delta
+show-coords -THrd dulcamara_daSolDulc1_16_500_c500_b100_l1000.delta  > dulcamara_daSolDulc1_16_500_c500_b100_l1000.coords
+ 
+
+#######in R
+library(circlize)
+library(data.table)
+library(tidyverse)
+sizes=read.table("sizes_dasol.txt",header=T,sep="\t")
+sizes$Name=gsub("daSolDulc1_chr","S.Dulc1_",sizes$Name)
+sizes$Name=gsub("_ntJoin","_",sizes$Name)
+getCol <- function(r, g, b, alpha=0.8) {
+  rgb(r/255, g/255, b/255, alpha=alpha)
+}
+
+getColName <- function(col.in, alpha=0.8) {
+  co = as.numeric(col2rgb(col.in))
+  rgb(red=co[1]/255, green=co[2]/255, blue=co[3]/255, alpha=alpha)
+}
+
+getColFromList <- function(color) {
+  if (!is.function(get(color))) { return(getColName(color)) } # "grey", "black"
+  else { return(getColName(color)) } #cigene_21_1"
+}
+
+
+
+
+S.Dulc1_1=getCol(255, 165, 0)
+S.Dulc1_2=getCol(240, 128, 128) # Light Coral
+S.Dulc1_3 <- getCol(192, 192, 192) # Silver
+S.Dulc1_4 <-getCol(128, 128, 128) # Gray
+S.Dulc1_5<- getCol(218, 112, 214) # Orchid
+S.Dulc1_6 <- getCol(255, 215, 0) # Gold
+S.Dulc1_7 <- getCol(64, 224, 208) # Turquoise
+S.Dulc1_8 <- getCol(0, 0, 128) # Navy
+S.Dulc1_9 <- getCol(30, 144, 255) # Dodger Blue
+S.Dulc1_10<- getCol(173, 255, 47) # Green Yellow
+S.Dulc1_11 <- getCol(60, 179, 113) # Medium Sea Green
+S.Dulc1_12 <- getCol(139, 0, 0) # Dark Red
+##daSolDulc1_chr1<- getCol(255, 228, 181) # Moccasin
+
+
+
+
+####dulcamara and daSol
+coords=fread("dulcamara_daSolDulc1_16_500_c500_b100_l1000.coords",header=F)
+coords=as.data.frame(coords)
+coord_dasol_dulc=coords[,c(10,1,2)]
+coord_dasol_dulc$V10=gsub("daSolDulc1_chr","S.Dulc1_",coord_dasol_dulc$V10)
+##coord_dasol_dulc$V10=gsub("_chr","",coord_dasol_dulc$V10)
+coord_dulc_dasol=coords[,c(11,3,4)]
+coord_dulc_dasol$V11=gsub("ntJoin","Sd_",coord_dulc_dasol$V11)
+###coord_dulc_dasol$V11=gsub("S.dulcamara","Sd",coord_dulc_dasol$V11)
+coord_dulc_dasol$col <- as.character(unlist(mget(coord_dasol_dulc$V10, ifnotfound = list(function(x) getColFromList(x)))))
+
+
+library(tidyr)
+sizes_sd_sd=sizes[grepl("Dulc|Sd",sizes$Name),]
+tiff("dulc_dasol.tiff",res=300,he=100,wi=100,units="mm")
+par(cex = 0.7) 
+circos.par("cell.padding" = c(0, 0, 0, 0))
+circos.par(points.overflow.warning = FALSE)
+##circos.par(gap.after = c(rep(0.3, 22), 8, rep(1.3, 22), 8))
+circos.par(track.margin=c(0,0))
+circos.par(gap.after = 0.1)
+circos.genomicInitialize(sizes_sd_sd)
+circos.genomicLink(coord_dulc_dasol, coord_dasol_dulc, col =coord_dulc_dasol$col,border = coord_dulc_dasol$col)
+circos.clear()
+dev.off()
 
