@@ -53,7 +53,16 @@
 #################
 
 #################
-###5.1 MEthylation the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA ####Sd_g8870, Sd_g28574
+###4.4 Methylation in genes without TEs - S.dulcamara and S.nigrum
+###4.4.1 Methylation in genes without TEs - gene body - S.dulcamara and S.nigrum
+###4.4.2 Methylation in genes without TEs - upstream - S.dulcamara and S.nigrum
+###4.4.3 Methylation in genes without TEs  - downstream - S.dulcamara and S.nigrum
+###4.4.4 Methylation in genes without TEs  - combine and plot - S.dulcamara and S.nigrum
+###4.4.5 Methylation in genes without TEs  - regressions - S.dulcamara and S.nigrum
+#################
+
+#################
+###5.1 MEthylation the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA ####Sd_g3085.1, Sd_g3087.1, Sd_g3090, Sd_g26139.3, Sd_g8870, Sd_g28574
 ###5.2 Proportion test assessing methylation frequency  the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA compared against average in genome
 ###5.2.1 Gene body
 ###5.2.2 Upstream
@@ -72,6 +81,25 @@
 ###5.6.2 LTRs upstream
 ###5.6.3 LTRs downstream
 #################
+
+#################
+###6.1. Retrieve methylation of NLRs - S.nigrum -genes, upstream (1Kb) or downstream (1Kbp) regions 
+###6.2.Assess methylation and compare DNA methylation frequency of 53NLRs shared between susceptible plants and compare with 384NLRs not shared between susceptible 
+###6.2.1 Gene body
+###6.2.2 Upstream
+###6.2.3 Downstream
+###6.3 Plot methylation NLRs
+###6.3.1 Methylation in NLRs- S.nigrum - gene bodies
+###6.3.2 Methylation in NLRs- S.nigrum - upstream
+###6.3.3 Methylation in NLRs- S.nigrum - downstream
+###6.3.4 Methylation in NLRs- S.nigrum - combined and plot
+#################
+
+
+
+
+
+
 
 
 
@@ -1862,7 +1890,7 @@ mean(nig$value)
 
 
 #################
-###4.3.2 Methylation in LTRs - upstream - S.dulcamara and S.nigrum
+###4.3.2 Methylation in LRs - upstream - S.dulcamara and S.nigrum
 #################
 #################### dulcamara
 library(dplyr)
@@ -2222,8 +2250,453 @@ dev.off()
 
 
 
+
 #################
-###5.1 MEthylation the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA ####Sd_g8870, Sd_g28574
+###4.4 Methylation in genes without TEs - S.dulcamara and S.nigrum
+#################
+
+#################
+###4.4.1 Methylation in genes without TEs - gene body - S.dulcamara and S.nigrum
+#################
+#################### dulcamara
+library(dplyr)
+genes=read.table("files_meth_new_genes_non_TEs/dulcamara_meth_non-TEs_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+write.table(genes, "files_meth_new_genes_non_TEs/dulcamara_meth_non-TEs_genes_filt_coordinates", col.names=T, sep="\t")
+
+
+##############intervals
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+#################### nigrum
+library(dplyr)
+genes_n=read.table("files_meth_new_genes_non_TEs/nigrum_meth_non-TEs_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "files_meth_new_genes_non_TEs/nigrum_meth_non-TEs_genes_filt_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+
+###########group 
+cut_list_final=left_join(cut_list, cut_list_n)
+write.table(cut_list_final, "files_meth_new_genes_non_TEs/dulcamara_nigrum_non-TEs_meth_genes_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
+###add a column with species and the frequency should be in one
+cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
+cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
+
+
+
+#################
+###4.4.2 Methylation in genes without TEs - upstream - S.dulcamara and S.nigrum
+#################
+#################### dulcamara
+library(dplyr)
+genes=read.table("files_meth_new_genes_non_TEs/dulcamara_meth_non-TEs_genes.upstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+
+write.table(genes, "files_meth_new_genes_non_TEs/dulcamara_meth_non-TEs_genes.upstream_filt_coordinates", col.names=T, sep="\t")
+
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+#################### nigrum
+library(dplyr)
+genes_n=read.table("files_meth_new_genes_non_TEs/nigrum_meth_non-TEs_genes.upstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "files_meth_new_genes_non_TEs/nigrum_meth_non-TEs_genes.upstream_filt_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+###########group 
+
+cut_list_final=left_join(cut_list, cut_list_n)
+write.table(cut_list_final, "files_meth_new_genes_non_TEs/dulcamara_nigrum_meth_non-TEs_genes.upstream_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
+cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
+cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
+
+
+
+
+
+#################
+###4.4.3 Methylation in genes without TEs - downstream - S.dulcamara and S.nigrum
+#################
+#################### dulcamara
+library(dplyr)
+genes=read.table("files_meth_new_genes_non_TEs/dulcamara_meth_non-TEs_genes.downstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+write.table(genes, "files_meth_new_genes_non_TEs/dulcamara_meth_non-TEs_genes.downstream_filt_coordinates", col.names=T, sep="\t")
+
+
+##############intervals
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+5, 5))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("dulcamara_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+#################### nigrum
+library(dplyr)
+genes_n=read.table("files_meth_new_genes_non_TEs/nigrum_meth_non-TEs_genes.downstream", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig_TE", "start_TE","end_TE","TE_type","overlapping","contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "files_meth_new_genes_non_TEs/nigrum_meth_non-TEs_genes.downstream_filt_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+5, 5))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("nigrum_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+###########group
+
+cut_list_final=left_join(cut_list, cut_list_n)
+write.table(cut_list_final, "files_meth_new_genes_non_TEs/dulcamara_nigrum_meth_non-TEs_genes.downstream_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("dulcamara|nigrum", cut_list_final2$variable),]
+###add a column with species and the frequency should be in one
+cut_list_final3$variable=sub("dulcamara", "S.dulcamara", cut_list_final3$variable)
+cut_list_final3$variable=sub("nigrum", "S.nigrum", cut_list_final3$variable)
+
+
+
+
+
+#################
+###4.4.4 Methylation in genes without TEs - combine and plot - S.dulcamara and S.nigrum
+#################
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+library(data.table)
+library(stringr)
+
+
+genes=read.table("files_meth_new_genes_non_TEs/dulcamara_nigrum_non-TEs_meth_genes_intervals", header=T, sep="\t")
+upstream=read.table("files_meth_new_genes_non_TEs/dulcamara_nigrum_meth_non-TEs_genes.upstream_intervals", header=T, sep="\t")
+downstream=read.table("files_meth_new_genes_non_TEs/dulcamara_nigrum_meth_non-TEs_genes.downstream_intervals", header=T, sep="\t")
+upstream$start_coordinates_all=upstream$start_coordinates
+upstream$end_coordinates_all=upstream$end_coordinates
+
+genes$start_coordinates_all=genes$start_coordinates+100
+genes$end_coordinates_all=genes$end_coordinates+100
+
+downstream$start_coordinates_all=downstream$start_coordinates+200
+downstream$end_coordinates_all=downstream$end_coordinates+200
+
+combined=rbind(upstream,genes,downstream)
+combined$new_coordinates=paste(combined$start_coordinates_all, combined$end_coordinates_all, sep=",")
+
+combined2=as.data.frame(melt(setDT(combined), id.vars = "new_coordinates"))
+combined2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(combined2$new_coordinates, ',', 2)
+combined2$start_coordinates=as.numeric(combined2$start_coordinates)
+combined2$end_coordinates=as.numeric(combined2$end_coordinates)
+combined2$variable=sub("_freq","",combined2$variable)
+combined3 <- combined2[grep("dulcamara|nigrum", combined2$variable),]
+
+combined3$middle_coordinates=with(combined3,ifelse(combined3$start_coordinates <= 6, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates < 6, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 11, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 16, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 21, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 26, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 31, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 36, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 41, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 46, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 51, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 56, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 61, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 66, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 71, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 76, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 81, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 86, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 91, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 96, combined3$end_coordinates-3,
+	ifelse(combined3$start_coordinates <= 100 & combined3$start_coordinates > 200, combined3$end_coordinates-103,
+		ifelse(combined3$start_coordinates <= 200 & combined3$start_coordinates>300, combined3$end_coordinates-203,"")))))))))))))))))))))))
+
+
+###add a column with species and the frequency should be in one
+combined3$variable=sub("dulcamara", "S.dulcamara", combined3$variable)
+combined3$variable=sub("nigrum", "S.nigrum", combined3$variable)
+
+###add a column with species and the frequency should be in one
+color_table <-  tibble(
+  Treatment = c("S.dulcamara","S.nigrum"),
+  Color = c("#CC6677", "black"))
+
+
+combined3$middle_coordinates=as.numeric(combined3$middle_coordinates)
+combined3$value=as.numeric(combined3$value)
+###add a column with species and the frequency should be in one
+color_table <-  tibble(
+  Treatment = c("S.dulcamara","S.nigrum"),
+  Color = c("#CC6677", "black"))
+
+
+combined3$middle_coordinates=as.numeric(combined3$middle_coordinates)
+combined3$value=as.numeric(combined3$value)
+write.table(combined3, "files_meth_new_genes_non_TEs/dulcamara_nigrum_non-TEs_meth_all_intervals", col.names=T, sep="\t")
+
+tiff("files_meth_new_genes_non_TEs/both_non-TEs_all.tiff", res=300, he=65, wi=90, units="mm")
+
+par(mar=c(1,1,1,15))
+p=ggplot(combined3, aes(x = middle_coordinates, y = value, colour=variable)) +
+   geom_point(size = 0.1) +
+  theme_bw() +geom_line(aes(x = middle_coordinates))+ylim(0,1)+
+  xlim(0,300)+xlab("")+ ylab("Methylation frequency (genes without TEs)")+
+theme(plot.margin = margin(t = 1,  # Top margin
+                             r = 25,  # Right margin
+                             b = 1,  # Bottom margin
+                             l = 1)) # Left margin
+
+p=p+scale_x_continuous(breaks = c(0,150,300), 
+labels=c("-1Kb","Gene body",  "+1Kb"))+ theme(legend.text = element_text(face = "italic"))+ theme( text = element_text(size = 7))
+
+p=p+scale_colour_manual(values = color_table$Color)
+p=p+annotate(geom = "rect", xmin=0, xmax=100, ymin=0, ymax=1,
+           fill = "gray80", colour = NA, alpha = 0.5)
+
+p=p+annotate(geom = "rect", xmin=200, xmax=300, ymin=0, ymax=1,
+           fill = "gray80", colour = NA, alpha = 0.5)
+
+
+print(p)
+dev.off()
+
+
+
+
+#################
+###4.4.5 Methylation in genes without TEs - regressions - S.dulcamara and S.nigrum
+#################
+################# gene body
+i="S.dulcamara"
+xlabel=substitute(expr = paste("Methylation frequency in ", italic(i), " gene bodies (without TEs)"),
+                      env = list(i=i))
+i="S.nigrum"
+ylabel=substitute(expr = paste("Methylation frequency in ", italic(i), " gene bodies (without TEs)"),
+                      env = list(i=i))
+library(ggpubr)
+tiff("files_meth_new_TEs/LTRs_comparison_gene_body.tiff",res=300,he=60,wi=60,units="mm")
+ggscatter(genes, x = "dulcamara_freq", y = "nigrum_freq",          
+ add = "reg.line", conf.int = TRUE,palette=c("#CC6677", "black"),size =1.5, cor.coef = TRUE, cor.coef.size = 2.0,
+          cor.coeff.args = list(label.y = 0.95),
+          xlab = c(xlabel), ylab = c(ylabel))+theme(text = element_text(size =4.0))+ylim(0.5,1)+xlim(0.5,1)
+dev.off()
+
+################# upstream
+i="S.dulcamara"
+xlabel=substitute(expr = paste("Methylation frequency in ", italic(i), " upstream regions (without TEs)"),
+                      env = list(i=i))
+i="S.nigrum"
+ylabel=substitute(expr = paste("Methylation frequency in ", italic(i), " upstream regions (without TEs)"),
+                      env = list(i=i))
+
+library(ggpubr)
+tiff("files_meth_new_TEs/LTRs_comparison_upstream.tiff",res=300,he=60,wi=60,units="mm")
+ggscatter(upstream, x = "dulcamara_freq", y = "nigrum_freq",          
+ add = "reg.line", conf.int = TRUE,palette=c("#CC6677", "black"),size =1.5, cor.coef = TRUE, cor.coef.size = 2.0,
+          cor.coeff.args = list(label.y = 0.95),
+          xlab = c(xlabel), ylab = c(ylabel))+theme(text = element_text(size =4.0))+ylim(0.5,1)+xlim(0.5,1)
+dev.off()
+
+################# downstream
+i="S.dulcamara"
+xlabel=substitute(expr = paste("Methylation frequency in ", italic(i), " downstream regions (without TEs)"),
+                      env = list(i=i))
+i="S.nigrum"
+ylabel=substitute(expr = paste("Methylation frequency in ", italic(i), " downstream regions (without TEs)"),
+                      env = list(i=i))
+
+library(ggpubr)
+tiff("files_meth_new_TEs/LTRs_comparison_downstream.tiff",res=300,he=60,wi=60,units="mm")
+ggscatter(downstream, x = "dulcamara_freq", y = "nigrum_freq",          
+ add = "reg.line", conf.int = TRUE,palette=c("#CC6677", "black"),size =1.5, cor.coef = TRUE, cor.coef.size = 2.0,
+          cor.coeff.args = list(label.y = 0.95),
+          xlab = c(xlabel), ylab = c(ylabel))+theme(text = element_text(size =4.0))+ylim(0.5,1)+xlim(0.5,1)
+dev.off()
+
+
+
+
+
+#################
+###5.1 MEthylation the genes in selected disease-related genes between S.dulcamara and S.americanum resistant to Ralstonia solanaceaerum - identified after SYNIMA ####Sd_g3085.1, Sd_g3087.1, Sd_g3090, Sd_g26139.3, Sd_g8870, Sd_g28574
 #################
 #grep "mRNA" S.dulcamara.annotation.gff3 > S.dulcamara.annotation.genes
 #awk '{print $1,$4,$5, $7, $9}' S.dulcamara.annotation.genes > S.dulcamara.annotation.genes2
@@ -2326,11 +2799,15 @@ write.table(genes_down_filt, "genes/dulcamara_meth_genes.downstream_interest_Sd_
 genes_filt_average=genes_filt %>%
   group_by(Gene_ID) %>%
   summarise(mean=mean(methylated_frequency,na.rm=TRUE))
-
+# A tibble: 6 × 2
 #  Gene_ID      mean
 #  <chr>       <dbl>
- Sd_g26139.3 0.422
- Sd_g8870    0.381
+1 Sd_g26139.3 0.422
+2 Sd_g28574   0.273
+3 Sd_g3085.1  0.912
+4 Sd_g3087.1  0.909
+5 Sd_g3090    0.934
+6 Sd_g8870    0.381
 
 
 
@@ -2339,8 +2816,12 @@ genes_up_filt_average=genes_up_filt %>%
   summarise(mean=mean(methylated_frequency,na.rm=TRUE))
 #  Gene_ID      mean
 #  <chr>       <dbl>
- Sd_g28574   0.569
- Sd_g8870    0.476
+1 Sd_g26139.3 0.386
+2 Sd_g28574   0.569
+3 Sd_g3085.1  0.903
+4 Sd_g3087.1  0.876
+5 Sd_g3090    0.891
+6 Sd_g8870    0.476
 
 
 
@@ -2349,8 +2830,12 @@ genes_down_filt_average=genes_down_filt %>%
   summarise(mean=mean(methylated_frequency,na.rm=TRUE))
 #  Gene_ID      mean
 #  <chr>       <dbl>
- Sd_g28574   0.501
- Sd_g8870    0.721
+1 Sd_g26139.3 0.910
+2 Sd_g28574   0.501
+3 Sd_g3085.1  0.936
+4 Sd_g3087.1  0.960
+5 Sd_g3090    0.841
+6 Sd_g8870    0.721
 
 
 
@@ -3344,4 +3829,1158 @@ p_value
 #[1] 0
 #[1] 0
 #[1] 1
+
+
+
+
+
+#################
+###6.1. Retrieve methylation of NLRs - S.nigrum -genes, upstream (1Kb) or downstream (1Kbp) regions 
+#################Start retrieving the genes names on 53 NLRs shared between susceptible species
+awk '{print $11}' NLR_nigrum_genome_genes_match_orthofinder_3531_all_susceptible_genes > NLR_nigrum_genome_genes_match_orthofinder_3531_all_susceptible_genes_names
+sed 's/;/\t/g' NLR_nigrum_genome_genes_match_orthofinder_3531_all_susceptible_genes_names >  NLR_nigrum_genome_genes_match_orthofinder_3531_all_susceptible_genes_names2
+awk '{print $1}'  NLR_nigrum_genome_genes_match_orthofinder_3531_all_susceptible_genes_names2 >  NLR_nigrum_genome_genes_match_orthofinder_3531_all_susceptible_genes_names3
+sed 's/ID=//g' NLR_nigrum_genome_genes_match_orthofinder_3531_all_susceptible_genes_names3 >  NLR_nigrum_genome_genes_match_orthofinder_3531_all_susceptible_genes_names4
+grep -wFf NLR_nigrum_genome_genes_match_orthofinder_3531_all_susceptible_genes_names4 Orthogroups.txt > NLR_nigrum_genome_genes_match_orthofinder_3531_all_susceptible_genes_names4_OG ###NONE
+###25 OGs--->not one single of them common between all 5 susceptible.
+####Check methylation of all the Sn genes in common with susceptible total 53 NLRs -->file is NLR_nigrum_genome_genes_match_orthofinder_3531_all_susceptible_genes_names4
+
+#################Retrieve first annotation of all the other 384 NLRs in S.nigrum and use bedtools to match with methylation gene, upstream and downstream
+awk '{print $11}' NLR/NLR_nigrum_genome_genes > NLR/NLR_nigrum_genome_genes_names
+sed 's/;/\t/g' NLR/NLR_nigrum_genome_genes_names >  NLR/NLR_nigrum_genome_genes_names2
+awk '{print $1}'  NLR/NLR_nigrum_genome_genes_names2 >  NLR/NLR_nigrum_genome_genes_names3
+sed 's/ID=//g' NLR/NLR_nigrum_genome_genes_names3 >  NLR/NLR_nigrum_genome_genes_names4
+grep -wFf NLR/NLR_nigrum_genome_genes_names4 S.nigrum.annotation.genes3 > NLR/NLR_nigrum_genome_genes_names4_all
+####sort and uniq
+sort NLR/NLR_nigrum_genome_genes_names4_all
+
+######437 -53 NLRs ---->384
+grep -vFf  NLR/NLR_nigrum_genome_genes_match_orthofinder_3531_all_susceptible_genes_names4 NLR/NLR_nigrum_genome_genes_names4_all > NLR/384_NLRs_SN_no_shared 
+grep -wFf NLR/NLR_nigrum_genome_genes_match_orthofinder_3531_all_susceptible_genes_names4 S.nigrum.annotation.genes3 > NLR/53_NLR_nigrum_susceptible
+
+####retrieve methylation of the 384
+###gene bodies 384
+bedtools intersect -a NLR/384_NLRs_SN_no_shared -b  nigrum_meth -wo > NLR/384_NLRs_SN_no_shared_meth_genes
+###upstream 384
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($4 == "+") {print $1,$2-1000, $3-1, $4, $5} else {print $1,$3+1,$3+1000, $4, $5}}' NLR/384_NLRs_SN_no_shared > NLR/384_NLRs_SN_no_shared.genes.upstream
+sed 's/ /\t/g' NLR/384_NLRs_SN_no_shared.genes.upstream > NLR/384_NLRs_SN_no_shared.genes.upstream2
+bedtools intersect -a NLR/384_NLRs_SN_no_shared.genes.upstream2 -b  nigrum_meth -wo > NLR/384_NLRs_SN_no_shared.upstream_meth
+
+###downstream 384
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($4 == "+") {print $1,$3+1, $3+1000, $4, $5} else {print $1,$2-1000,$2-1, $4, $5}}' NLR/384_NLRs_SN_no_shared > NLR/384_NLRs_SN_no_shared.genes.downstream
+sed 's/ /\t/g' NLR/384_NLRs_SN_no_shared.genes.downstream > NLR/384_NLRs_SN_no_shared.genes.downstream2
+bedtools intersect -a NLR/384_NLRs_SN_no_shared.genes.downstream2 -b  nigrum_meth -wo > NLR/384_NLRs_SN_no_shared.downstream_meth
+
+
+####retrieve methylation of the 53
+###gene bodies 53 NLRs
+bedtools intersect -a NLR/53_NLR_nigrum_susceptible -b  nigrum_meth -wo > NLR/53_NLR_nigrum_susceptible_meth_genes
+
+###upstream
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($4 == "+") {print $1,$2-1000, $2-1, $4, $5} else {print $1,$3+1,$3+1000, $4, $5}}' NLR/53_NLR_nigrum_susceptible > NLR/53_NLR_nigrum_susceptible.genes.upstream
+sed 's/ /\t/g' NLR/53_NLR_nigrum_susceptible.genes.upstream > NLR/53_NLR_nigrum_susceptible.genes.upstream2
+bedtools intersect -a NLR/53_NLR_nigrum_susceptible.genes.upstream2 -b  nigrum_meth -wo >  NLR/53_NLR_nigrum_susceptible.upstream_meth
+
+###downstream
+awk 'BEGIN{OFS="\t";FS="\t"} {if ($4 == "+") {print $1,$3+1, $3+1000, $4, $5} else {print $1,$2-1000,$2-1, $4, $5}}' NLR/53_NLR_nigrum_susceptible > NLR/53_NLR_nigrum_susceptible.genes.downstream
+sed 's/ /\t/g' NLR/53_NLR_nigrum_susceptible.genes.downstream > NLR/53_NLR_nigrum_susceptible.genes.downstream2
+bedtools intersect -a NLR/53_NLR_nigrum_susceptible.genes.downstream2 -b  nigrum_meth -wo > NLR/53_NLR_nigrum_susceptible.downstream_meth
+
+
+
+#################
+###6.2.Assess methylation and compare DNA methylation frequency of 53NLRs shared between susceptible plants and compare with 384NLRs not shared between susceptible 
+#################
+###6.2.1 Gene body
+#################
+library(data.table)
+genes=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/384_NLRs_SN_no_shared_meth_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+###222115 15
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+
+
+methylation_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(mean_freq=mean(methylated_frequency,na.rm=TRUE)) 
+methylation_average$Gene_ID=str_split(methylation_average$Gene_ID, ';', simplify = TRUE)[,2]
+methylation_average$Gene_ID=sub("Name=","",methylation_average$Gene_ID)
+
+
+genes_number= as.numeric(nlevels(factor(methylation_average$Gene_ID)))
+add_zeros=384
+methylation_average_vector=c(methylation_average$mean_freq, rep(0,add_zeros))
+methylation_average_mean=mean(methylation_average_vector, na.rm=TRUE) 
+methylation_average_mean
+methylation_average_sd=sd(methylation_average_vector, na.rm=TRUE) 
+methylation_average_sd
+genes_number= 384
+
+[1] 0.3983985
+[1] 0.4163187
+
+
+genes_interest=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/53_NLR_nigrum_susceptible_meth_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_interest)<-c(header)
+genes_interest$Gene_size=genes_interest$end_gene - genes_interest$start_gene
+###222115 15
+genes_interest$start_gene_percentage=c(1)
+genes_interest$end_gene_percentage=c(100)
+genes_interest$start_methylation_start_gene_difference=genes_interest$start_methylation- genes_interest$start_gene
+genes_interest$end_methylation_start_gene_difference=genes_interest$end_methylation- genes_interest$start_gene
+
+genes_interest=genes_interest %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_interest=genes_interest %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_interest$start_meth_percentage = 100*genes_interest$start_meth_percentage
+genes_interest$end_meth_percentage = 100*genes_interest$end_meth_percentage
+
+
+methylation_average_interest=genes_interest %>%
+  group_by(Gene_ID) %>%
+  summarise(mean_freq=mean(methylated_frequency,na.rm=TRUE)) 
+methylation_average_interest$Gene_ID=str_split(methylation_average_interest$Gene_ID, ';', simplify = TRUE)[,2]
+methylation_average_interest$Gene_ID=sub("Name=","",methylation_average_interest$Gene_ID)
+methylation_average_interest=as.data.frame(methylation_average_interest)
+methylation_average_interest
+              . mean_freq
+1     Sn_g1162 0.8474737
+2    Sn_g15989 0.9582500
+3    Sn_g16678 0.9881053
+4    Sn_g17796 0.8161500
+5  Sn_g17797.1 0.6352059
+6      Sn_g180 0.8101702
+7    Sn_g20081 0.9620152
+8    Sn_g20082 0.9276538
+9  Sn_g22013.1 0.8381905
+10 Sn_g22352.1 0.7815868
+11 Sn_g22368.1 0.6980682
+12   Sn_g23740 0.9284348
+13 Sn_g23821.1 0.8614409
+14 Sn_g24372.1 0.8847000
+15   Sn_g24373 0.8709412
+16   Sn_g24653 0.9101154
+17   Sn_g26177 0.9140806
+18   Sn_g26491 0.8171143
+19 Sn_g26495.1 0.7295125
+20 Sn_g26500.2 0.9606957
+21   Sn_g26501 0.9881667
+22 Sn_g26502.1 0.9188000
+23 Sn_g26503.1 0.9057586
+24 Sn_g26506.1 0.9323043
+25   Sn_g27458 0.6458889
+26   Sn_g27592 0.9885833
+27   Sn_g27593 0.7258273
+28 Sn_g27783.1 0.9464126
+29   Sn_g28030 0.9747273
+30   Sn_g28345 0.6763590
+31   Sn_g28346 0.6647500
+32   Sn_g28360 0.9250000
+33   Sn_g28364 0.4879167
+34 Sn_g28365.1 0.9232692
+35   Sn_g28476 0.5293846
+36   Sn_g31682 0.8046923
+37   Sn_g32412 0.9867500
+38 Sn_g33165.1 0.9532500
+39   Sn_g33166 0.8563448
+40 Sn_g34732.2 0.2085588
+41 Sn_g35023.2 0.9274667
+42 Sn_g35024.2 0.8854255
+43   Sn_g35259 0.8403221
+44   Sn_g35299 0.9222333
+45 Sn_g35317.1 0.9590390
+46 Sn_g35382.2 0.9090667
+47   Sn_g37116 0.9570909
+48 Sn_g37362.1 0.7145066
+49    Sn_g4757 0.9244253
+50    Sn_g7185 0.8078000
+51  Sn_g7847.1 0.8102136
+52  Sn_g8685.1 0.9362075
+
+Z_statistic <- (0.2085588 - methylation_average_mean) / (methylation_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+Z_statistic
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+
+
+[1] -8.935663
+[1] 4.047433e-19
+[1] 1
+[1] 2.023717e-19
+>
+
+
+Z_statistic <- (0.4879167 - methylation_average_mean) / (methylation_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+Z_statistic
+p_value
+
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+[1] 4.213578
+[1] 2.513564e-05
+[1] 1.256782e-05
+[1] 0.9999874
+
+
+
+#################
+###6.2.2 Upstream
+#################
+library(data.table)
+genes=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/384_NLRs_SN_no_shared.upstream_meth", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+###222115 15
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+
+
+methylation_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(mean_freq=mean(methylated_frequency,na.rm=TRUE)) 
+methylation_average$Gene_ID=str_split(methylation_average$Gene_ID, ';', simplify = TRUE)[,2]
+methylation_average$Gene_ID=sub("Name=","",methylation_average$Gene_ID)
+
+
+genes_number= as.numeric(nlevels(factor(methylation_average$Gene_ID)))
+add_zeros=384
+methylation_average_vector=c(methylation_average$mean_freq, rep(0,add_zeros))
+methylation_average_mean=mean(methylation_average_vector, na.rm=TRUE) 
+methylation_average_mean
+methylation_average_sd=sd(methylation_average_vector, na.rm=TRUE) 
+methylation_average_sd
+genes_number= 384
+
+[1] 0.3702148
+[1] 0.4021292
+
+
+genes_interest=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/53_NLR_nigrum_susceptible.upstream_meth", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_interest)<-c(header)
+genes_interest$Gene_size=genes_interest$end_gene - genes_interest$start_gene
+###222115 15
+genes_interest$start_gene_percentage=c(1)
+genes_interest$end_gene_percentage=c(100)
+genes_interest$start_methylation_start_gene_difference=genes_interest$start_methylation- genes_interest$start_gene
+genes_interest$end_methylation_start_gene_difference=genes_interest$end_methylation- genes_interest$start_gene
+
+genes_interest=genes_interest %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_interest=genes_interest %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_interest$start_meth_percentage = 100*genes_interest$start_meth_percentage
+genes_interest$end_meth_percentage = 100*genes_interest$end_meth_percentage
+
+
+methylation_average_interest=genes_interest %>%
+  group_by(Gene_ID) %>%
+  summarise(mean_freq=mean(methylated_frequency,na.rm=TRUE)) 
+methylation_average_interest$Gene_ID=str_split(methylation_average_interest$Gene_ID, ';', simplify = TRUE)[,2]
+methylation_average_interest$Gene_ID=sub("Name=","",methylation_average_interest$Gene_ID)
+methylation_average_interest=as.data.frame(methylation_average_interest)
+methylation_average_interest
+    Gene_ID mean_freq
+1     Sn_g1162 0.9474667
+2    Sn_g15989 0.9480769
+3    Sn_g16678 0.2891818
+4    Sn_g17796 0.4108667
+5  Sn_g17797.1 0.5575385
+6      Sn_g180 0.7511000
+7    Sn_g20081 0.9217778
+8    Sn_g20082 0.9606429
+9  Sn_g22013.1 0.8680833
+10 Sn_g22352.1 0.9897692
+11 Sn_g22368.1 0.6923077
+12   Sn_g23740 0.8750000
+13 Sn_g23821.1 0.8810000
+14 Sn_g24372.1 0.8376429
+15   Sn_g24373 0.8793077
+16   Sn_g24653 0.9376667
+17   Sn_g24687 0.5571429
+18   Sn_g26177 0.5547143
+19   Sn_g26491 0.9650000
+20 Sn_g26495.1 0.8385000
+21 Sn_g26500.2 0.9238095
+22   Sn_g26501 0.8818333
+23 Sn_g26502.1 0.8747333
+24 Sn_g26503.1 0.8703333
+25 Sn_g26506.1 0.9166000
+26   Sn_g27458 0.7142000
+27   Sn_g27592 0.9875385
+28   Sn_g27593 0.6666667
+29 Sn_g27783.1 0.9659167
+30   Sn_g28030 0.9934444
+31   Sn_g28345 0.6647500
+32   Sn_g28346 0.7032857
+33   Sn_g28360 0.9451000
+34   Sn_g28364 0.7060000
+35 Sn_g28365.1 0.9852308
+36   Sn_g28476 0.7781429
+37   Sn_g31682 0.9748000
+38   Sn_g32412 0.9772500
+39 Sn_g33165.1 0.6035000
+40   Sn_g33166 0.9904667
+41 Sn_g34732.2 0.2421000
+42 Sn_g35023.2 0.8596923
+43 Sn_g35024.2 0.8338750
+44   Sn_g35259 0.5552500
+45   Sn_g35299 0.9924167
+46 Sn_g35317.1 0.9594167
+47 Sn_g35382.2 0.8570000
+48   Sn_g37116 0.8992308
+49 Sn_g37362.1 0.6155333
+50    Sn_g4757 0.5900000
+51    Sn_g7185 0.0828750
+52  Sn_g7847.1 0.9758000
+53  Sn_g8685.1 0.9591818
+
+Z_statistic <- (0.2421000 - methylation_average_mean) / (methylation_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+Z_statistic
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+[1] -6.243086
+[1] 4.290221e-10
+[1] 1
+[1] 2.145111e-10
+
+
+
+Z_statistic <- (0.4108667 - methylation_average_mean) / (methylation_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+Z_statistic
+p_value
+
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+[1] 1.980983
+[1] 0.04759314
+[1] 0.02379657
+[1] 0.9762034
+
+#################
+###6.2.3 Downstream
+#################
+library(data.table)
+genes=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/384_NLRs_SN_no_shared.downstream_meth", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+###222115 15
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+
+
+methylation_average=genes %>%
+  group_by(Gene_ID) %>%
+  summarise(mean_freq=mean(methylated_frequency,na.rm=TRUE)) 
+methylation_average$Gene_ID=str_split(methylation_average$Gene_ID, ';', simplify = TRUE)[,2]
+methylation_average$Gene_ID=sub("Name=","",methylation_average$Gene_ID)
+
+
+genes_number= as.numeric(nlevels(factor(methylation_average$Gene_ID)))
+add_zeros=384
+methylation_average_vector=c(methylation_average$mean_freq, rep(0,add_zeros))
+methylation_average_mean=mean(methylation_average_vector, na.rm=TRUE) 
+methylation_average_mean
+methylation_average_sd=sd(methylation_average_vector, na.rm=TRUE) 
+methylation_average_sd
+genes_number= 384
+
+y
+[1] 0.3857931
+[1] 0.4151561
+
+genes_interest=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/53_NLR_nigrum_susceptible.downstream_meth", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_interest)<-c(header)
+genes_interest$Gene_size=genes_interest$end_gene - genes_interest$start_gene
+###222115 15
+genes_interest$start_gene_percentage=c(1)
+genes_interest$end_gene_percentage=c(100)
+genes_interest$start_methylation_start_gene_difference=genes_interest$start_methylation- genes_interest$start_gene
+genes_interest$end_methylation_start_gene_difference=genes_interest$end_methylation- genes_interest$start_gene
+
+genes_interest=genes_interest %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_interest=genes_interest %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_interest$start_meth_percentage = 100*genes_interest$start_meth_percentage
+genes_interest$end_meth_percentage = 100*genes_interest$end_meth_percentage
+
+
+methylation_average_interest=genes_interest %>%
+  group_by(Gene_ID) %>%
+  summarise(mean_freq=mean(methylated_frequency,na.rm=TRUE)) 
+methylation_average_interest$Gene_ID=str_split(methylation_average_interest$Gene_ID, ';', simplify = TRUE)[,2]
+methylation_average_interest$Gene_ID=sub("Name=","",methylation_average_interest$Gene_ID)
+methylation_average_interest=as.data.frame(methylation_average_interest)
+methylation_average_interest
+       Gene_ID mean_freq
+1     Sn_g1162 0.6930000
+2    Sn_g15989 0.6989333
+3    Sn_g16678 0.9974615
+4    Sn_g17796 0.7607000
+5  Sn_g17797.1 0.7607000
+6      Sn_g180 0.7795714
+7    Sn_g20081 0.9131667
+8    Sn_g20082 0.7095000
+9  Sn_g22013.1 0.9643500
+10 Sn_g22352.1 0.8667333
+11 Sn_g22368.1 0.5040000
+12   Sn_g23740 0.8149091
+13 Sn_g23821.1 0.9142857
+14 Sn_g24372.1 0.9947000
+15   Sn_g24373 0.7350000
+16   Sn_g24653 0.5303333
+17   Sn_g24687 0.8567143
+18   Sn_g26177 0.9230000
+19   Sn_g26491 0.6332857
+20 Sn_g26495.1 0.5000000
+21 Sn_g26500.2 0.8604000
+22   Sn_g26501 0.9946667
+23 Sn_g26502.1 0.8703333
+24 Sn_g26503.1 0.8333333
+25 Sn_g26506.1 0.7796429
+26   Sn_g27458 0.6886000
+27   Sn_g27592 0.4306667
+28   Sn_g27593 0.9855000
+29 Sn_g27783.1 0.9379048
+30   Sn_g28030 0.9947143
+31   Sn_g28345 0.5923636
+32   Sn_g28346 0.8488571
+33   Sn_g28360 0.9391579
+34   Sn_g28364 0.9672857
+35 Sn_g28365.1 0.9207143
+36   Sn_g28476 0.6054375
+37   Sn_g31682 0.9562000
+38   Sn_g32412 0.9834286
+39 Sn_g33165.1 0.7431250
+40   Sn_g33166 0.9927333
+41 Sn_g34732.2 0.6289000
+42 Sn_g35023.2 0.9812727
+43 Sn_g35024.2 0.9470000
+44   Sn_g35259 0.5249231
+45   Sn_g35299 0.9945385
+46 Sn_g35317.1 0.9514167
+47 Sn_g35382.2 0.8411667
+48   Sn_g37116 0.9021739
+49 Sn_g37362.1 0.7875455
+50    Sn_g4757 0.9958333
+51    Sn_g7185 0.8944286
+52  Sn_g7847.1 0.8868571
+53  Sn_g8685.1 0.9401429
+
+
+
+Z_statistic <- (0.5249231 - methylation_average_mean) / (methylation_average_sd/ sqrt(genes_number))
+p_value <- 2 * pnorm(-abs(Z_statistic))  # For a two-tailed test
+Z_statistic
+p_value
+
+#For a right-tailed test (sample mean > population mean):
+p_value <- 1 - pnorm(Z_statistic)
+p_value
+#For a left-tailed test (sample mean < population mean):
+p_value <- pnorm(Z_statistic)
+p_value
+[1] 6.567118
+[1] 5.129835e-11
+[1] 2.564915e-11
+[1] 1
+
+
+
+
+#################
+###6.3 Plot methylation NLRs
+#################
+
+#################
+###6.3.1 Methylation in NLRs- S.nigrum - gene body
+#################
+#################### 52 genes except Sn_g34732
+#compare in a plot the DNA methylation frequency of 52 NLRs shared between susceptible, Sn_g34732 and the rest of S.nigrum NLRs -384.
+### start with 53 NLRs and remove the info of Sn_g34732
+library(dplyr)
+genes=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/53_NLR_nigrum_susceptible_meth_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+genes=genes[!grepl("Sn_g34732", genes$Gene_ID),]
+write.table(genes, "/users/sfo503/scratch/dulcamara_nigrum/NLR/52_NLR_nigrum_susceptible_genes_meth_coordinates", col.names=T, sep="\t")
+
+
+##############intervals
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+10, 15))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list2=as.data.frame(by(genes$methylated_frequency, cuts, max)) ##ok
+cut_list3=as.data.frame(by(genes$methylated_frequency, cuts, min)) ##ok
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("susceptible_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+#################### 384 NLRS
+library(dplyr)
+genes_n=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/384_NLRs_SN_no_shared_meth_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+###222115 15
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "/users/sfo503/scratch/dulcamara_nigrum/NLR/384_NLRs_SN_no_shared_meth_genes_meth_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+10, 15))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list2_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, max)) ##ok
+cut_list3_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, min)) ##ok
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("rest_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+
+#################### nigrum
+genes=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/53_NLR_nigrum_susceptible_meth_genes", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+
+genes2=genes[grepl("Sn_g34732", genes$Gene_ID),]
+##############intervals
+#####average by 5%
+cuts_n2 <- cut(genes2$end_meth_percentage, breaks=seq(1, max(genes2$start_meth_percentage)+10, 15))
+cut_list_n2=as.data.frame(by(genes2$methylated_frequency, cuts_n2, mean))
+cut_list2_n2=as.data.frame(by(genes2$methylated_frequency, cuts_n2, max)) ##ok
+cut_list3_n2=as.data.frame(by(genes2$methylated_frequency, cuts_n2, min)) ##ok
+cut_list_n2$coordinates<-rownames(cut_list_n2)
+cut_list_n2$coordinates=gsub("(","", cut_list_n2$coordinates,fixed=TRUE)
+cut_list_n2$coordinates=gsub("]","", cut_list_n2$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n2$coordinates, ',', 2)
+cut_list_n2$start_coordinates=as.numeric(cut_list_n2$start_coordinates)
+cut_list_n2$end_coordinates=as.numeric(cut_list_n2$end_coordinates)
+cut_list_n2$x=as.numeric(cut_list_n2$x)
+cut_list_n2$middle_coordinates=cut_list_n2$end_coordinates-3
+colnames(cut_list_n2)=c("int_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+
+
+###########group and plot 384, 52 and Sn_g34732
+
+cut_list_final=left_join(cut_list, cut_list_n)
+cut_list_final=left_join(cut_list_final, cut_list_n2)
+write.table(cut_list_final, "/users/sfo503/scratch/dulcamara_nigrum/NLR/52_384_Sn_g34732_NLR_Sn_genes_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("susceptible|rest|int", cut_list_final2$variable),]
+###add a column with species and the frequency should be in one
+cut_list_final3$variable=sub("susceptible", "52 NLRs susceptible", cut_list_final3$variable)
+cut_list_final3$variable=sub("rest", "Other NLRs", cut_list_final3$variable)
+cut_list_final3$variable=sub("int", "Sn_g34732", cut_list_final3$variable)
+
+###add a column with species and the frequency should be in one
+color_table <-  tibble(
+  Treatment = c("52 NLRs susceptible","Other NLRs", "Sn_g34732"),
+  Color = c("#009E73", "#777777", "#332288"))
+
+library(ggplot2)
+tiff("/users/sfo503/scratch/dulcamara_nigrum/NLR/NLR_52_384_Sn_g34732_genes.tiff", res=300, he=200, wi=200, units="mm")
+par(mar=c(1,1,1,15))
+p=ggplot(cut_list_final3, aes(x = start_coordinates, y = value, colour=variable)) +
+  geom_segment(aes(xend = end_coordinates, yend = value)) +
+   geom_point(size = 3) +
+  geom_point(aes(x = end_coordinates), size = 3) +
+  theme_bw() +geom_line(aes(x = middle_coordinates))+ylim(0,1)+
+  xlim(0,102)+xlab("Gene Locus")+ ylab("Methylation frequency")+
+theme(plot.margin = margin(t = 1,  # Top margin
+                             r = 25,  # Right margin
+                             b = 1,  # Bottom margin
+                             l = 1)) # Left margin
+p=p+scale_x_continuous(breaks = c(0, 25,50,75,100), labels=c("Transcription start site", "Locus (25% bp)","Locus (50% bp)","Locus (75%)", "End mRNA"))
+p=p+scale_colour_manual(values = color_table$Color)
+
+print(p)
+dev.off()
+
+dulc<-cut_list_final3[grep("52 NLRs susceptible",cut_list_final3$variable),]
+nig<-cut_list_final3[grep("Other NLRs",cut_list_final3$variable),]
+int<-cut_list_final3[grep("Sn_g34732",cut_list_final3$variable),]
+mean(dulc$value)
+mean(nig$value)
+mean(int$value, na.rm=T)
+
+  
+[1] 0.8457069
+[1] 0.8115234
+[1] 0.1844206
+
+
+
+#################
+###6.3.2 Methylation in NLRs- S.nigrum - upstream
+#################
+#################### 52 genes except Sn_g34732
+### start with 53 NLRs and remove the info of Sn_g34732
+library(dplyr)
+genes=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/53_NLR_nigrum_susceptible.upstream_meth", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+genes=genes[!grepl("Sn_g34732", genes$Gene_ID),]
+write.table(genes, "/users/sfo503/scratch/dulcamara_nigrum/NLR/52_NLR_nigrum_susceptible_genes.upstream_meth_coordinates", col.names=T, sep="\t")
+
+
+##############intervals
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+10, 15))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list2=as.data.frame(by(genes$methylated_frequency, cuts, max)) ##ok
+cut_list3=as.data.frame(by(genes$methylated_frequency, cuts, min)) ##ok
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("susceptible_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+#################### 384 NLRS
+library(dplyr)
+genes_n=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/384_NLRs_SN_no_shared.upstream_meth", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+###222115 15
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "/users/sfo503/scratch/dulcamara_nigrum/NLR/384_NLRs_SN_no_shared.upstream_meth_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+10, 15))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list2_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, max)) ##ok
+cut_list3_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, min)) ##ok
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("rest_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+
+
+#############gene of interest Sn_g34732
+
+genes=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/53_NLR_nigrum_susceptible.upstream_meth", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+
+genes2=genes[grepl("Sn_g34732", genes$Gene_ID),]
+##############intervals
+#####average by 5%
+cuts_n2 <- cut(genes2$end_meth_percentage, breaks=seq(1, max(genes2$start_meth_percentage)+10, 15))
+cut_list_n2=as.data.frame(by(genes2$methylated_frequency, cuts_n2, mean))
+cut_list2_n2=as.data.frame(by(genes2$methylated_frequency, cuts_n2, max)) ##ok
+cut_list3_n2=as.data.frame(by(genes2$methylated_frequency, cuts_n2, min)) ##ok
+cut_list_n2$coordinates<-rownames(cut_list_n2)
+cut_list_n2$coordinates=gsub("(","", cut_list_n2$coordinates,fixed=TRUE)
+cut_list_n2$coordinates=gsub("]","", cut_list_n2$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n2$coordinates, ',', 2)
+cut_list_n2$start_coordinates=as.numeric(cut_list_n2$start_coordinates)
+cut_list_n2$end_coordinates=as.numeric(cut_list_n2$end_coordinates)
+cut_list_n2$x=as.numeric(cut_list_n2$x)
+cut_list_n2$middle_coordinates=cut_list_n2$end_coordinates-3
+colnames(cut_list_n2)=c("int_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+
+
+###########group and plot 384, 52 and Sn_g34732
+
+cut_list_final=left_join(cut_list, cut_list_n)
+cut_list_final=left_join(cut_list_final, cut_list_n2)
+write.table(cut_list_final, "/users/sfo503/scratch/dulcamara_nigrum/NLR/52_384_Sn_g34732_NLR_Sn_genes.upstream_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("susceptible|rest|int", cut_list_final2$variable),]
+###add a column with species and the frequency should be in one
+cut_list_final3$variable=sub("susceptible", "52 NLRs susceptible", cut_list_final3$variable)
+cut_list_final3$variable=sub("rest", "Other NLRs", cut_list_final3$variable)
+cut_list_final3$variable=sub("int", "Sn_g34732", cut_list_final3$variable)
+
+###add a column with species and the frequency should be in one
+color_table <-  tibble(
+  Treatment = c("52 NLRs susceptible","Other NLRs", "Sn_g34732"),
+  Color = c("#009E73", "#777777", "#332288"))
+
+library(ggplot2)
+tiff("/users/sfo503/scratch/dulcamara_nigrum/NLR/NLR_52_384_Sn_g34732_genes.upstream.tiff", res=300, he=200, wi=200, units="mm")
+par(mar=c(1,1,1,15))
+p=ggplot(cut_list_final3, aes(x = start_coordinates, y = value, colour=variable)) +
+  geom_segment(aes(xend = end_coordinates, yend = value)) +
+   geom_point(size = 3) +
+  geom_point(aes(x = end_coordinates), size = 3) +
+  theme_bw() +geom_line(aes(x = middle_coordinates))+ylim(0,1)+
+  xlim(0,102)+xlab("Gene Locus")+ ylab("Methylation frequency")+
+theme(plot.margin = margin(t = 1,  # Top margin
+                             r = 25,  # Right margin
+                             b = 1,  # Bottom margin
+                             l = 1)) # Left margin
+p=p+scale_x_continuous(breaks = c(0, 25,50,75,100), labels=c("Transcription start site", "Locus (25% bp)","Locus (50% bp)","Locus (75%)", "End mRNA"))
+p=p+scale_colour_manual(values = color_table$Color)
+
+print(p)
+dev.off()
+
+dulc<-cut_list_final3[grep("52 NLRs susceptible",cut_list_final3$variable),]
+nig<-cut_list_final3[grep("Other NLRs",cut_list_final3$variable),]
+int<-cut_list_final3[grep("Sn_g34732",cut_list_final3$variable),]
+mean(dulc$value)
+mean(nig$value)
+mean(int$value, na.rm=T)
+[1] 0.8209333
+[1] 0.7916444
+[1] 0.202619
+
+
+
+
+
+#################
+###6.3.3 Methylation in NLRs- S.nigrum - downstream
+#################
+#################### 52 genes except Sn_g34732
+### start with 53 NLRs and remove the info of Sn_g34732
+library(dplyr)
+genes=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/53_NLR_nigrum_susceptible.downstream_meth", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+genes=genes[!grepl("Sn_g34732", genes$Gene_ID),]
+write.table(genes, "/users/sfo503/scratch/dulcamara_nigrum/NLR/52_NLR_nigrum_susceptible_genes.downstream_meth_coordinates", col.names=T, sep="\t")
+
+
+##############intervals
+cuts <- cut(genes$end_meth_percentage, breaks=seq(1, max(genes$start_meth_percentage)+10, 15))
+cut_list=as.data.frame(by(genes$methylated_frequency, cuts, mean))
+cut_list2=as.data.frame(by(genes$methylated_frequency, cuts, max)) ##ok
+cut_list3=as.data.frame(by(genes$methylated_frequency, cuts, min)) ##ok
+cut_list$coordinates<-rownames(cut_list)
+cut_list$coordinates=gsub("(","", cut_list$coordinates,fixed=TRUE)
+cut_list$coordinates=gsub("]","", cut_list$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list$coordinates, ',', 2)
+cut_list$start_coordinates=as.numeric(cut_list$start_coordinates)
+cut_list$end_coordinates=as.numeric(cut_list$end_coordinates)
+cut_list$x=as.numeric(cut_list$x)
+cut_list$middle_coordinates=cut_list$end_coordinates-3
+colnames(cut_list)=c("susceptible_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+#################### 384 NLRS
+library(dplyr)
+genes_n=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/384_NLRs_SN_no_shared.downstream_meth", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes_n)<-c(header)
+genes_n$Gene_size=genes_n$end_gene - genes_n$start_gene
+###222115 15
+genes_n$start_gene_percentage=c(1)
+genes_n$end_gene_percentage=c(100)
+genes_n$start_methylation_start_gene_difference=genes_n$start_methylation- genes_n$start_gene
+genes_n$end_methylation_start_gene_difference=genes_n$end_methylation- genes_n$start_gene
+
+genes_n=genes_n %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes_n=genes_n %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes_n$start_meth_percentage = 100*genes_n$start_meth_percentage
+genes_n$end_meth_percentage = 100*genes_n$end_meth_percentage
+write.table(genes_n, "/users/sfo503/scratch/dulcamara_nigrum/NLR/384_NLRs_SN_no_shared.downstream_meth_coordinates", col.names=T, sep="\t")
+
+##############intervals
+#####average by 5%
+cuts_n <- cut(genes_n$end_meth_percentage, breaks=seq(1, max(genes_n$start_meth_percentage)+10, 15))
+cut_list_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, mean))
+cut_list2_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, max)) ##ok
+cut_list3_n=as.data.frame(by(genes_n$methylated_frequency, cuts_n, min)) ##ok
+cut_list_n$coordinates<-rownames(cut_list_n)
+cut_list_n$coordinates=gsub("(","", cut_list_n$coordinates,fixed=TRUE)
+cut_list_n$coordinates=gsub("]","", cut_list_n$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n$coordinates, ',', 2)
+cut_list_n$start_coordinates=as.numeric(cut_list_n$start_coordinates)
+cut_list_n$end_coordinates=as.numeric(cut_list_n$end_coordinates)
+cut_list_n$x=as.numeric(cut_list_n$x)
+cut_list_n$middle_coordinates=cut_list_n$end_coordinates-3
+colnames(cut_list_n)=c("rest_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+#############gene of interest Sn_g34732
+
+genes=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/53_NLR_nigrum_susceptible.downstream_meth", header=F, sep="\t")
+header= c("Contig", "start_gene", "end_gene", "strand", "Gene_ID", "contig", "start_methylation", "end_methylation", "num_motifs_in_group", "called_sites", "called_sites_methylated", "methylated_frequency", "group_sequence", "gene_and_methylation_overlap")
+colnames(genes)<-c(header)
+genes$Gene_size=genes$end_gene - genes$start_gene
+genes$start_gene_percentage=c(1)
+genes$end_gene_percentage=c(100)
+genes$start_methylation_start_gene_difference=genes$start_methylation- genes$start_gene
+genes$end_methylation_start_gene_difference=genes$end_methylation- genes$start_gene
+
+genes=genes %>% mutate(start_meth_percentage = start_methylation_start_gene_difference / Gene_size)
+genes=genes %>% mutate(end_meth_percentage = end_methylation_start_gene_difference / Gene_size)
+genes$start_meth_percentage = 100*genes$start_meth_percentage
+genes$end_meth_percentage = 100*genes$end_meth_percentage
+
+genes2=genes[grepl("Sn_g34732", genes$Gene_ID),]
+##############intervals
+#####average by 5%
+cuts_n2 <- cut(genes2$end_meth_percentage, breaks=seq(1, max(genes2$start_meth_percentage)+10, 15))
+cut_list_n2=as.data.frame(by(genes2$methylated_frequency, cuts_n2, mean))
+cut_list2_n2=as.data.frame(by(genes2$methylated_frequency, cuts_n2, max)) ##ok
+cut_list3_n2=as.data.frame(by(genes2$methylated_frequency, cuts_n2, min)) ##ok
+cut_list_n2$coordinates<-rownames(cut_list_n2)
+cut_list_n2$coordinates=gsub("(","", cut_list_n2$coordinates,fixed=TRUE)
+cut_list_n2$coordinates=gsub("]","", cut_list_n2$coordinates,fixed=TRUE)
+
+library(stringr)
+cut_list_n2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_n2$coordinates, ',', 2)
+cut_list_n2$start_coordinates=as.numeric(cut_list_n2$start_coordinates)
+cut_list_n2$end_coordinates=as.numeric(cut_list_n2$end_coordinates)
+cut_list_n2$x=as.numeric(cut_list_n2$x)
+cut_list_n2$middle_coordinates=cut_list_n2$end_coordinates-3
+colnames(cut_list_n2)=c("int_freq", "coordinates", "start_coordinates", "end_coordinates", "middle_coordinates")
+
+
+
+
+###########group and plot 384, 52 and Sn_g34732
+
+cut_list_final=left_join(cut_list, cut_list_n)
+cut_list_final=left_join(cut_list_final, cut_list_n2)
+write.table(cut_list_final, "/users/sfo503/scratch/dulcamara_nigrum/NLR/52_384_Sn_g34732_NLR_Sn_genes.downstream_intervals", col.names=T, sep="\t")
+library(tidyr)
+library(reshape2)
+library(data.table)
+###make it long
+cut_list_final2=as.data.frame(melt(setDT(cut_list_final), id.vars = "coordinates"))
+cut_list_final2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(cut_list_final2$coordinates, ',', 2)
+cut_list_final2$start_coordinates=as.numeric(cut_list_final2$start_coordinates)
+cut_list_final2$end_coordinates=as.numeric(cut_list_final2$end_coordinates)
+
+cut_list_final2$middle_coordinates=cut_list_final2$end_coordinates-3
+cut_list_final2$variable=sub("_freq","",cut_list_final2$variable)
+cut_list_final3 <- cut_list_final2[grep("susceptible|rest|int", cut_list_final2$variable),]
+###add a column with species and the frequency should be in one
+cut_list_final3$variable=sub("susceptible", "52 NLRs susceptible", cut_list_final3$variable)
+cut_list_final3$variable=sub("rest", "Other NLRs", cut_list_final3$variable)
+cut_list_final3$variable=sub("int", "Sn_g34732", cut_list_final3$variable)
+
+###add a column with species and the frequency should be in one
+color_table <-  tibble(
+  Treatment = c("52 NLRs susceptible","Other NLRs", "Sn_g34732"),
+  Color = c("#009E73", "#777777", "#332288"))
+
+library(ggplot2)
+tiff("/users/sfo503/scratch/dulcamara_nigrum/NLR/NLR_52_384_Sn_g34732_genes.downstream.tiff", res=300, he=200, wi=200, units="mm")
+par(mar=c(1,1,1,15))
+p=ggplot(cut_list_final3, aes(x = start_coordinates, y = value, colour=variable)) +
+  geom_segment(aes(xend = end_coordinates, yend = value)) +
+   geom_point(size = 3) +
+  geom_point(aes(x = end_coordinates), size = 3) +
+  theme_bw() +geom_line(aes(x = middle_coordinates))+ylim(0,1)+
+  xlim(0,102)+xlab("Gene Locus")+ ylab("Methylation frequency")+
+theme(plot.margin = margin(t = 1,  # Top margin
+                             r = 25,  # Right margin
+                             b = 1,  # Bottom margin
+                             l = 1)) # Left margin
+p=p+scale_x_continuous(breaks = c(0, 25,50,75,100), labels=c("Transcription start site", "Locus (25% bp)","Locus (50% bp)","Locus (75%)", "End mRNA"))
+p=p+scale_colour_manual(values = color_table$Color)
+
+print(p)
+dev.off()
+
+dulc<-cut_list_final3[grep("52 NLRs susceptible",cut_list_final3$variable),]
+nig<-cut_list_final3[grep("Other NLRs",cut_list_final3$variable),]
+int<-cut_list_final3[grep("Sn_g34732",cut_list_final3$variable),]
+mean(dulc$value)
+mean(nig$value)
+mean(int$value, na.rm=T)        1
+
+[1] 0.8404428
+[1] 0.772004
+[1] 0.59725
+
+
+
+#################
+###6.3.4 Methylation in NLRs- S.nigrum - combined and plot
+#################
+###################
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+library(data.table)
+library(stringr)
+
+
+genes=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/52_384_Sn_g34732_NLR_Sn_genes_intervals", header=T, sep="\t")
+upstream=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/52_384_Sn_g34732_NLR_Sn_genes.upstream_intervals", header=T, sep="\t")
+downstream=read.table("/users/sfo503/scratch/dulcamara_nigrum/NLR/52_384_Sn_g34732_NLR_Sn_genes.downstream_intervals", header=T, sep="\t")
+upstream$start_coordinates_all=upstream$start_coordinates
+upstream$end_coordinates_all=upstream$end_coordinates
+
+genes$start_coordinates_all=genes$start_coordinates+100
+genes$end_coordinates_all=genes$end_coordinates+100
+
+downstream$start_coordinates_all=downstream$start_coordinates+200
+downstream$end_coordinates_all=downstream$end_coordinates+200
+
+combined=rbind(upstream,genes,downstream)
+combined$new_coordinates=paste(combined$start_coordinates_all, combined$end_coordinates_all, sep=",")
+
+combined2=as.data.frame(melt(setDT(combined), id.vars = "new_coordinates"))
+combined2[c('start_coordinates', 'end_coordinates')] <- str_split_fixed(combined2$new_coordinates, ',', 2)
+combined2$start_coordinates=as.numeric(combined2$start_coordinates)
+combined2$end_coordinates=as.numeric(combined2$end_coordinates)
+combined2$variable=sub("_freq","",combined2$variable)
+combined3 <- combined2[grep("susceptible|rest|int", combined2$variable),]
+
+#combined3$middle_coordinates=with(combined3,ifelse(combined3$start_coordinates <= 96, combined3$end_coordinates-3,
+#	ifelse(combined3$start_coordinates >= 100 & combined3$start_coordinates < 200, combined3$end_coordinates-103,
+#		ifelse(combined3$start_coordinates >= 200 & combined3$start_coordinates < 300, combined3$end_coordinates-203,""))))
+
+combined3$middle_coordinates=with(combined3,ifelse(combined3$start_coordinates <= 6, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates < 6, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 11, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 16, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 21, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 26, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 31, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 36, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 41, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 46, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 51, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 56, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 61, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 66, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 71, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 76, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 81, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 86, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 91, combined3$end_coordinates-3,
+ifelse(combined3$start_coordinates >= 96, combined3$end_coordinates-3,
+	ifelse(combined3$start_coordinates <= 100 & combined3$start_coordinates > 200, combined3$end_coordinates-103,
+		ifelse(combined3$start_coordinates <= 200 & combined3$start_coordinates>300, combined3$end_coordinates-203,"")))))))))))))))))))))))
+
+
+
+
+###add a column with species and the frequency should be in one
+combined3$variable=sub("susceptible", "52 NLRs susceptible", combined3$variable)
+combined3$variable=sub("rest", "Other NLRs", combined3$variable)
+combined3$variable=sub("int", "Sn_g34732", combined3$variable)
+
+###add a column with species and the frequency should be in one
+color_table <-  tibble(
+  Treatment = c("52 NLRs susceptible","Other NLRs", "Sn_g34732"),
+  Color = c("#009E73", "#777777", "#332288"))
+
+
+
+combined3$middle_coordinates=as.numeric(combined3$middle_coordinates)
+combined3$value=as.numeric(combined3$value)
+write.table(combined3, "/users/sfo503/scratch/dulcamara_nigrum/NLR/52_384_Sn_g34732_NLR_Sn_genes_all_intervals", col.names=T, sep="\t")
+
+tiff("/users/sfo503/scratch/dulcamara_nigrum/NLR/52_384_Sn_g34732_NLR_Sn_genes_all.tiff", res=300, he=65, wi=90, units="mm")
+
+par(mar=c(1,1,1,15))
+p=ggplot(combined3, aes(x = middle_coordinates, y = value, colour=variable)) +
+   geom_point(size = 0.1) +
+  theme_bw() +geom_line(aes(x = middle_coordinates))+ylim(0,1)+
+  xlim(0,300)+xlab("")+ ylab("Methylation frequency")+
+theme(plot.margin = margin(t = 1,  # Top margin
+                             r = 25,  # Right margin
+                             b = 1,  # Bottom margin
+                             l = 1)) # Left margin
+
+p=p+scale_x_continuous(breaks = c(0,150,300), 
+labels=c("-1Kb","Gene body",  "+1Kb"))+ theme(legend.text = element_text(face = "bold"))+ theme( text = element_text(size = 7))
+
+p=p+scale_colour_manual(values = color_table$Color)
+p=p+annotate(geom = "rect", xmin=0, xmax=100, ymin=0, ymax=1,
+           fill = "gray80", colour = NA, alpha = 0.5)
+
+p=p+annotate(geom = "rect", xmin=200, xmax=300, ymin=0, ymax=1,
+           fill = "gray80", colour = NA, alpha = 0.5)
+
+
+print(p)
+dev.off()
+
+
+
+
+
+
+
+
+
+
 
